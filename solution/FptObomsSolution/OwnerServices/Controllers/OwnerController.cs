@@ -16,14 +16,14 @@ public class OwnerController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Owners>>> GetAllActiveOwners()
+    public async Task<ActionResult<IEnumerable<Owner>>> GetAllActiveOwners()
     {
         var owners = await _ownerRepository.GetAllOwners();
         return Ok(owners);
     }
 
     [HttpGet("{username}")]
-    public async Task<ActionResult<Owners>> GetOwnerByUsername(string username)
+    public async Task<ActionResult<Owner>> GetOwnerByUsername(string username)
     {
         var owner = await _ownerRepository.GetOwnerByUsername(username);
         if (owner == null)
@@ -33,7 +33,7 @@ public class OwnerController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddOwner([FromBody] Owners owner)
+    public async Task<IActionResult> AddOwner([FromBody] Owner owner)
     {
         await _ownerRepository.AddOwner(owner);
         return Created();

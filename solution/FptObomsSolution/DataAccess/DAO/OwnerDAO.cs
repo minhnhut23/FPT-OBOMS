@@ -12,24 +12,24 @@ public class OwnerDAO
         _client = client;
     }
 
-    public async Task<List<Owners>> GetAllOwners()
+    public async Task<List<Owner>> GetAllOwners()
     {
-        var result = await _client.From<Owners>().Get();
+        var result = await _client.From<Owner>().Get();
         return result.Models;
     }
 
-    public async Task<Owners?> GetOwnerByUsername(string username)
+    public async Task<Owner?> GetOwnerByUsername(string username)
     {
         var result = await _client
-            .From<Owners>()
+            .From<Owner>()
             .Filter("user_name", Supabase.Postgrest.Constants.Operator.Equals, username)
             .Get();
 
         return result.Models.FirstOrDefault();
     }
 
-    public async Task AddOwner(Owners owner)
+    public async Task AddOwner(Owner owner)
     {
-        await _client.From<Owners>().Insert(owner);
+        await _client.From<Owner>().Insert(owner);
     }
 }

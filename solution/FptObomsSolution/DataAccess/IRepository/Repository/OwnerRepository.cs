@@ -12,18 +12,18 @@ public class OwnerRepository : IOwnerRepository
         _ownerDAO = ownerDAO;
     }
 
-    public Task AddOwner(Owners owners)
+    public Task AddOwner(Owner owners)
     {
         return Task.FromResult(_ownerDAO.AddOwner(owners));
     }
 
-    public async Task<List<Owners>> GetAllOwners()
+    public async Task<List<Owner>> GetAllOwners()
     {
         var owners = await _ownerDAO.GetAllOwners();
         return owners;
     }
 
-    public async Task<Owners?> GetOwnerByUsername(string username)
+    public async Task<Owner?> GetOwnerByUsername(string username)
     {
         var owner = await _ownerDAO.GetOwnerByUsername(username);
         return owner;
