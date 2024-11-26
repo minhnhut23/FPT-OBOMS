@@ -1,0 +1,16 @@
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\bin\Debug\net8.0\appsettings.json
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\bin\Debug\net8.0\BusinessObject.deps.json
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\bin\Debug\net8.0\BusinessObject.runtimeconfig.json
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\bin\Debug\net8.0\BusinessObject.dll
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\bin\Debug\net8.0\BusinessObject.pdb
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.csproj.AssemblyReference.cache
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.GeneratedMSBuildEditorConfig.editorconfig
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.AssemblyInfoInputs.cache
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.AssemblyInfo.cs
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.csproj.CoreCompileInputs.cache
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.sourcelink.json
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.dll
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\refint\BusinessObject.dll
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.pdb
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\BusinessObject.genruntimeconfig.cache
+E:\do-an\PJ\FPT-OBOMS\solution\FptObomsSolution\BusinessObject\obj\Debug\net8.0\ref\BusinessObject.dll

@@ -3,7 +3,31 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35431.28
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessObject", "BusinessObject\BusinessObject.csproj", "{FAE98574-9137-456E-8105-A431A0510660}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OwnerServices", "OwnerServices\OwnerServices.csproj", "{C0C39B79-9629-41EE-9D84-49615CC15D36}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FAE98574-9137-456E-8105-A431A0510660}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FAE98574-9137-456E-8105-A431A0510660}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FAE98574-9137-456E-8105-A431A0510660}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FAE98574-9137-456E-8105-A431A0510660}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0C39B79-9629-41EE-9D84-49615CC15D36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0C39B79-9629-41EE-9D84-49615CC15D36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0C39B79-9629-41EE-9D84-49615CC15D36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0C39B79-9629-41EE-9D84-49615CC15D36}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
