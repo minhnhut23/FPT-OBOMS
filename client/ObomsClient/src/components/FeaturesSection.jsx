@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import PropTypes from 'prop-types';
 import { 
   UserGroupIcon, 
@@ -216,10 +216,6 @@ export default function FeaturesSection() {
   const containerRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [showNav, setShowNav] = useState(false);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
 
   const handleDotClick = (index) => {
     const sections = document.querySelectorAll('[data-feature-section]');
@@ -299,6 +295,36 @@ export default function FeaturesSection() {
     };
   }, []);
 
+  const imageVariants = {
+    hidden: { 
+      opacity: 0,
+      scale: 1.1,
+      filter: 'blur(10px)'
+    },
+    visible: (isActive) => ({
+      opacity: isActive ? 1 : 0.4,
+      scale: 1,
+      filter: 'blur(0px)',
+      transition: {
+        opacity: { duration: 0.5, ease: 'easeOut' },
+        scale: { duration: 0.7, ease: [0.34, 1.56, 0.64, 1] },
+        filter: { duration: 0.5, ease: 'easeOut' }
+      }
+    }),
+    hover: {
+      scale: 1.03,
+      transition: { duration: 0.3, ease: 'easeOut' }
+    }
+  };
+
+  const gradientVariants = {
+    hidden: { opacity: 0 },
+    visible: (isActive) => ({
+      opacity: isActive ? 0.7 : 0.9,
+      transition: { duration: 0.5, ease: 'easeOut' }
+    })
+  };
+
   return (
     <section 
       ref={containerRef} 
@@ -361,38 +387,66 @@ export default function FeaturesSection() {
 
       {/* Features */}
       <div className="relative z-10">
-        {features.map((feature, index) => (
-          <div
-            key={feature.title}
-            data-feature-section
-            className="min-h-screen flex items-center"
-          >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-              <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
-                <FeatureCard 
-                  feature={feature} 
-                  isActive={index === activeIndex} 
-                />
-                
-                <div className="relative mt-8 lg:mt-0">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 to-violet-500/10 rounded-2xl blur-2xl" />
-                  <div className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden ring-1 ring-white/10">
-                    <OptimizedImage
-                      {...feature.image}
-                      className="w-full h-full object-cover"
-                      effect="fade"
-                      priority={index === 0}
+        {features.map((feature, index) => {
+          const isActive = index === activeIndex;
+          
+          return (
+            <div
+              key={feature.title}
+              data-feature-section
+              className="min-h-screen flex items-center"
+              style={{
+                transform: 'translateY(-90px)'
+              }}
+            >
+              <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 items-center">
+                  <FeatureCard 
+                    feature={feature} 
+                    isActive={isActive} 
+                  />
+                  
+                  <div className="relative mt-8 lg:mt-0 group">
+                    {/* Background glow effect */}
+                    <motion.div 
+                      className="absolute -inset-4 bg-gradient-to-r from-blue-500/10 to-violet-500/10 rounded-2xl blur-2xl"
+                      initial="hidden"
+                      animate="visible"
+                      variants={gradientVariants}
+                      custom={isActive}
                     />
-                    <div 
-                      className="absolute inset-0 bg-gradient-to-t from-[#1C1C35] via-[#1C1C35]/50 to-transparent"
-                      aria-hidden="true"
-                    />
+                    
+                    {/* Image container */}
+                    <motion.div 
+                      className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] rounded-2xl overflow-hidden ring-1 ring-white/10 transform-gpu"
+                      initial="hidden"
+                      animate="visible"
+                      whileHover="hover"
+                      variants={imageVariants}
+                      custom={isActive}
+                    >
+                      <OptimizedImage
+                        {...feature.image}
+                        className="w-full h-full object-cover"
+                        effect="none" // We're handling animations here
+                        hoverEffect={false} // We're handling hover here
+                        priority={index === 0}
+                      />
+                      
+                      {/* Gradient overlay */}
+                      <motion.div 
+                        className="absolute inset-0 bg-gradient-to-t from-[#1C1C35] via-[#1C1C35]/50 to-transparent"
+                        variants={gradientVariants}
+                        custom={isActive}
+                        aria-hidden="true"
+                      />
+                    </motion.div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div 
