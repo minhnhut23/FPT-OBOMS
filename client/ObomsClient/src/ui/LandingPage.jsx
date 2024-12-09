@@ -29,7 +29,7 @@ const images = [
     effect: "fade"
   },
   {
-    src: "https://images.unsplash.com/photo-1615038552039-e1b271f14ec8?w=800&auto=format&fit=crop&q=60",
+    src: "https://www.maestato.com/en/media/products_photos/59aff5c53d1b6_dsc0044-3.jpg",
     alt: "Professional billiard table",
     width: 600,
     height: 400,

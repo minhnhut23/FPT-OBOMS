@@ -32,7 +32,7 @@ const features = [
     title: "Seamless Booking",
     description: "Book tables instantly with real-time availability across multiple venues. Our smart scheduling system ensures you always get the perfect spot.",
     image: {
-      src: "https://images.unsplash.com/photo-1606244864456-8bee63fce472?w=800&auto=format&fit=crop&q=60",
+      src: "https://www.stayntouch.com/wp-content/uploads/2024/05/seamless-booking-engine-opt.png",
       alt: "Modern booking interface on mobile",
       width: 800,
       height: 600
