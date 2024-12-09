@@ -221,10 +221,6 @@ export default function FeaturesSection() {
     offset: ["start start", "end end"]
   });
 
-  // Even faster header opacity transition
-  const headerOpacity = useTransform(scrollYProgress, [0, 0.02], [0, 1]);
-
-  // Scroll to section with offset positioning
   const handleDotClick = (index) => {
     const sections = document.querySelectorAll('[data-feature-section]');
     const section = sections[index];
@@ -246,7 +242,6 @@ export default function FeaturesSection() {
     }
   };
 
-  // Update active section and nav visibility based on scroll position
   useEffect(() => {
     const sections = document.querySelectorAll('[data-feature-section]');
     const ctaSection = document.querySelector('[data-cta-section]');
@@ -261,20 +256,16 @@ export default function FeaturesSection() {
         const viewportHeight = window.innerHeight;
         const viewportCenter = viewportHeight / 2;
         
-        // Check first feature section for showing nav
+        // Show/hide nav logic
         const firstSection = sections[0];
         if (firstSection) {
           const rect = firstSection.getBoundingClientRect();
           const sectionCenter = rect.top + (rect.height / 2);
           
-          // Show nav when first section reaches the target position
           if (sectionCenter <= viewportCenter) {
-            // Check CTA section to hide nav
             if (ctaSection) {
               const ctaRect = ctaSection.getBoundingClientRect();
               const ctaCenter = ctaRect.top + (ctaRect.height / 2);
-              
-              // Hide nav when reaching middle of CTA
               setShowNav(ctaCenter > viewportCenter);
             } else {
               setShowNav(true);
@@ -314,7 +305,7 @@ export default function FeaturesSection() {
       className="relative bg-[#1C1C35] pt-8 sm:pt-12"
       aria-labelledby="features-heading"
     >
-      {/* Side Navigation - Hide on mobile */}
+      {/* Side Navigation */}
       <motion.div 
         className="hidden md:block fixed left-4 lg:left-8 top-1/2 -translate-y-1/2 z-30"
         initial={{ opacity: 0 }}
@@ -344,11 +335,9 @@ export default function FeaturesSection() {
         </div>
       </motion.div>
 
-      {/* Sticky Header */}
-      <motion.div 
+      {/* Sticky Header - No fade effect */}
+      <div 
         className="sticky top-16 z-20 bg-[#1C1C35]/90 backdrop-blur-sm py-4 sm:py-6 mb-6 sm:mb-8"
-        style={{ opacity: headerOpacity }}
-        transition={{ duration: 0.1 }}
       >
         <div className="max-w-3xl mx-auto px-4">
           <span className="block text-center text-blue-400 font-semibold text-xs uppercase tracking-wider mb-2">
@@ -368,7 +357,7 @@ export default function FeaturesSection() {
             Discover how our comprehensive suite of features can transform your business
           </p>
         </div>
-      </motion.div>
+      </div>
 
       {/* Features */}
       <div className="relative z-10">
