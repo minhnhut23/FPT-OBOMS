@@ -3,32 +3,24 @@
   "WorkspaceRootPath": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\shopmanagementservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|solutionrelative:shopmanagementservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\ownerservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|solutionrelative:ownerservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\ownerservices\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
       "RelativeMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|solutionrelative:ownerservices\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\ownerservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|solutionrelative:ownerservices\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\shopmanagementservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|solutionrelative:shopmanagementservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\shopmanagementservice\\shopmanagementservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|solutionrelative:shopmanagementservice\\shopmanagementservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\ownerservices\\controllers\\ownercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|solutionrelative:ownerservices\\controllers\\ownercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\businessobject\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|solutionrelative:businessobject\\models\\owner.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\ownerservices\\ownerservices.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|solutionrelative:ownerservices\\ownerservices.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\businessobject\\models\\menuitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|solutionrelative:businessobject\\models\\menuitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\dataaccess\\dao\\ownerdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -39,8 +31,32 @@
       "RelativeMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|solutionrelative:dataaccess\\irepository\\repository\\ownerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\businessobject\\models\\menuitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|solutionrelative:businessobject\\models\\menuitem.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\dataaccess\\irepository\\repository\\manageshoprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|solutionrelative:dataaccess\\irepository\\repository\\manageshoprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\businessobject\\businessobject.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|solutionrelative:businessobject\\businessobject.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\shopmanagementservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|solutionrelative:shopmanagementservice\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\shopmanagementservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|solutionrelative:shopmanagementservice\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\dataaccess\\irepository\\imanageshoprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|solutionrelative:dataaccess\\irepository\\imanageshoprepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\dataaccess\\dao\\manageshopdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|solutionrelative:dataaccess\\dao\\manageshopdao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\shopmanagementservice\\shopmanagementservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{5D4EF811-6A73-4A38-9BF4-70021D04BBC4}|ShopManagementService\\ShopManagementService.csproj|solutionrelative:shopmanagementservice\\shopmanagementservice.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{C0C39B79-9629-41EE-9D84-49615CC15D36}|OwnerServices\\OwnerServices.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\ownerservices\\.env||{8B382828-6202-11D1-8870-0000F87579D2}",
@@ -53,10 +69,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\businessobject\\models\\shop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|solutionrelative:businessobject\\models\\shop.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\businessobject\\businessobject.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
-      "RelativeMoniker": "D:0:0:{FAE98574-9137-456E-8105-A431A0510660}|BusinessObject\\BusinessObject.csproj|solutionrelative:businessobject\\businessobject.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
     },
     {
       "AbsoluteMoniker": "D:0:0:{15B6E66E-813D-4FAC-BF19-5F980C0AE5BE}|DataAccess\\DataAccess.csproj|e:\\do-an\\pj\\fpt-oboms\\solution\\fptobomssolution\\dataaccess\\irepository\\iownerrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -74,7 +86,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 405,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 7,
           "Children": [
             {
               "$type": "Bookmark",
@@ -86,67 +98,75 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "appsettings.json",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\appsettings.json",
-              "RelativeDocumentMoniker": "ShopManagementService\\appsettings.json",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\appsettings.json",
-              "RelativeToolTip": "ShopManagementService\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2024-12-02T07:00:00.063Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\Program.cs",
-              "RelativeDocumentMoniker": "ShopManagementService\\Program.cs",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\Program.cs",
-              "RelativeToolTip": "ShopManagementService\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 6,
+              "Title": "OwnerRepository.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
+              "RelativeDocumentMoniker": "DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
+              "RelativeToolTip": "DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
+              "ViewState": "AgIAAAkAAAAAAAAAAAAAABEAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-12-02T06:59:59.323Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T03:56:36.436Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "ShopManagementService.csproj",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\ShopManagementService.csproj",
-              "RelativeDocumentMoniker": "ShopManagementService\\ShopManagementService.csproj",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\ShopManagementService.csproj",
-              "RelativeToolTip": "ShopManagementService\\ShopManagementService.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "OwnerController.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Controllers\\OwnerController.cs",
+              "RelativeDocumentMoniker": "OwnerServices\\Controllers\\OwnerController.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Controllers\\OwnerController.cs",
+              "RelativeToolTip": "OwnerServices\\Controllers\\OwnerController.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAQwCUAAAAkAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T04:09:49.249Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "BusinessObject.csproj",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\BusinessObject.csproj",
+              "RelativeDocumentMoniker": "BusinessObject\\BusinessObject.csproj",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\BusinessObject.csproj",
+              "RelativeToolTip": "BusinessObject\\BusinessObject.csproj",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAACIAAAAdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-12-02T06:59:29.75Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "MenuItem.cs",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\MenuItem.cs",
-              "RelativeDocumentMoniker": "BusinessObject\\Models\\MenuItem.cs",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\MenuItem.cs",
-              "RelativeToolTip": "BusinessObject\\Models\\MenuItem.cs",
-              "ViewState": "AgIAABUAAAAAAAAAAAAYwB4AAAAEAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T07:57:08.803Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T00:57:32.623Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
+              "Title": "ManageShopRepository.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\Repository\\ManageShopRepository.cs",
+              "RelativeDocumentMoniker": "DataAccess\\IRepository\\Repository\\ManageShopRepository.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\Repository\\ManageShopRepository.cs",
+              "RelativeToolTip": "DataAccess\\IRepository\\Repository\\ManageShopRepository.cs",
+              "ViewState": "AgIAAAoAAAAAAAAAAAAQwAgAAAA7AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-03T06:42:10.707Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "OwnerDAO.cs",
               "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\DAO\\OwnerDAO.cs",
               "RelativeDocumentMoniker": "DataAccess\\DAO\\OwnerDAO.cs",
               "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\DAO\\OwnerDAO.cs",
               "RelativeToolTip": "DataAccess\\DAO\\OwnerDAO.cs",
-              "ViewState": "AgIAAA4AAAAAAAAAAAAxwBsAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T03:30:15.466Z",
+              "WhenOpened": "2024-11-26T03:30:15.466Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Program.cs",
+              "RelativeDocumentMoniker": "OwnerServices\\Program.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Program.cs",
+              "RelativeToolTip": "OwnerServices\\Program.cs",
+              "ViewState": "AgIAABEAAAAAAAAAAAAAwBwAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T00:55:06.705Z",
               "EditorCaption": ""
             },
             {
@@ -157,27 +177,86 @@
               "RelativeDocumentMoniker": "OwnerServices\\appsettings.json",
               "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\appsettings.json",
               "RelativeToolTip": "OwnerServices\\appsettings.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAADAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAA2AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
               "WhenOpened": "2024-11-26T00:54:59.642Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Program.cs",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Program.cs",
-              "RelativeDocumentMoniker": "OwnerServices\\Program.cs",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Program.cs",
-              "RelativeToolTip": "OwnerServices\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T00:55:06.705Z",
-              "EditorCaption": ""
+              "DocumentIndex": 3,
+              "Title": "OwnerServices.http",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\OwnerServices.http",
+              "RelativeDocumentMoniker": "OwnerServices\\OwnerServices.http",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\OwnerServices.http",
+              "RelativeToolTip": "OwnerServices\\OwnerServices.http",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
+              "WhenOpened": "2024-12-10T07:21:38.941Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 15,
+              "DocumentIndex": 4,
+              "Title": "MenuItem.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\MenuItem.cs",
+              "RelativeDocumentMoniker": "BusinessObject\\Models\\MenuItem.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\MenuItem.cs",
+              "RelativeToolTip": "BusinessObject\\Models\\MenuItem.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-11-26T07:57:08.803Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Program.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\Program.cs",
+              "RelativeDocumentMoniker": "ShopManagementService\\Program.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\Program.cs",
+              "RelativeToolTip": "ShopManagementService\\Program.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAIwB8AAAA6AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-02T06:59:59.323Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\appsettings.json",
+              "RelativeDocumentMoniker": "ShopManagementService\\appsettings.json",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\appsettings.json",
+              "RelativeToolTip": "ShopManagementService\\appsettings.json",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAADAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-12-02T07:00:00.063Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "IManageShopRepository.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\IManageShopRepository.cs",
+              "RelativeDocumentMoniker": "DataAccess\\IRepository\\IManageShopRepository.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\IManageShopRepository.cs",
+              "RelativeToolTip": "DataAccess\\IRepository\\IManageShopRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-03T06:41:39.064Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "ManageShopDAO.cs",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\DAO\\ManageShopDAO.cs",
+              "RelativeDocumentMoniker": "DataAccess\\DAO\\ManageShopDAO.cs",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\DAO\\ManageShopDAO.cs",
+              "RelativeToolTip": "DataAccess\\DAO\\ManageShopDAO.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAmAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-12-03T06:40:39.306Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
               "Title": "Program.cs",
               "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementServices\\Program.cs",
               "RelativeDocumentMoniker": "ShopManagementServices\\Program.cs",
@@ -188,59 +267,19 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "OwnerRepository.cs",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
-              "RelativeDocumentMoniker": "DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
-              "RelativeToolTip": "DataAccess\\IRepository\\Repository\\OwnerRepository.cs",
-              "ViewState": "AgIAAAQAAAAAAAAAAAAqwBEAAAAFAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T03:56:36.436Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "OwnerController.cs",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Controllers\\OwnerController.cs",
-              "RelativeDocumentMoniker": "OwnerServices\\Controllers\\OwnerController.cs",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\Controllers\\OwnerController.cs",
-              "RelativeToolTip": "OwnerServices\\Controllers\\OwnerController.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAAYwAoAAAAVAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T04:09:49.249Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Owner.cs",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\Owner.cs",
-              "RelativeDocumentMoniker": "BusinessObject\\Models\\Owner.cs",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\Owner.cs",
-              "RelativeToolTip": "BusinessObject\\Models\\Owner.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAQAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T03:03:09.919Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 13,
-              "Title": "BusinessObject.csproj",
-              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\BusinessObject.csproj",
-              "RelativeDocumentMoniker": "BusinessObject\\BusinessObject.csproj",
-              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\BusinessObject.csproj",
-              "RelativeToolTip": "BusinessObject\\BusinessObject.csproj",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAuAAAAAAAAAA==",
+              "Title": "ShopManagementService.csproj",
+              "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\ShopManagementService.csproj",
+              "RelativeDocumentMoniker": "ShopManagementService\\ShopManagementService.csproj",
+              "ToolTip": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\ShopManagementService\\ShopManagementService.csproj",
+              "RelativeToolTip": "ShopManagementService\\ShopManagementService.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
-              "WhenOpened": "2024-11-26T00:57:32.623Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-12-02T06:59:29.75Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 14,
               "Title": ".env",
               "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\OwnerServices\\.env",
               "RelativeDocumentMoniker": "OwnerServices\\.env",
@@ -248,12 +287,11 @@
               "RelativeToolTip": "OwnerServices\\.env",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
-              "WhenOpened": "2024-11-26T01:27:54.973Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T01:27:54.973Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 17,
               "Title": "IOwnerRepository.cs",
               "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\DataAccess\\IRepository\\IOwnerRepository.cs",
               "RelativeDocumentMoniker": "DataAccess\\IRepository\\IOwnerRepository.cs",
@@ -261,12 +299,11 @@
               "RelativeToolTip": "DataAccess\\IRepository\\IOwnerRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T03:53:29.973Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T03:53:29.973Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 16,
               "Title": "Shop.cs",
               "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\Shop.cs",
               "RelativeDocumentMoniker": "BusinessObject\\Models\\Shop.cs",
@@ -274,12 +311,11 @@
               "RelativeToolTip": "BusinessObject\\Models\\Shop.cs",
               "ViewState": "AgIAAA0AAAAAAAAAAAAQwBgAAAA0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T07:03:43.338Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T07:03:43.338Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 15,
               "Title": "Table.cs",
               "DocumentMoniker": "E:\\do-an\\PJ\\FPT-OBOMS\\solution\\FptObomsSolution\\BusinessObject\\Models\\Table.cs",
               "RelativeDocumentMoniker": "BusinessObject\\Models\\Table.cs",
@@ -287,8 +323,7 @@
               "RelativeToolTip": "BusinessObject\\Models\\Table.cs",
               "ViewState": "AgIAABwAAAAAAAAAAAAwwCAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-11-26T07:47:05.908Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-11-26T07:47:05.908Z"
             }
           ]
         }
