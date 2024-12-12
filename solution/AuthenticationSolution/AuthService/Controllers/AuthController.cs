@@ -27,7 +27,7 @@ public class AuthController : Controller
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { msg = ex.Message });
         }
     }
 
@@ -42,9 +42,26 @@ public class AuthController : Controller
         }
         catch (Exception ex)
         {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
+
+    [Authorize]
+    [HttpPost("/logout")]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            await _authDAO.Logout();
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
             return BadRequest(ex.Message);
         }
     }
+
 
 }
 
