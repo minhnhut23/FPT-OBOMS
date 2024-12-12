@@ -13,8 +13,6 @@ Response (200):
 
 Response (400):
 {
-    "code": 400,
-    "error_code": "invalid_credentials",
     "msg": "Invalid login credentials"
 }
 
