@@ -9,6 +9,9 @@ public class Profile : BaseModel
     [PrimaryKey("id")]
     public Guid Id { get; set; }
 
+    [Column("full_name")]
+    public string FullName { get; set; } = null!;
+
     [Column("profile_picture")]
     public string ProfilePicture { get; set; } = null!;
 
@@ -25,7 +28,10 @@ public class Profile : BaseModel
     public DateTime UpdatedAt { get; set; }
 
     [Column("role")]
-    public Roles Role { get; set; } 
+    public Roles Role { get; set; }
+    
+    [Column("account_id")]     
+    public Guid AccountId { get; set; }
 
     public enum Roles
     {

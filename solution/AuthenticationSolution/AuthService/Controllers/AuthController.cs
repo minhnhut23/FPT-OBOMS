@@ -17,7 +17,7 @@ public class AuthController : Controller
     }
 
     [HttpPost("/login")]
-    public async Task<IActionResult> SignIn([FromBody] LoginRequestDTO request)
+    public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
         try
         {
@@ -30,5 +30,21 @@ public class AuthController : Controller
             return BadRequest(ex.Message);
         }
     }
+
+    [HttpPost("/register")]
+    public async Task<IActionResult> Register([FromBody] RegisterRequestDTO request)
+    {
+        try
+        {
+            await _authDAO.Register(request);
+
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
 }
 
