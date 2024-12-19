@@ -1,10 +1,6 @@
 ﻿using BusinessObject.DTO;
-using BusinessObject.Models;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Supabase;
 using Supabase.Gotrue;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace AuthService.DAO;
 
@@ -56,12 +52,12 @@ public class AuthDAO
         {
             if (request.Password.Trim() != request.ConfirmPassword.Trim())
             {
-                throw new Exception("Password and Confirm Password are not the same");
+                throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
 
             if (!ValidatePassword(request.Password))
             {
-                throw new Exception("Password is not valid");
+                throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
             }
 
             var session = await _client.Auth.SignUp(request.Email, request.Password);
@@ -97,6 +93,14 @@ public class AuthDAO
         {
             throw new Exception(ex.Message);
         }
+    }
+
+
+    public async Task<User> GetUser()
+    {
+        var checksession = _client.Auth.CurrentUser;
+
+        return checksession;
     }
 
     public static bool IsJson(string input)
@@ -145,7 +149,7 @@ public class AuthDAO
         if (validConditions == 0) return false;
         foreach (char c in passWord)
         {
-            if (c >= '0' && c <= '9')
+            if (c >= '0' && c <= '8')
             {
                 validConditions++;
                 break;
@@ -154,7 +158,7 @@ public class AuthDAO
         if (validConditions == 1) return false;
         if (validConditions == 2)
         {
-            char[] special = { '@', '#', '$', '%', '^', '&', '+', '=' }; // or whatever    
+            char[] special = { '@', '#', '$', '%', '^', '&', '+', '=' };   
             if (passWord.IndexOfAny(special) == -1) return false;
         }
         return true;

@@ -2,18 +2,25 @@
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Supabase;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace TestAuth.Controllers;
 
 [Route("/api/auth")]
+[ApiController]
 public class AuthController : Controller
 {
     private readonly AuthDAO _authDAO;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(AuthDAO authDAO)
+
+    public AuthController(AuthDAO authDAO, IConfiguration configuration)
     {
         _authDAO = authDAO;
+        _configuration = configuration;
     }
 
     [HttpPost("/login")]
@@ -62,6 +69,9 @@ public class AuthController : Controller
         }
     }
 
-
+    [HttpGet("GetProfile")]
+    public IActionResult GetProfile()
+    {
+        return Ok(_authDAO.GetUser());
+    }
 }
-
