@@ -69,12 +69,39 @@ public class AuthController : Controller
         }
     }
 
-    [HttpGet("GetProfile")]
+    [HttpGet("getProfile")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
-        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-        var user = await _authDAO.GetUser(token);
-        return Ok(user);
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var user = await _authDAO.GetCurrentUser(token);
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+        
     }
+
+    [HttpGet("createProfile")]
+    [Authorize]
+    public async Task<IActionResult> CreateProfile([FromBody] CreateProfileDTO request)
+    {
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var reponse = await _authDAO.CreateUser(request, token);
+            return Ok(reponse);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+
+    }
+
+
 }

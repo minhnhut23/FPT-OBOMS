@@ -35,7 +35,7 @@ public class AuthDAO
                 try
                 {
                     var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
-                    errorMessage = errorObj?.msg ?? "An unknown error occurred";
+                    errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response.";
                 }
                 catch (JsonException)
                 {
@@ -72,7 +72,7 @@ public class AuthDAO
                 try
                 {
                     var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
-                    errorMessage = errorObj?.msg ?? "An unknown error occurred";
+                    errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response";
                 }
                 catch (JsonException)
                 {
@@ -97,28 +97,110 @@ public class AuthDAO
     }
 
 
-    public async Task<GetUserDTO> GetUser(string token)
+    public async Task<GetUserDTO> GetCurrentUser(string token)
     {
-        var handler = new JwtSecurityTokenHandler();
-        var jwtToken = handler.ReadJwtToken(token);
-
-        var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
-
-        var accountId = Guid.Parse(claims["sub"]);
-
-        var profile = await _client
-            .From<Profile>()
-            .Where(x => x.AccountId == accountId)
-            .Single();
-
-        return new GetUserDTO
+        try
         {
-            AccountId = accountId,
-            Email = claims.ContainsKey("email") ? claims["email"] : null,
-            FullName = profile.FullName,
-            Bio = profile.Bio,
-            Role = profile.Role,
-        };
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+
+            var accountId = Guid.Parse(claims["sub"]);
+
+            var profile = await _client
+                .From<Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
+            if (profile == null)
+            {
+                throw new Exception("You have not update your account yet!");
+            }
+
+            return new GetUserDTO
+            {
+                AccountId = accountId,
+                Email = claims["email"],
+                FullName = profile.FullName,
+                Bio = profile.Bio!,
+                DateOfBirth = profile.DateOfBirth,
+                ProfilePicture = profile.ProfilePicture!
+            };
+        }
+        catch (Exception ex)
+        {
+            string errorMessage = ex.Message;
+
+            if (IsJson(errorMessage))
+            {
+                try
+                {
+                    var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
+                    errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response.";
+                }
+                catch (JsonException)
+                {
+                    errorMessage = "Error processing the custom error message.";
+                }
+            }
+
+            throw new Exception(errorMessage);
+        }
+        
+    }
+
+    public async Task<Profile> CreateUser(CreateProfileDTO request, string token)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            var accountId = Guid.Parse(claims["sub"]);
+
+            var profile = await _client
+                .From<Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
+            if (profile != null)
+            {
+                throw new Exception("The user already exists!");
+            }
+
+            var result = new Profile
+            {
+                FullName = request.FullName,
+                ProfilePicture = request.ProfilePicture,
+                Bio = request.Bio,
+                Role = request.Role,
+                DateOfBirth = request.DateOfBirth,
+                AccountId = accountId,                
+            };
+
+            await _client.From<Profile>().Insert(result);
+
+            return result;
+
+        } catch (Exception ex) {
+            string errorMessage = ex.Message;
+
+            //if (IsJson(errorMessage))
+            //{
+            //    try
+            //    {
+            //        var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
+            //        errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response.";
+            //    }
+            //    catch (JsonException)
+            //    {
+            //        errorMessage = "Error processing the custom error message.";
+            //    }
+            //}
+
+            throw new Exception(errorMessage);
+        }        
     }
 
     public static bool IsJson(string input)

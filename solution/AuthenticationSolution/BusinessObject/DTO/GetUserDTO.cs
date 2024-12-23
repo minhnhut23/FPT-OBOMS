@@ -7,7 +7,7 @@ public class GetUserDTO
     public Guid AccountId { get; set; }
     public string Email { get; set; } = null!;
     public string FullName { get; set; } = null!;
+    public string ProfilePicture { get; set; } = null!;
     public string Bio { get; set; } = null!;
-    public Roles Role { get; set; }
-
+    public DateTime DateOfBirth { get; set; }
 }

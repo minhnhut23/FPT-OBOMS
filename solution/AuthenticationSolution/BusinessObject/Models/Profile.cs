@@ -13,10 +13,10 @@ public class Profile : BaseModel
     public string FullName { get; set; } = null!;
 
     [Column("profile_picture")]
-    public string ProfilePicture { get; set; } = null!;
+    public string? ProfilePicture { get; set; } = null!;
 
     [Column("bio")]
-    public string Bio { get; set; } = null!;
+    public string? Bio { get; set; } = null!;
 
     [Column("date_of_birth")]
     public DateTime DateOfBirth { get; set; }
@@ -28,15 +28,9 @@ public class Profile : BaseModel
     public DateTime UpdatedAt { get; set; }
 
     [Column("role")]
-    public Roles Role { get; set; }
+    public string Role { get; set; } = null!;
     
     [Column("account_id")]     
     public Guid AccountId { get; set; }
 
-    public enum Roles
-    {
-        Customer,
-        Owner,
-        Admin
-    } 
 }
