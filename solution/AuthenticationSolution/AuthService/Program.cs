@@ -22,6 +22,8 @@ namespace AuthService
             var supabaseUrl = supabaseConfig["Url"];
             var supabaseKey = supabaseConfig["ApiKey"];
 
+            builder.Services.AddAuthorization();
+
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -30,12 +32,13 @@ namespace AuthService
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuerSigningKey = true,
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
-                    ValidIssuer = "https://cnbwnwbtafbarsgmcabf.supabase.co/auth/v1",
-                    ValidAudience = "authenticated",
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(supabaseKey))
+                    ValidIssuer = builder.Configuration["Authentication:ValidIssuer"],
+                    ValidAudience = builder.Configuration["Authentication:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Authentication:JWTSecret"]!))
                 };
             });
 

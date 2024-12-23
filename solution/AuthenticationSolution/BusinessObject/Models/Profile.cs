@@ -3,7 +3,7 @@ using Supabase.Postgrest.Models;
 
 namespace BusinessObject.Models;
 
-[Table("profile")]
+[Table("profiles")]
 public class Profile : BaseModel
 {
     [PrimaryKey("id")]

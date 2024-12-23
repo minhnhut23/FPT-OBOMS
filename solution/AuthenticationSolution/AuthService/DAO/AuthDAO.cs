@@ -1,6 +1,7 @@
 ﻿using BusinessObject.DTO;
+using BusinessObject.Models;
 using Newtonsoft.Json;
-using Supabase.Gotrue;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace AuthService.DAO;
 
@@ -96,11 +97,28 @@ public class AuthDAO
     }
 
 
-    public async Task<User> GetUser()
+    public async Task<GetUserDTO> GetUser(string token)
     {
-        var checksession = _client.Auth.CurrentUser;
+        var handler = new JwtSecurityTokenHandler();
+        var jwtToken = handler.ReadJwtToken(token);
 
-        return checksession;
+        var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+
+        var accountId = Guid.Parse(claims["sub"]);
+
+        var profile = await _client
+            .From<Profile>()
+            .Where(x => x.AccountId == accountId)
+            .Single();
+
+        return new GetUserDTO
+        {
+            AccountId = accountId,
+            Email = claims.ContainsKey("email") ? claims["email"] : null,
+            FullName = profile.FullName,
+            Bio = profile.Bio,
+            Role = profile.Role,
+        };
     }
 
     public static bool IsJson(string input)

@@ -70,8 +70,11 @@ public class AuthController : Controller
     }
 
     [HttpGet("GetProfile")]
-    public IActionResult GetProfile()
+    [Authorize]
+    public async Task<IActionResult> GetProfile()
     {
-        return Ok(_authDAO.GetUser());
+        var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        var user = await _authDAO.GetUser(token);
+        return Ok(user);
     }
 }
