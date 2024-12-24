@@ -43,7 +43,7 @@ namespace ShopManagementService
             });
 
             // Initialize Supabase client
-            var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
+            var supabaseClient = new Supabase.Client(supabaseUrl!, supabaseKey);
             supabaseClient.InitializeAsync().Wait();
 
             // Register Supabase client as a service

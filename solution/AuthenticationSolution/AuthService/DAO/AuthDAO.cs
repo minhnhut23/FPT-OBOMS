@@ -1,4 +1,5 @@
-﻿using BusinessObject.DTO;
+﻿using AuthService.Utils;
+using BusinessObject.DTO;
 using BusinessObject.Models;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
@@ -28,22 +29,7 @@ public class AuthDAO
         }
         catch (Exception ex)
         {
-            string errorMessage = ex.Message;
-
-            if (IsJson(errorMessage))
-            {
-                try
-                {
-                    var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
-                    errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response.";
-                }
-                catch (JsonException)
-                {
-                    errorMessage = "Error processing the custom error message.";
-                }
-            }
-
-            throw new Exception(errorMessage);
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
     }
 
@@ -56,7 +42,9 @@ public class AuthDAO
                 throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
 
-            if (!ValidatePassword(request.Password))
+            PasswordValidator validator = new PasswordValidator();
+
+            if (!validator.ValidatePassword(request.Password))
             {
                 throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
             }
@@ -65,23 +53,8 @@ public class AuthDAO
         }
         catch (Exception ex)
         {
-            string errorMessage = ex.Message;
-
-            if (IsJson(errorMessage))
-            {
-                try
-                {
-                    var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
-                    errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response";
-                }
-                catch (JsonException)
-                {
-                    errorMessage = "Error processing the custom error message.";
-                }
-            }
-
-            throw new Exception(errorMessage);
-        }   
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
     }
 
     public async Task Logout()
@@ -92,7 +65,7 @@ public class AuthDAO
         }
         catch (Exception ex)
         {
-            throw new Exception(ex.Message);
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
     }
 
@@ -130,24 +103,9 @@ public class AuthDAO
         }
         catch (Exception ex)
         {
-            string errorMessage = ex.Message;
-
-            if (IsJson(errorMessage))
-            {
-                try
-                {
-                    var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
-                    errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response.";
-                }
-                catch (JsonException)
-                {
-                    errorMessage = "Error processing the custom error message.";
-                }
-            }
-
-            throw new Exception(errorMessage);
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
-        
+
     }
 
     public async Task<Profile> CreateUser(CreateProfileDTO request, string token)
@@ -184,85 +142,12 @@ public class AuthDAO
             return result;
 
         } catch (Exception ex) {
-            string errorMessage = ex.Message;
-
-            //if (IsJson(errorMessage))
-            //{
-            //    try
-            //    {
-            //        var errorObj = JsonConvert.DeserializeObject<dynamic>(errorMessage);
-            //        errorMessage = errorObj?.msg ?? "An unknown error occurred in JSON response.";
-            //    }
-            //    catch (JsonException)
-            //    {
-            //        errorMessage = "Error processing the custom error message.";
-            //    }
-            //}
-
-            throw new Exception(errorMessage);
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }        
     }
 
-    public static bool IsJson(string input)
-    {
-        if (string.IsNullOrWhiteSpace(input))
-            return false;
-
-        input = input.Trim();
-
-        if ((input.StartsWith("{") && input.EndsWith("}")) || 
-            (input.StartsWith("[") && input.EndsWith("]")))
-        {
-            try
-            {
-                JsonConvert.DeserializeObject(input);
-                return true;
-            }
-            catch (JsonException)
-            {
-                return false;
-            }
-        }
-
-        return false;
-    }
-
-    private bool ValidatePassword(string passWord)
-    {
-        int validConditions = 0;
-        foreach (char c in passWord)
-        {
-            if (c >= 'a' && c <= 'z')
-            {
-                validConditions++;
-                break;
-            }
-        }
-        foreach (char c in passWord)
-        {
-            if (c >= 'A' && c <= 'Z')
-            {
-                validConditions++;
-                break;
-            }
-        }
-        if (validConditions == 0) return false;
-        foreach (char c in passWord)
-        {
-            if (c >= '0' && c <= '8')
-            {
-                validConditions++;
-                break;
-            }
-        }
-        if (validConditions == 1) return false;
-        if (validConditions == 2)
-        {
-            char[] special = { '@', '#', '$', '%', '^', '&', '+', '=' };   
-            if (passWord.IndexOfAny(special) == -1) return false;
-        }
-        return true;
-    }
+    
+    
 
 }
 
