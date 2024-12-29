@@ -24,7 +24,7 @@ public class PasswordValidator
         if (validConditions == 0) return false;
         foreach (char c in passWord)
         {
-            if (c >= '0' && c <= '8')
+            if (c >= '0' && c <= '6')
             {
                 validConditions++;
                 break;

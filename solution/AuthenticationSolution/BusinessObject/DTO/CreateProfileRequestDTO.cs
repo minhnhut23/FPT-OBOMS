@@ -2,7 +2,7 @@
 
 namespace BusinessObject.DTO;
 
-public class CreateProfileDTO
+public class CreateProfileRequestDTO
 {
     public string FullName { get; set; } = null!;
     public string? ProfilePicture { get; set; } = null!;

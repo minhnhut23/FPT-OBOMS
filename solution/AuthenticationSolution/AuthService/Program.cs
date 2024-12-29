@@ -44,6 +44,7 @@ namespace AuthService
             });
 
             builder.Services.AddTransient<AuthDAO>();
+            builder.Services.AddTransient<UserDAO>();
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl!, supabaseKey);

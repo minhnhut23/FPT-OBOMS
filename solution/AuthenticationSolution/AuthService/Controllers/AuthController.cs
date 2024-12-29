@@ -2,33 +2,26 @@
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Supabase;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace TestAuth.Controllers;
 
-[Route("/api/auth")]
 [ApiController]
+[Route("/api/auth")]
 public class AuthController : Controller
 {
-    private readonly AuthDAO _authDAO;
-    private readonly IConfiguration _configuration;
+    private readonly AuthDAO _dao;
 
-
-    public AuthController(AuthDAO authDAO, IConfiguration configuration)
+    public AuthController(AuthDAO dao)
     {
-        _authDAO = authDAO;
-        _configuration = configuration;
+        _dao = dao;
     }
 
-    [HttpPost("/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDTO request)
     {
         try
         {
-            var loginResponse = await _authDAO.Login(request.Email,request.Password);
+            var loginResponse = await _dao.Login(request.Email, request.Password);
 
             return Ok(loginResponse);
         }
@@ -38,12 +31,12 @@ public class AuthController : Controller
         }
     }
 
-    [HttpPost("/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterRequestDTO request)
     {
         try
         {
-            await _authDAO.Register(request);
+            await _dao.Register(request);
 
             return Ok();
         }
@@ -54,54 +47,34 @@ public class AuthController : Controller
     }
 
     [Authorize]
-    [HttpPost("/logout")]
+    [HttpPost("logout")]
     public async Task<IActionResult> Logout()
     {
         try
         {
-            await _authDAO.Logout();
+            await _dao.Logout();
 
             return Ok();
         }
         catch (Exception ex)
         {
-            return BadRequest(ex.Message);
+            return BadRequest(new { msg = ex.Message });
         }
     }
 
-    [HttpGet("getProfile")]
-    [Authorize]
-    public async Task<IActionResult> GetProfile()
+    [HttpPost("forgotPassword")]
+    public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequestDTO requestDTO)
     {
         try
         {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var user = await _authDAO.GetCurrentUser(token);
-            return Ok(user);
+            await _dao.ForgotPassword(requestDTO.Email);
+
+            return Ok();
         }
         catch (Exception ex)
         {
             return BadRequest(new { msg = ex.Message });
         }
-        
     }
-
-    [HttpGet("createProfile")]
-    [Authorize]
-    public async Task<IActionResult> CreateProfile([FromBody] CreateProfileDTO request)
-    {
-        try
-        {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var reponse = await _authDAO.CreateUser(request, token);
-            return Ok(reponse);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { msg = ex.Message });
-        }
-
-    }
-
 
 }

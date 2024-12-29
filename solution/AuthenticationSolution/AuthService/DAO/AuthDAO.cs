@@ -1,7 +1,7 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
 using BusinessObject.Models;
-using Newtonsoft.Json;
+using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace AuthService.DAO;
@@ -21,9 +21,16 @@ public class AuthDAO
         {
             var session = await _client.Auth.SignIn(email, password);
 
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(session!.AccessToken);
+
+            var expiresAt = jwtToken.ValidTo;
+
             return new LoginResponseDTO
             {
-                AccessToken = session!.AccessToken!
+                AccessToken = session.AccessToken!,
+                RefreshToken = session.RefreshToken!,
+                ExpiresAt = expiresAt
             };
 
         }
@@ -69,85 +76,42 @@ public class AuthDAO
         }
     }
 
-
-    public async Task<GetUserDTO> GetCurrentUser(string token)
+    public async Task ForgotPassword(string email)
     {
         try
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-
-            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
-
-            var accountId = Guid.Parse(claims["sub"]);
-
-            var profile = await _client
-                .From<Profile>()
-                .Where(x => x.AccountId == accountId)
-                .Single();
-
-            if (profile == null)
-            {
-                throw new Exception("You have not update your account yet!");
-            }
-
-            return new GetUserDTO
-            {
-                AccountId = accountId,
-                Email = claims["email"],
-                FullName = profile.FullName,
-                Bio = profile.Bio!,
-                DateOfBirth = profile.DateOfBirth,
-                ProfilePicture = profile.ProfilePicture!
-            };
+            await _client.Auth.ResetPasswordForEmail(email);
         }
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
-
     }
 
-    public async Task<Profile> CreateUser(CreateProfileDTO request, string token)
+    public async Task ResetPassword(string accessToken, string newPassword)
     {
         try
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
-            var accountId = Guid.Parse(claims["sub"]);
+            // Xác thực người dùng bằng Access Token được gửi qua liên kết
+            var session = await _client.Auth.VerifyOTP(accessToken, "recovery");
 
-            var profile = await _client
-                .From<Profile>()
-                .Where(x => x.AccountId == accountId)
-                .Single();
-
-            if (profile != null)
+            if (session == null)
             {
-                throw new Exception("The user already exists!");
+                throw new Exception("Invalid or expired token.");
             }
 
-            var result = new Profile
-            {
-                FullName = request.FullName,
-                ProfilePicture = request.ProfilePicture,
-                Bio = request.Bio,
-                Role = request.Role,
-                DateOfBirth = request.DateOfBirth,
-                AccountId = accountId,                
-            };
+            // Cập nhật mật khẩu mới cho người dùng
+            var attrs = new UserAttributes { Password = newPassword };
 
-            await _client.From<Profile>().Insert(result);
 
-            return result;
+            var user = await _client.Auth.Update(attrs);
 
-        } catch (Exception ex) {
+            Console.WriteLine("Password has been reset successfully.");
+        }
+        catch (Exception ex)
+        {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-        }        
+        }
     }
-
-    
-    
-
 }
 

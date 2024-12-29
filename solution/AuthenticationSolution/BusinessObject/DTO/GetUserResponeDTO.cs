@@ -2,7 +2,7 @@
 
 namespace BusinessObject.DTO;
 
-public class GetUserDTO
+public class GetUserResponeDTO
 {
     public Guid AccountId { get; set; }
     public string Email { get; set; } = null!;
