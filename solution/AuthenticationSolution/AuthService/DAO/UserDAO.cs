@@ -57,6 +57,37 @@ public class UserDAO
         }
 
     }
+     public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
+    {
+        try
+        {          
+            var profile = await _client
+                .From<Profile>()
+                .Where(x => x.Id == profileId)
+                .Single();
+
+            if (profile == null)
+            {
+               throw new Exception("Profile not found!");
+            }
+            else
+            {
+                return new GetUserResponeDTO
+                {                   
+                    FullName = profile.FullName,
+                    Bio = profile.Bio!,
+                    DateOfBirth = profile.DateOfBirth,
+                    ProfilePicture = profile.ProfilePicture!
+                };
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
+
+    }
 
     public async Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token)
     {

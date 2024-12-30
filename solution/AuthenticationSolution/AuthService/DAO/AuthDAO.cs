@@ -76,7 +76,7 @@ public class AuthDAO
         }
     }
 
-    public async Task ForgotPassword(string email)
+   /* public async Task ForgotPassword(string email)
     {
         try
         {
@@ -112,6 +112,6 @@ public class AuthDAO
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
-    }
+    }/*
 }
 

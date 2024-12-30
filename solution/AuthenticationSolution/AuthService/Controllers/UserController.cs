@@ -49,4 +49,18 @@ public class UserController : Controller
         }
 
     }
+
+    [HttpGet("getUserById")]
+    public async Task<IActionResult> GetUserById([FromQuery] Guid id)
+    {
+        try
+        {
+            var reponse = await _dao.GetUserById(id);
+            return Ok(reponse);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
 }
