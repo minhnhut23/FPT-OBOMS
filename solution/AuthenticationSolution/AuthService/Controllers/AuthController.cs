@@ -77,6 +77,7 @@ public class AuthController : Controller
         }
     }
 
+    [HttpPost("recoverPassword")]
     public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequestDTO requestDTO)
     {
         try
