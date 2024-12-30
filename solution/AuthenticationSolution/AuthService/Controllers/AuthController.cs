@@ -77,4 +77,17 @@ public class AuthController : Controller
         }
     }
 
+    public async Task<IActionResult> RecoverPassword([FromBody] RecoverPasswordRequestDTO requestDTO)
+    {
+        try
+        {
+            await _dao.ResetPassword(requestDTO);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
+
 }

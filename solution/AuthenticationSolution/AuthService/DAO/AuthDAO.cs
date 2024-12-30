@@ -88,30 +88,38 @@ public class AuthDAO
         }
     }
 
-    public async Task ResetPassword(string accessToken, string newPassword)
+    public async Task ResetPassword(RecoverPasswordRequestDTO request)
     {
         try
         {
-            // Xác thực người dùng bằng Access Token được gửi qua liên kết
-            var session = await _client.Auth.VerifyOTP(accessToken, "recovery");
+            var session = await _client.Auth.VerifyOTP("recovery" ,request.AccessToken, Constants.EmailOtpType.Recovery);
 
             if (session == null)
             {
                 throw new Exception("Invalid or expired token.");
             }
 
-            // Cập nhật mật khẩu mới cho người dùng
-            var attrs = new UserAttributes { Password = newPassword };
+            if (request.NewPassword.Trim() != request.ConfirmPassword.Trim())
+            {
+                throw new Exception("Password is not valid: password and confirm password are not the same.");
+            }
 
+            PasswordValidator validator = new PasswordValidator();
 
-            var user = await _client.Auth.Update(attrs);
+            if (!validator.ValidatePassword(request.NewPassword))
+            {
+                throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
+            }
 
-            Console.WriteLine("Password has been reset successfully.");
+            var updatedUser = await _client.Auth.Update(new UserAttributes { Password = request.NewPassword });
+
         }
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
     }
+
+
 }
 
