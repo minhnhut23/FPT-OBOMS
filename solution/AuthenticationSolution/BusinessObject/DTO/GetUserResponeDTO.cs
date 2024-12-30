@@ -4,7 +4,6 @@ namespace BusinessObject.DTO;
 
 public class GetUserResponeDTO
 {
-    public Guid AccountId { get; set; }
     public string Email { get; set; } = null!;
     public string FullName { get; set; } = null!;
     public string ProfilePicture { get; set; } = null!;

@@ -33,18 +33,23 @@ public class UserDAO
 
             if (profile == null)
             {
-                throw new Exception("You have not update your account yet!");
+                return new GetUserResponeDTO
+                {
+                    Email = claims["email"]
+                };
             }
-
-            return new GetUserResponeDTO
+            else
             {
-                AccountId = accountId,
-                Email = claims["email"],
-                FullName = profile.FullName,
-                Bio = profile.Bio!,
-                DateOfBirth = profile.DateOfBirth,
-                ProfilePicture = profile.ProfilePicture!
-            };
+                return new GetUserResponeDTO
+                {
+                    Email = claims["email"],
+                    FullName = profile.FullName,
+                    Bio = profile.Bio!,
+                    DateOfBirth = profile.DateOfBirth,
+                    ProfilePicture = profile.ProfilePicture!
+                };
+            }
+            
         }
         catch (Exception ex)
         {
@@ -53,7 +58,7 @@ public class UserDAO
 
     }
 
-    public async Task<Profile> CreateUser(CreateProfileRequestDTO request, string token)
+    public async Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token)
     {
         try
         {
@@ -86,7 +91,14 @@ public class UserDAO
 
             await _client.From<Profile>().Insert(result);
 
-            return result;
+            return new GetUserResponeDTO
+            {
+                Email = claims["email"],
+                FullName = result.FullName,
+                Bio = result.Bio!,
+                DateOfBirth = result.DateOfBirth,
+                ProfilePicture = result.ProfilePicture!
+            };
 
         }
         catch (Exception ex)
