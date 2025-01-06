@@ -76,7 +76,7 @@ public class AuthDAO
         }
     }
 
-   /* public async Task ForgotPassword(string email)
+    public async Task ForgotPassword(string email)
     {
         try
         {
