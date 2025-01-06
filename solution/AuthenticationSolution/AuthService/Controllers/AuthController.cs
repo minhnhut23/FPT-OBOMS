@@ -83,7 +83,7 @@ public class AuthController : Controller
         try
         {
             await _dao.ResetPassword(requestDTO);
-            return Ok();
+            return Ok(new { msg = "Password has been reset successfully." });
         }
         catch (Exception ex)
         {
