@@ -131,6 +131,50 @@ public class AuthDAO
         }
     }
 
+    public async Task ChangePassword(ChangePasswordRequestDTO request, string token)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            if (!claims.ContainsKey("email"))
+                throw new Exception("Invalid token: Email claim is missing.");
 
+            var email = claims["email"];
+
+            var session = await _client.Auth.SignIn(email, request.OldPassword);
+            if (session == null)
+            {
+                throw new Exception("Invalid current password or email.");
+            }
+
+
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
+            {
+                throw new ArgumentException("Password fields cannot be null or empty.");
+            }
+
+            if (request.NewPassword != request.ConfirmPassword)
+            {
+                throw new Exception("Password is not valid: password and confirm password are not the same.");
+            }
+
+            PasswordValidator validator = new PasswordValidator();
+
+            if (!validator.ValidatePassword(request.NewPassword))
+            {
+                throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
+            }
+
+            await _client.Auth.Update(new UserAttributes { Password = request.NewPassword });
+
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
+    }
 }
 
