@@ -21,8 +21,8 @@ namespace BusinessObject.Models
         [Column("status")]
         [Required]
         public string Status { get; set; }
-        [Column("location_description")]
-        public string LocationDescription { get; set; }
+        [Column("description")]
+        public string Description { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
@@ -34,5 +34,8 @@ namespace BusinessObject.Models
         [Required]
         public Guid ShopId { get; set; }
 
+        [Required]
+        [Column("type_id")]
+        public Guid TypeId { get; set; }
     }
 }
