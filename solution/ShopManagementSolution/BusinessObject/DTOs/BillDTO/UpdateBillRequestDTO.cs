@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.DTO
+namespace BusinessObject.DTOs.BillDTO
 {
-    internal class Class1
+    public class UpdateBillRequestDTO
     {
+        public decimal TotalAmount { get; set; }
     }
 }

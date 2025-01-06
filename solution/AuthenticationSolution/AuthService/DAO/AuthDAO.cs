@@ -1,6 +1,7 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
 using BusinessObject.Models;
+using Newtonsoft.Json.Linq;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -44,7 +45,12 @@ public class AuthDAO
     {
         try
         {
-            if (request.Password.Trim() != request.ConfirmPassword.Trim())
+            if (string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
+            {
+                throw new ArgumentException("Password fields cannot be null or empty.");
+            }
+
+            if (request.Password != request.ConfirmPassword)
             {
                 throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
@@ -92,14 +98,19 @@ public class AuthDAO
     {
         try
         {
-            var session = await _client.Auth.VerifyOTP("recovery" ,request.AccessToken, Constants.EmailOtpType.Recovery);
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(request.AccessToken);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            var email = claims["email"];
 
-            if (session == null)
-            {
-                throw new Exception("Invalid or expired token.");
+            var session = await _client.Auth.VerifyOTP(email, request.AccessToken, Constants.EmailOtpType.Recovery);
+
+            if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword)) 
+            { 
+                throw new ArgumentException("Password fields cannot be null or empty."); 
             }
 
-            if (request.NewPassword.Trim() != request.ConfirmPassword.Trim())
+            if (request.NewPassword != request.ConfirmPassword)
             {
                 throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
@@ -111,7 +122,7 @@ public class AuthDAO
                 throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
             }
 
-            var updatedUser = await _client.Auth.Update(new UserAttributes { Password = request.NewPassword });
+            await _client.Auth.Update(new UserAttributes { Password = request.NewPassword });
 
         }
         catch (Exception ex)

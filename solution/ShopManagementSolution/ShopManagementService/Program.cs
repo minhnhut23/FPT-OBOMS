@@ -1,4 +1,5 @@
 
+using BusinessObject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -42,8 +43,13 @@ namespace ShopManagementService
                 };
             });
 
+            builder.Services.AddScoped<TableDAO>();
+            builder.Services.AddScoped<TableTypeDAO>();
+            builder.Services.AddScoped<BillDAO>();
+            builder.Services.AddScoped<BillDetailDAO>();
+
             // Initialize Supabase client
-            var supabaseClient = new Supabase.Client(supabaseUrl!, supabaseKey);
+            var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
             supabaseClient.InitializeAsync().Wait();
 
             // Register Supabase client as a service
