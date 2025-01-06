@@ -49,4 +49,35 @@ public class UserController : Controller
         }
 
     }
+
+    [HttpGet("getUserById")]
+    [Authorize]
+    public async Task<IActionResult> GetUserById([FromQuery] Guid id)
+    {
+        try
+        {
+            var reponse = await _dao.GetUserById(id);
+            return Ok(reponse);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
+
+    [HttpPut("updateProfile")]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDTO request)
+    {
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            var reponse = await _dao.UpdateProfile(request, token);
+            return Ok(reponse);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
 }

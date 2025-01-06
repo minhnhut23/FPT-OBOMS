@@ -89,6 +89,20 @@ public class AuthController : Controller
         {
             return BadRequest(new { msg = ex.Message });
         }
+    }[HttpPost("changePassword")]
+    [Authorize]
+    public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO requestDTO)
+    {
+        try
+        {
+            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            await _dao.ChangePassword(requestDTO, token);
+            return Ok(new { msg = "Password has been change successfully." });
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
     }
 
 }
