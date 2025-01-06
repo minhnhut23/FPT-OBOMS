@@ -1,5 +1,8 @@
 using AuthService.DAO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -54,6 +57,9 @@ namespace AuthService
             builder.Services.AddSingleton(supabaseClient);
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/home/app/.aspnet/DataProtection-Keys"));
 
 
             var app = builder.Build();
