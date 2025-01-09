@@ -47,6 +47,7 @@ namespace ShopManagementService
             builder.Services.AddScoped<TableTypeDAO>();
             builder.Services.AddScoped<BillDAO>();
             builder.Services.AddScoped<BillDetailDAO>();
+            builder.Services.AddScoped<ShopDAO>();
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
