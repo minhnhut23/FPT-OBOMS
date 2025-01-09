@@ -55,9 +55,7 @@ public class AuthDAO
                 throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
 
-            PasswordValidator validator = new PasswordValidator();
-
-            if (!validator.ValidatePassword(request.Password))
+            if (!PasswordValidator.ValidatePassword(request.Password))
             {
                 throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
             }
@@ -115,9 +113,7 @@ public class AuthDAO
                 throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
 
-            PasswordValidator validator = new PasswordValidator();
-
-            if (!validator.ValidatePassword(request.NewPassword))
+            if (!PasswordValidator.ValidatePassword(request.NewPassword))
             {
                 throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
             }
@@ -149,8 +145,6 @@ public class AuthDAO
                 throw new Exception("Invalid current password or email.");
             }
 
-
-
             if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
             {
                 throw new ArgumentException("Password fields cannot be null or empty.");
@@ -161,9 +155,7 @@ public class AuthDAO
                 throw new Exception("Password is not valid: password and confirm password are not the same.");
             }
 
-            PasswordValidator validator = new PasswordValidator();
-
-            if (!validator.ValidatePassword(request.NewPassword))
+            if (!PasswordValidator.ValidatePassword(request.NewPassword))
             {
                 throw new Exception("Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character.");
             }

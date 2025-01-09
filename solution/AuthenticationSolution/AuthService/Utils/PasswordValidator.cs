@@ -2,7 +2,7 @@
 
 public class PasswordValidator
 {
-    public bool ValidatePassword(string passWord)
+    public static bool ValidatePassword(string passWord)
     {
         int validConditions = 0;
         foreach (char c in passWord)

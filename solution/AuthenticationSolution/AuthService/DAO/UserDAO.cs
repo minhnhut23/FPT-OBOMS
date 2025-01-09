@@ -1,9 +1,7 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
 using BusinessObject.Models;
-using Supabase;
 using Supabase.Gotrue;
-using Supabase.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace AuthService.DAO;
@@ -89,7 +87,9 @@ public class UserDAO
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
 
-    }public async Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token)
+    }
+    
+    public async Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token)
     {
         try
         {
@@ -111,7 +111,12 @@ public class UserDAO
             }
             else
             {
-                
+
+                if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+                {
+                    throw new Exception("Invalid Birthday!");
+                }
+
                 profile.ProfilePicture = request.ProfilePicture;
                 profile.FullName = request.FullName;
                 profile.Bio = request.Bio; 
@@ -169,6 +174,16 @@ public class UserDAO
             if (profile != null)
             {
                 throw new Exception("The user already exists!");
+            }
+
+            if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+            {
+                throw new Exception("Invalid Birthday!");
+            }
+
+            if (request.Role != "Customer" || request.Role != "Owner" || request.Role != "Admin")
+            {
+                throw new Exception("Invalid Role");
             }
 
             var result = new Profile
