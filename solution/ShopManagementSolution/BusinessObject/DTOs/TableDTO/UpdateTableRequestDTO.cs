@@ -16,6 +16,8 @@ namespace BusinessObject.DTOs.TableDTO
         public string Status { get; set; }
 
         [StringLength(1000, ErrorMessage = "Location description cannot exceed 1000 characters.")]
-        public string LocationDescription { get; set; }
+        public string Description { get; set; }
+        [Required(ErrorMessage = "Type ID is required.")]
+        public Guid TypeId { get; set; }
     }
 }

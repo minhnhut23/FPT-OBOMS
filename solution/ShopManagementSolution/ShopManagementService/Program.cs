@@ -18,6 +18,9 @@ namespace ShopManagementService
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+
 
             var supabaseConfig = builder.Configuration.GetSection("Supabase");
             var supabaseUrl = supabaseConfig["Url"];

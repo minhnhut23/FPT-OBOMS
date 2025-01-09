@@ -1,81 +1,140 @@
-﻿using BusinessObject.DTOs.TableDTO;
+﻿using AutoMapper;
+using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
-using Newtonsoft.Json;
-using Supabase;
-using Supabase.Postgrest;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using static Supabase.Postgrest.Constants;
 
 namespace BusinessObject.Services
 {
     public class TableDAO
     {
         private readonly Supabase.Client _client;
+        private readonly IMapper _mapper;
 
-        public TableDAO(Supabase.Client client)
+        public TableDAO(Supabase.Client client, IMapper mapper)
         {
             _client = client;
+            _mapper = mapper;
         }
 
-        public async Task<List<GetTableResponseDTO>> GetAllTables()
+        public async Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
         {
-            var response = await _client
-                .From<Table>()
-                .Get();
-            var tables = response.Models;
+            try
+            {
+                // Khởi tạo query
+                var query = _client.From<Table>().Select("*");
+                var counting = _client.From<Table>().Select("*");
 
-         
-            var listTables = tables.
-                Select(table => new GetTableResponseDTO
+                // Áp dụng bộ lọc
+                query = ApplyFilters(query, request);
+                counting = ApplyFilters(counting, request);
+
+                // Clone query để tính tổng số lượng bản ghi
+                var totalRecordsResponse = await counting.Select("id").Get();
+                var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
+                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+                // Phân trang
+                var skip = (request.PageNumber - 1) * request.PageSize;
+                var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
+
+                // Lấy danh sách bảng đã phân trang
+                var tablesResponse = await paginatedQuery.Get();
+                var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
+                var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
+
+                var tables = tablesResponse.Models
+                    .Select(table =>
                     {
-                        Id = table.Id,
-                        TableNumber = table.TableNumber,
-                        Capacity = table.Capacity,
-                        Status = table.Status,
-                        LocationDescription = table.LocationDescription,
-                        CreatedAt = table.CreatedAt,
-                        UpdatedAt = table.UpdatedAt
+                        var dto = _mapper.Map<GetTableResponseDTO>(table);
+                        dto.TableType = typeNameDict.ContainsKey(table.TypeId) ? typeNameDict[table.TypeId] : "Unknown";
+                        return dto;
                     })
-                .ToList();
+                    .ToList();
 
-            return listTables;
+                // Trả về nếu không có bản ghi
+                if (totalRecords == 0 || request.PageNumber > totalPages)
+                {
+                    return (
+                        new List<GetTableResponseDTO>(),
+                        new PaginationMetadataDTO
+                        {
+                            TotalResults = totalRecords,
+                            TotalPages = totalPages,
+                            CurrentPage = request.PageNumber,
+                            PageSize = request.PageSize
+                        }
+                    );
+                }
+
+                // Tạo metadata phân trang
+                var paginationMetadata = new PaginationMetadataDTO
+                {
+                    TotalResults = totalRecords,
+                    TotalPages = totalPages,
+                    CurrentPage = request.PageNumber,
+                    PageSize = request.PageSize
+                };
+
+                return (tables, paginationMetadata);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error fetching tables: {ex.Message}");
+            }
+        }
+        private dynamic ApplyFilters(dynamic query, GetTableRequestDTO request)
+        {
+            if (!string.IsNullOrEmpty(request.Status))
+                query = query.Filter("status", Operator.Equals, request.Status);
+
+            if (!string.IsNullOrEmpty(request.TableNumber))
+                query = query.Filter("table_number", Operator.ILike, $"%{request.TableNumber}%");
+
+            if (request.MinCapacity.HasValue)
+                query = query.Filter("capacity", Operator.GreaterThanOrEqual, request.MinCapacity.Value);
+
+            if (request.MaxCapacity.HasValue)
+                query = query.Filter("capacity", Operator.LessThanOrEqual, request.MaxCapacity.Value);
+
+            if (request.TypeId.HasValue)
+                query = query.Filter("type_id", Operator.Equals, request.TypeId.Value.ToString());
+
+            return query;
         }
 
         public async Task<GetTableResponseDTO?> GetTableById(Guid id)
         {
             try
             {
-                var response = await _client
+                var tableResponse = await _client
                     .From<Table>()
-                     .Where(x => x.Id == id)
+                    .Where(x => x.Id == id)
                     .Single();
-                if (response == null)
+
+                if (tableResponse == null)
                 {
-                    throw new Exception("Table Not Found!");
+                    throw new Exception("Table not found!");
                 }
-                else
+                string tableTypeName = "Unknown";
+                if (await IsTypeExists(tableResponse.TypeId))
                 {
-                    var tableDetail = new GetTableResponseDTO
-                    {
-                        Id = response.Id,
-                        TableNumber = response.TableNumber,
-                        Capacity = response.Capacity,
-                        Status = response.Status,
-                        LocationDescription = response.LocationDescription,
-                        CreatedAt = response.CreatedAt,
-                        UpdatedAt = response.UpdatedAt
-                    };
-                    return tableDetail;
+                    var tableTypeResponse = await _client
+                        .From<TableType>()
+                        .Where(x => x.Id == tableResponse.TypeId)
+                        .Single();
+
+                    tableTypeName = tableTypeResponse?.Name ?? "Unknown";
                 }
+                var tableDetail = _mapper.Map<GetTableResponseDTO>(tableResponse);
+                tableDetail.TableType = tableTypeName;
+                return tableDetail;
             }
             catch (Exception ex)
             {
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
+
         public async Task<bool> GetTableByNumber(string number, Guid shopId)
         {
             if (!await IsShopExists(shopId))
@@ -113,99 +172,60 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-
-        public async Task<GetTableResponseDTO> CreateTable(CreateTableRequestDTO createTable)
-        {
-            if (!await IsShopExists(createTable.ShopId))
-            {
-                throw new Exception("Error! Shop ID does not exist!");
-            }
-
-            if (!await GetTableByNumber(createTable.TableNumber, createTable.ShopId))
-            {
-                throw new Exception("Error! Table Number already exists!");
-            }
-            if (createTable.Capacity <= 0)
-            {
-                throw new Exception("Capacity must be a positive number.");
-            }
-            var table = new Table
-            {
-                Id = Guid.NewGuid(),
-                TableNumber = createTable.TableNumber,
-                Capacity = createTable.Capacity,
-                Status = createTable.Status,
-                LocationDescription = createTable.LocationDescription,
-                ShopId = createTable.ShopId,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            var response = await _client
-                .From<Table>()
-                .Insert(table);
-            if (response == null)
-            {
-                throw new Exception("Error! Insert error!");
-            }
-
-            var tableResponse = new GetTableResponseDTO
-            {
-                Id = table.Id,
-                TableNumber = table.TableNumber,
-                Capacity = table.Capacity,
-                Status = table.Status,
-                LocationDescription = table.LocationDescription,
-                CreatedAt = table.CreatedAt
-            };
-
-            return tableResponse;
-        }
-
-
-        public async Task<GetTableResponseDTO> UpdateTable(Guid id, UpdateTableRequestDTO updateTable)
+        public async Task<bool> IsTypeExists(Guid typeId)
         {
             try
             {
                 var response = await _client
-                    .From<Table>()
-                    .Where(x => x.Id == id)
+                    .From<TableType>()
+                    .Where(x => x.Id == typeId)
                     .Single();
-                if (response == null)
-                {
-                    throw new Exception("Table not found!");
-                }
-                response.TableNumber = updateTable.TableNumber;
-                response.Capacity = updateTable.Capacity;
-                response.Status = updateTable.Status;
-                response.LocationDescription = updateTable.LocationDescription;
-                response.UpdatedAt = DateTime.UtcNow;
 
-                var updateResponse = await _client
-                    .From<Table>()
-                    .Where(x => x.Id == id)
-                    .Update(response);
-                if (updateResponse == null)
-                {
-                    throw new Exception("Error! Update error!");
-                }
-                var updatedTableDTO = new GetTableResponseDTO
-                {
-                    Id = response.Id,
-                    TableNumber = response.TableNumber,
-                    Capacity = response.Capacity,
-                    Status = response.Status,
-                    LocationDescription = response.LocationDescription,
-                    CreatedAt = response.CreatedAt,
-                    UpdatedAt = response.UpdatedAt
-                };
-
-                return updatedTableDTO;
+                return response != null;
             }
             catch (Exception ex)
             {
-                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+                throw new Exception($"Error checking type existence: {ex.Message}");
             }
+        }
+
+        public async Task<GetTableResponseDTO> CreateTable(CreateTableRequestDTO createTable)
+        {
+            if (!await IsShopExists(createTable.ShopId))
+                throw new Exception("Shop ID does not exist!");
+
+            if (!await IsTypeExists(createTable.TypeId))
+                throw new Exception("Type ID does not exist!");
+
+            if (!await GetTableByNumber(createTable.TableNumber, createTable.ShopId))
+                throw new Exception("Table Number already exists!");
+
+            var table = _mapper.Map<Table>(createTable);
+            table.Id = Guid.NewGuid();
+            table.CreatedAt = DateTime.UtcNow;
+            table.UpdatedAt = DateTime.UtcNow;
+
+            var response = await _client.From<Table>().Insert(table);
+            if (response == null)
+                throw new Exception("Error! Insert error!");
+
+            return await GetTableById(table.Id);
+        }
+
+        public async Task<GetTableResponseDTO> UpdateTable(Guid id, UpdateTableRequestDTO updateTable)
+        {
+            var existingTable = await _client.From<Table>().Where(x => x.Id == id).Single();
+            if (existingTable == null)
+                throw new Exception("Table not found!");
+
+            _mapper.Map(updateTable, existingTable);
+            existingTable.UpdatedAt = DateTime.UtcNow;
+
+            var updateResponse = await _client.From<Table>().Where(x => x.Id == id).Update(existingTable);
+            if (updateResponse == null)
+                throw new Exception("Error! Update error!");
+
+            return await GetTableById(existingTable.Id);
         }
 
         public async Task<DeleteTableRequestDTO> DeleteTable(Guid id)

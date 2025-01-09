@@ -3,6 +3,7 @@ using BusinessObject.Models;
 using BusinessObject.Services;
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,19 +21,30 @@ namespace ShopManagementService.Controllers
             _tableDAO = tableService;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllTables()
+        [HttpGet("tables")]
+        public async Task<IActionResult> GetAllTables([FromQuery] GetTableRequestDTO request)
         {
             try
             {
-                var tables = await _tableDAO.GetAllTables();
-                return Ok(tables);
+                // Call the service method
+                var (tables, paginationMetadata) = await _tableDAO.GetAllTables(request);
+
+                // Prepare the response object
+                var response = new GetAllTablesResponseDTO
+                {
+                    Data = tables,
+                    Pagination = paginationMetadata
+                };
+
+                return Ok(response); // Return 200 OK with data
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
+                // Handle errors
+                return StatusCode(500, new { Message = ex.Message }); // Return 500 Internal Server Error
             }
         }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTableById(Guid id)
