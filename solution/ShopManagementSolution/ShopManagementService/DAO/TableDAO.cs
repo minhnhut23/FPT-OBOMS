@@ -23,19 +23,16 @@ namespace BusinessObject.Services
             {
                 // Khởi tạo query
                 var query = _client.From<Table>().Select("*");
+                var counting = _client.From<Table>().Select("*");
 
                 // Áp dụng bộ lọc
                 query = ApplyFilters(query, request);
+                counting = ApplyFilters(counting, request);
 
-                // Clone query và tính tổng số lượng bản ghi sử dụng COUNT
-                var totalRecordsResponse = await _client.From<Table>()
-                    .Select("COUNT(*)")  // Chỉ chọn số lượng bản ghi
-                    .Range(0, int.MaxValue)  // Không cần phân trang, chỉ cần tổng số
-                    .Filter(query)  // Áp dụng bộ lọc vào COUNT query
-                    .Get();
-                var totalRecords = totalRecordsResponse.Models?.FirstOrDefault()?.Count ?? 0;
+                // Clone query để tính tổng số lượng bản ghi
+                var totalRecordsResponse = await counting.Select("id").Get();
+                var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
-
                 // Phân trang
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
