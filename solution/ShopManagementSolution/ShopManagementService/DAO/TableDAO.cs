@@ -2,15 +2,7 @@
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
-using Newtonsoft.Json;
-using Supabase;
-using Supabase.Postgrest;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using static Supabase.Postgrest.Constants;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BusinessObject.Services
 {
@@ -24,64 +16,35 @@ namespace BusinessObject.Services
             _client = client;
             _mapper = mapper;
         }
+
         public async Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
         {
             try
             {
+                // Khởi tạo query
                 var query = _client.From<Table>().Select("*");
 
-                // Apply Filters
-                if (!string.IsNullOrEmpty(request.Status))
-                    query = query.Filter("status", Operator.Equals, request.Status);
+                // Áp dụng bộ lọc
+                query = ApplyFilters(query, request);
 
-                if (!string.IsNullOrEmpty(request.TableNumber))
-                    query = query.Filter("table_number", Operator.ILike, $"%{request.TableNumber}%");
+                // Clone query và tính tổng số lượng bản ghi sử dụng COUNT
+                var totalRecordsResponse = await _client.From<Table>()
+                    .Select("COUNT(*)")  // Chỉ chọn số lượng bản ghi
+                    .Range(0, int.MaxValue)  // Không cần phân trang, chỉ cần tổng số
+                    .Filter(query)  // Áp dụng bộ lọc vào COUNT query
+                    .Get();
+                var totalRecords = totalRecordsResponse.Models?.FirstOrDefault()?.Count ?? 0;
+                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
-                if (request.MinCapacity.HasValue)
-                    query = query.Filter("capacity", Operator.GreaterThanOrEqual, request.MinCapacity.Value);
-
-                if (request.MaxCapacity.HasValue)
-                    query = query.Filter("capacity", Operator.LessThanOrEqual, request.MaxCapacity.Value);
-
-                if (request.TypeId.HasValue)
-                    query = query.Filter("type_id", Operator.Equals, request.TypeId.Value.ToString());
-
-
-                var sortBy = request.SortBy.ToLower();
-                var sortOrder = request.SortOrder.ToLower() == "desc" ? Ordering.Descending : Ordering.Ascending; // Use Ordering enum for sorting
-
-                // Apply sorting based on the "SortBy" field
-                switch (sortBy)
-                {
-                    case "capacity":
-                        query = query.Order("capacity", sortOrder); // Use enum Ordering.Asc or Ordering.Desc
-                        break;
-                    case "status":
-                        query = query.Order("status", sortOrder); // Use enum Ordering.Asc or Ordering.Desc
-                        break;
-                    case "table_number":
-                        query = query.Order("table_number", sortOrder); // Use enum Ordering.Asc or Ordering.Desc
-                        break;
-                    default:
-                        query = query.Order("table_number", Ordering.Ascending); // Default sorting by table_number in ascending order
-                        break;
-                }
-                var temp = query;
-
+                // Phân trang
                 var skip = (request.PageNumber - 1) * request.PageSize;
-                query = query.Range(skip, skip + request.PageSize - 1);
+                var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
-                // Fetch Tables
-                var tablesResponse = await query.Get();
-                if (tablesResponse.Models == null || !tablesResponse.Models.Any())
-                {
-                    throw new Exception("Danh sách rỗng! Không có bàn nào thỏa mãn điều kiện lọc.");
-                }
-                // Fetch Table Types
+                // Lấy danh sách bảng đã phân trang
+                var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
                 var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
 
-                // Map to DTOs
                 var tables = tablesResponse.Models
                     .Select(table =>
                     {
@@ -91,17 +54,25 @@ namespace BusinessObject.Services
                     })
                     .ToList();
 
-                var totalRecordsResponse = await temp.Select("id").Get();
-                var totalRecords = totalRecordsResponse.Models?.Count ?? 0;  // Đếm số lượng bản ghi trả về
-                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
-
-                if (request.PageNumber > totalPages)
+                // Trả về nếu không có bản ghi
+                if (totalRecords == 0 || request.PageNumber > totalPages)
                 {
-                    throw new Exception("Page not found. The page number exceeds total pages.");
+                    return (
+                        new List<GetTableResponseDTO>(),
+                        new PaginationMetadataDTO
+                        {
+                            TotalResults = totalRecords,
+                            TotalPages = totalPages,
+                            CurrentPage = request.PageNumber,
+                            PageSize = request.PageSize
+                        }
+                    );
                 }
-                // Create Pagination Metadata
+
+                // Tạo metadata phân trang
                 var paginationMetadata = new PaginationMetadataDTO
                 {
+                    TotalResults = totalRecords,
                     TotalPages = totalPages,
                     CurrentPage = request.PageNumber,
                     PageSize = request.PageSize
@@ -113,6 +84,25 @@ namespace BusinessObject.Services
             {
                 throw new Exception($"Error fetching tables: {ex.Message}");
             }
+        }
+        private dynamic ApplyFilters(dynamic query, GetTableRequestDTO request)
+        {
+            if (!string.IsNullOrEmpty(request.Status))
+                query = query.Filter("status", Operator.Equals, request.Status);
+
+            if (!string.IsNullOrEmpty(request.TableNumber))
+                query = query.Filter("table_number", Operator.ILike, $"%{request.TableNumber}%");
+
+            if (request.MinCapacity.HasValue)
+                query = query.Filter("capacity", Operator.GreaterThanOrEqual, request.MinCapacity.Value);
+
+            if (request.MaxCapacity.HasValue)
+                query = query.Filter("capacity", Operator.LessThanOrEqual, request.MaxCapacity.Value);
+
+            if (request.TypeId.HasValue)
+                query = query.Filter("type_id", Operator.Equals, request.TypeId.Value.ToString());
+
+            return query;
         }
 
         public async Task<GetTableResponseDTO?> GetTableById(Guid id)
