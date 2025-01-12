@@ -1,6 +1,7 @@
 
 using BusinessObject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -59,6 +60,9 @@ namespace ShopManagementService
             builder.Services.AddSingleton(supabaseClient);
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/home/app/.aspnet/DataProtection-Keys"));
 
             var app = builder.Build();
 

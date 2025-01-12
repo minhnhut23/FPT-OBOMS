@@ -1,7 +1,5 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
-using BusinessObject.Models;
-using Newtonsoft.Json.Linq;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 
