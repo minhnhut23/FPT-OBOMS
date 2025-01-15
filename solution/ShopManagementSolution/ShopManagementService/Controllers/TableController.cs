@@ -1,17 +1,14 @@
 ﻿using BusinessObject.DTOs.TableDTO;
-using BusinessObject.Models;
 using BusinessObject.Services;
 using BusinessObject.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TableController : ControllerBase
     {
         private readonly TableDAO _tableDAO;
