@@ -17,31 +17,26 @@ namespace BusinessObject.Services
             _mapper = mapper;
         }
 
-        public async Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+        public async Task<(List<GetTableResponseDTO> Tables, DTOs.TableDTO.PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
         {
             try
             {
-                // Khởi tạo query
                 var query = _client.From<Table>().Select("*");
-                var counting = _client.From<Table>().Select("*");
-
-                // Áp dụng bộ lọc
                 query = ApplyFilters(query, request);
-                counting = ApplyFilters(counting, request);
 
-                // Clone query để tính tổng số lượng bản ghi
+                var counting = _client.From<Table>().Select("*");
+                counting = ApplyFilters(counting, request);
                 var totalRecordsResponse = await counting.Select("id").Get();
                 var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
-                // Phân trang
+
+
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
-                // Lấy danh sách bảng đã phân trang
                 var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
                 var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
-
                 var tables = tablesResponse.Models
                     .Select(table =>
                     {
@@ -51,12 +46,11 @@ namespace BusinessObject.Services
                     })
                     .ToList();
 
-                // Trả về nếu không có bản ghi
                 if (totalRecords == 0 || request.PageNumber > totalPages)
                 {
                     return (
                         new List<GetTableResponseDTO>(),
-                        new PaginationMetadataDTO
+                        new DTOs.TableDTO.PaginationMetadataDTO
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -66,8 +60,7 @@ namespace BusinessObject.Services
                     );
                 }
 
-                // Tạo metadata phân trang
-                var paginationMetadata = new PaginationMetadataDTO
+                var paginationMetadata = new DTOs.TableDTO.PaginationMetadataDTO
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,
