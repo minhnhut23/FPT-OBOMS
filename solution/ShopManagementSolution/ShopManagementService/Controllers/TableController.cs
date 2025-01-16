@@ -1,8 +1,12 @@
 ﻿using BusinessObject.DTOs.TableDTO;
-using BusinessObject.Services;
+
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopManagementService.Interfaces.IRepositories;
+using System;
+using System.Threading.Tasks;
+
 
 namespace ShopManagementService.Controllers
 {
@@ -11,11 +15,11 @@ namespace ShopManagementService.Controllers
     [Authorize]
     public class TableController : ControllerBase
     {
-        private readonly TableDAO _tableDAO;
+        private readonly ITableRepository _tableRepository;
 
-        public TableController(TableDAO tableService)
+        public TableController(ITableRepository tableRepository)
         {
-            _tableDAO = tableService;
+            _tableRepository = tableRepository;
         }
 
         [HttpGet("tables")]
@@ -23,32 +27,28 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                // Call the service method
-                var (tables, paginationMetadata) = await _tableDAO.GetAllTables(request);
+                var (tables, paginationMetadata) = await _tableRepository.GetAllTables(request);
 
-                // Prepare the response object
                 var response = new GetAllTablesResponseDTO
                 {
                     Data = tables,
                     Pagination = paginationMetadata
                 };
 
-                return Ok(response); // Return 200 OK with data
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                // Handle errors
-                return StatusCode(500, new { Message = ex.Message }); // Return 500 Internal Server Error
+                return StatusCode(500, new { Message = ex.Message });
             }
         }
-
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTableById(Guid id)
         {
             try
             {
-                var table = await _tableDAO.GetTableById(id);
+                var table = await _tableRepository.GetTableById(id);
                 if (table == null) return NotFound("Table not found.");
                 return Ok(table);
             }
@@ -63,13 +63,12 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-               
                 if (createTable == null)
                 {
                     return BadRequest("Invalid data provided.");
                 }
-               
-                if (!await _tableDAO.GetTableByNumber(createTable.TableNumber, createTable.ShopId))
+
+                if (!await _tableRepository.GetTableByNumber(createTable.TableNumber, createTable.ShopId))
                 {
                     return Conflict("Table number already exists for this shop.");
                 }
@@ -78,7 +77,8 @@ namespace ShopManagementService.Controllers
                 {
                     return BadRequest("Capacity must be a positive number.");
                 }
-                var createdTable = await _tableDAO.CreateTable(createTable);
+
+                var createdTable = await _tableRepository.CreateTable(createTable);
                 return Ok($"Created successfully!");
             }
             catch (Exception ex)
@@ -96,15 +96,18 @@ namespace ShopManagementService.Controllers
                 {
                     return BadRequest("Invalid data.");
                 }
-                if (await _tableDAO.GetTableById(id) == null)
+
+                if (await _tableRepository.GetTableById(id) == null)
                 {
                     return NotFound("Table not found.");
                 }
+
                 if (updateTable.Capacity <= 0)
                 {
                     return BadRequest("Capacity must be a positive number.");
                 }
-                var updatedTable = await _tableDAO.UpdateTable(id, updateTable);
+
+                var updatedTable = await _tableRepository.UpdateTable(id, updateTable);
                 return Ok(updatedTable);
             }
             catch (Exception ex)
@@ -118,7 +121,7 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                var deleted = await _tableDAO.DeleteTable(id);
+                var deleted = await _tableRepository.DeleteTable(id);
                 if (!deleted.IsDeleted) return BadRequest(deleted.Message);
                 return Ok(deleted.Message);
             }

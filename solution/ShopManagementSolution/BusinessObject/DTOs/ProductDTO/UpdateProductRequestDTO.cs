@@ -13,6 +13,7 @@ public class UpdateProductRequestDTO
     public string? Ingredient { get; set; } = null!;
 
     public string? NutritionalIfo { get; set; } = null!;
-    
+
     public bool IsAvailable { get; set; }
 }
+

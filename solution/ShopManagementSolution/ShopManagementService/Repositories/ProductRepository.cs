@@ -1,5 +1,8 @@
 ﻿using BusinessObject.DTOs.ProductDTO;
+using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
+using BusinessObject.Utils;
+
 using ShopManagementService.DAO;
 using ShopManagementService.Interface.Repositories;
 
@@ -21,5 +24,8 @@ public class ProductRepository : IProductRepository
     public Task UpdateProduct(UpdateProductRequestDTO request, Guid id) => _dao.UpdateProduct(request, id);
 
     public Task DeleteProduct(Guid id) => _dao.DeleteProduct(id);
+    public Task<(List<GetProductResponseDTO>, ProductPaginationDTO)> GetAllProducts(GetProductRequestDTO request)
+       => _dao.GetAllProducts(request);
 
 }
+

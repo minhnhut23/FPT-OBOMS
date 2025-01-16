@@ -45,7 +45,6 @@ namespace BusinessObject.Services
             }
         }
 
-        // Get Table Type by ID
         public async Task<GetTableTypeResponseDTO?> GetTableTypeById(Guid id)
         {
             try
@@ -75,7 +74,6 @@ namespace BusinessObject.Services
             }
         }
 
-        // Create a new Table Type
         public async Task<GetTableTypeResponseDTO> CreateTableType(AddEditTypeRequestDTO createTableType)
         {
             try
@@ -120,7 +118,6 @@ namespace BusinessObject.Services
             }
         }
 
-        // Update Table Type
         public async Task<GetTableTypeResponseDTO> UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType)
         {
             try
@@ -166,7 +163,6 @@ namespace BusinessObject.Services
             }
         }
 
-        // Delete Table Type
         public async Task<DeleteTableTypeDTO> DeleteTableType(Guid id)
         {
             try

@@ -1,6 +1,8 @@
 ﻿using BusinessObject.DTOs.ProductDTO;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
+using ShopManagementService.Interface.Repositories;
+
 using ShopManagementService.Repositories;
 
 namespace ShopManagementService.Controllers
@@ -14,6 +16,26 @@ namespace ShopManagementService.Controllers
         public ProductController(ProductRepository repo)
         {
             _repo = repo;
+        }
+        [HttpGet("products")]
+        public async Task<IActionResult> GetAllProducts([FromQuery] GetProductRequestDTO request)
+        {
+            try
+            {
+                var (products, paginationMetadata) = await _repo.GetAllProducts(request);
+
+                var response = new GetAllProductsResponseDTO
+                {
+                    Data = products,
+                    Pagination = paginationMetadata
+                };
+
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
         // GET: api/product/{id}
@@ -79,3 +101,4 @@ namespace ShopManagementService.Controllers
         }
     }
 }
+
