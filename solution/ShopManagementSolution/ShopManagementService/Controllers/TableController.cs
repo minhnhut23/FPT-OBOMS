@@ -1,14 +1,18 @@
 ﻿using BusinessObject.DTOs.TableDTO;
+
 using BusinessObject.Utils;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.Interfaces.IRepositories;
 using System;
 using System.Threading.Tasks;
 
+
 namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class TableController : ControllerBase
     {
         private readonly ITableRepository _tableRepository;

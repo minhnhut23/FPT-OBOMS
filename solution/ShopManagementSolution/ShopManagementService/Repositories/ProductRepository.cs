@@ -2,6 +2,7 @@
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
+
 using ShopManagementService.DAO;
 using ShopManagementService.Interface.Repositories;
 
@@ -27,3 +28,4 @@ public class ProductRepository : IProductRepository
        => _dao.GetAllProducts(request);
 
 }
+

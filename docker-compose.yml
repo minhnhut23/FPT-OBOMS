@@ -17,7 +17,7 @@ services:
     volumes:
       - ./data-protection-keys:/home/app/.aspnet/DataProtection-Keys
     ports:
-      - '5000:8080'
+      - '5001:8080'
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       SUPABASE_URL: https://cnbwnwbtafbarsgmcabf.supabase.co

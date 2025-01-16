@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using ShopManagementService.DAO;
 using ShopManagementService.Interface.Repositories;
 using ShopManagementService.Interfaces.IRepositories;
+
 using ShopManagementService.Repositories;
 using System.Text;
 
@@ -57,6 +58,10 @@ namespace ShopManagementService
             builder.Services.AddScoped<BillDetailDAO>();
             builder.Services.AddScoped<ProductDAO>();
             builder.Services.AddTransient<ProductRepository>();
+
+            builder.Services.AddScoped<ProductDAO>();
+            builder.Services.AddScoped<ProductRepository>();
+
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);

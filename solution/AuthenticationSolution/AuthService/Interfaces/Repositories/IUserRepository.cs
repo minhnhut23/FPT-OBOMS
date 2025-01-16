@@ -1,0 +1,16 @@
+﻿using BusinessObject.DTO;
+
+namespace AuthService.Interfaces.Repositories;
+
+public interface IUserRepository
+{
+    public Task<GetUserResponeDTO> GetCurrentUser(string token);
+
+    public Task<GetUserResponeDTO> GetUserById(Guid profileId);
+
+    public Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token);
+
+    public Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token);
+
+
+}

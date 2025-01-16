@@ -16,3 +16,4 @@ public class CreateProductRequestDTO
 
     public Guid ShopId { get; set; }
 }
+

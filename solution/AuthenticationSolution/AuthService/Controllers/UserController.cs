@@ -1,4 +1,5 @@
 ﻿using AuthService.DAO;
+using AuthService.Repositories;
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +10,11 @@ namespace AuthService.Controllers;
 [Route("/api/user")]
 public class UserController : Controller
 {
-    private readonly UserDAO _dao;
+    private readonly UserRepository _repo;
 
-    public UserController(UserDAO dao)
+    public UserController(UserRepository repo)
     {
-        _dao = dao;
+        _repo = repo;
     }
 
     [HttpGet("getCurrentProfile")]
@@ -23,7 +24,7 @@ public class UserController : Controller
         try
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var user = await _dao.GetCurrentUser(token);
+            var user = await _repo.GetCurrentUser(token);
             return Ok(user);
         }
         catch (Exception ex)
@@ -40,7 +41,7 @@ public class UserController : Controller
         try
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var reponse = await _dao.CreateUser(request, token);
+            var reponse = await _repo.CreateUser(request, token);
             return Ok(reponse);
         }
         catch (Exception ex)
@@ -56,7 +57,7 @@ public class UserController : Controller
     {
         try
         {
-            var reponse = await _dao.GetUserById(id);
+            var reponse = await _repo.GetUserById(id);
             return Ok(reponse);
         }
         catch (Exception ex)
@@ -72,7 +73,7 @@ public class UserController : Controller
         try
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var reponse = await _dao.UpdateProfile(request, token);
+            var reponse = await _repo.UpdateProfile(request, token);
             return Ok(reponse);
         }
         catch (Exception ex)

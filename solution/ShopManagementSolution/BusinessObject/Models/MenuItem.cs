@@ -33,6 +33,7 @@ public class MenuItem : BaseModel
     [Column("nutritional_info")]
     public string NutritionalIfo { get; set; } = null!;
 
+
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
 
@@ -40,3 +41,4 @@ public class MenuItem : BaseModel
     public DateTime UpdatedAt { get; set; }
 
 }
+

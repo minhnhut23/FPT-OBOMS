@@ -5,6 +5,7 @@ using BusinessObject.Utils;
 using Supabase;
 using static Supabase.Postgrest.Constants;
 
+
 namespace ShopManagementService.DAO;
 
 public class ProductDAO
@@ -16,6 +17,7 @@ public class ProductDAO
     {
         _client = client;
         _mapper = mapper;
+
     }
     public async Task<MenuItem> GetProductById(Guid id)
     {
@@ -103,6 +105,7 @@ public class ProductDAO
 
         return query;
     }
+
     public async Task CreateProduct(CreateProductRequestDTO request)
     {
         try

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
 using ShopManagementService.Interface.Repositories;
+
 using ShopManagementService.Repositories;
 
 namespace ShopManagementService.Controllers
@@ -36,6 +37,7 @@ namespace ShopManagementService.Controllers
                 return StatusCode(500, new { Message = ex.Message });
             }
         }
+
         // GET: api/product/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductById(Guid id)
@@ -99,3 +101,4 @@ namespace ShopManagementService.Controllers
         }
     }
 }
+
