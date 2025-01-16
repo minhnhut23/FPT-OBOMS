@@ -1,0 +1,25 @@
+﻿using BusinessObject.DTOs.ProductDTO;
+using BusinessObject.Models;
+using ShopManagementService.DAO;
+using ShopManagementService.Interface.Repositories;
+
+namespace ShopManagementService.Repositories;
+
+public class ProductRepository : IProductRepository
+{
+    private readonly ProductDAO _dao;
+
+    public ProductRepository(ProductDAO dao)
+    {
+        _dao = dao;
+    }
+
+    public Task CreateProduct(CreateProductRequestDTO request) => _dao.CreateProduct(request);
+
+    public Task<MenuItem> GetProductById(Guid id) => _dao.GetProductById(id);
+
+    public Task UpdateProduct(UpdateProductRequestDTO request, Guid id) => _dao.UpdateProduct(request, id);
+
+    public Task DeleteProduct(Guid id) => _dao.DeleteProduct(id);
+
+}
