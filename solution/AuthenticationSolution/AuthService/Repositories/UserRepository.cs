@@ -1,5 +1,5 @@
 ﻿using AuthService.DAO;
-using AuthService.Interfaces.Repositories;
+using AuthService.IRepositories;
 using BusinessObject.DTO;
 
 namespace AuthService.Repositories;
