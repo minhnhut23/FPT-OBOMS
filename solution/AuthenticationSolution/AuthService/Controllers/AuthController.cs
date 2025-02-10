@@ -1,4 +1,4 @@
-﻿using AuthService.Repositories;
+﻿using AuthService.IRepositories;
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +9,9 @@ namespace TestAuth.Controllers;
 [Route("/api/auth")]
 public class AuthController : Controller
 {
-    private readonly AuthRepository _repo;
+    private readonly IAuthRepository _repo;
 
-    public AuthController(AuthRepository repo)
+    public AuthController(IAuthRepository repo)
     {
         _repo = repo;
     }

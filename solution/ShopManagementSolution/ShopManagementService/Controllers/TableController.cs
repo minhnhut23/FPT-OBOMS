@@ -1,11 +1,8 @@
 ﻿using BusinessObject.DTOs.TableDTO;
-
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ShopManagementService.Interfaces.IRepositories;
-using System;
-using System.Threading.Tasks;
+using ShopManagementService.IRepositories;
 
 
 namespace ShopManagementService.Controllers

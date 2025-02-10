@@ -1,6 +1,6 @@
 ﻿using BusinessObject.DTOs.TableDTO;
 
-namespace ShopManagementService.Interfaces.IRepositories
+namespace ShopManagementService.IRepositories
 {
     public interface ITableRepository
     {

@@ -1,5 +1,5 @@
 ﻿using AuthService.DAO;
-using AuthService.Repositories;
+using AuthService.IRepositories;
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +10,9 @@ namespace AuthService.Controllers;
 [Route("/api/user")]
 public class UserController : Controller
 {
-    private readonly UserRepository _repo;
+    private readonly IUserRepository _repo;
 
-    public UserController(UserRepository repo)
+    public UserController(IUserRepository repo)
     {
         _repo = repo;
     }

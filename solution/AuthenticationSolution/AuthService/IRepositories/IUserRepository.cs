@@ -1,6 +1,6 @@
 ﻿using BusinessObject.DTO;
 
-namespace AuthService.Interfaces.Repositories;
+namespace AuthService.IRepositories;
 
 public interface IUserRepository
 {

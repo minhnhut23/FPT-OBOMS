@@ -4,7 +4,7 @@ using BusinessObject.Models;
 using BusinessObject.Utils;
 
 using ShopManagementService.DAO;
-using ShopManagementService.Interface.Repositories;
+using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Repositories;
 

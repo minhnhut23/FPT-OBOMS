@@ -1,7 +1,7 @@
 ﻿using BusinessObject.DTOs.ProductDTO;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
-using ShopManagementService.Interface.Repositories;
+using ShopManagementService.IRepositories;
 
 using ShopManagementService.Repositories;
 
@@ -11,9 +11,9 @@ namespace ShopManagementService.Controllers
     [ApiController]
     public class ProductController : ControllerBase
     {
-        private readonly ProductRepository _repo;
+        private readonly IProductRepository _repo;
 
-        public ProductController(ProductRepository repo)
+        public ProductController(IProductRepository repo)
         {
             _repo = repo;
         }

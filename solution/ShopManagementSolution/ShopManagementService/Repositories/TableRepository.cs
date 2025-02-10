@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Services;
-using ShopManagementService.Interfaces.IRepositories;
+using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Repositories
 {
