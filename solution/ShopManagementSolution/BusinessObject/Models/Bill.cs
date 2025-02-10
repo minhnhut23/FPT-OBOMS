@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using System.ComponentModel.DataAnnotations;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
@@ -7,7 +6,7 @@ using Supabase.Postgrest.Models;
 namespace BusinessObject.Models
 {
     [Table("bills")]
-    public class Bill: BaseModel
+    public class Bill : BaseModel
     {
         [PrimaryKey("id")]
         public Guid Id { get; set; }
@@ -19,6 +18,17 @@ namespace BusinessObject.Models
         [Column("total_amount")]
         [Range(0, double.MaxValue, ErrorMessage = "Total amount must be a positive value.")]
         public decimal TotalAmount { get; set; }
+
+        [Column("received_amount")]
+        [Range(0, double.MaxValue, ErrorMessage = "Received amount must be a positive value.")]
+        public decimal ReceivedAmount { get; set; }
+
+        [Column("change_amount")]
+        [Range(0, double.MaxValue, ErrorMessage = "Change amount must be a positive value.")]
+        public decimal ChangeAmount { get; set; }
+
+        [Column("table_id")]
+        public Guid TableId { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

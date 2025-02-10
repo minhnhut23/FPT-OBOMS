@@ -7,12 +7,13 @@ namespace BusinessObject.DTOs.BillDTO
         public Guid Id { get; set; }
         public Guid ReservationId { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? ReceivedAmount { get; set; }
+        public decimal? ChangeAmount { get; set; }
+        public Guid TableId { get; set; } 
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public Guid CustomerId { get; set; }
         public Guid ShopId { get; set; }
-
-        // This will hold the list of BillDetails
         public List<BillDetailResponseDTO> BillDetails { get; set; }
     }
 }

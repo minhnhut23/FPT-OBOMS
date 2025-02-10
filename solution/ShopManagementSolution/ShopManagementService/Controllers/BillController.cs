@@ -17,7 +17,6 @@ namespace BusinessObject.Controllers
             _billDao = billDao;
         }
 
-        // GET: api/bill
         [HttpGet]
         public async Task<IActionResult> GetAllBills()
         {
@@ -32,7 +31,6 @@ namespace BusinessObject.Controllers
             }
         }
 
-        // GET: api/bill/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBillById(Guid id)
         {
@@ -51,8 +49,24 @@ namespace BusinessObject.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+        [HttpGet("draft/{id}")]
+        public async Task<IActionResult> GetDraftBillById(Guid id)
+        {
+            try
+            {
+                var draftBill = await _billDao.GetDraftBillById(id);
+                if (draftBill == null)
+                {
+                    return NotFound(new { message = "Draft bill not found." });
+                }
 
-        // POST: api/bill
+                return Ok(draftBill);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateBill([FromBody] CreateBillRequestDTO createBill)
         {
@@ -72,7 +86,6 @@ namespace BusinessObject.Controllers
             }
         }
 
-        // PUT: api/bill/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBill(Guid id, [FromBody] UpdateBillRequestDTO updateBill)
         {
@@ -92,7 +105,6 @@ namespace BusinessObject.Controllers
             }
         }
 
-        // DELETE: api/bill/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBill(Guid id)
         {
@@ -111,5 +123,32 @@ namespace BusinessObject.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("generate-pdf/{id}")]
+        public async Task<IActionResult> GenerateBillPdf(Guid id)
+        {
+            try
+            {
+                // Gọi phương thức GenerateBillPdfById từ DAO và nhận lại filePath
+                string filePath = await _billDao.GenerateBillPdfById(id);
+
+                // Kiểm tra xem file có tồn tại không
+                if (!System.IO.File.Exists(filePath))
+                {
+                    return NotFound(new { message = "File not found." });
+                }
+
+                // Đọc nội dung file PDF
+                var fileBytes = System.IO.File.ReadAllBytes(filePath);
+
+                // Trả về file PDF dưới dạng response
+                return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
