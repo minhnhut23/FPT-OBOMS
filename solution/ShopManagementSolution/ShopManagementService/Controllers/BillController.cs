@@ -130,7 +130,7 @@ namespace BusinessObject.Controllers
             try
             {
                 // Gọi phương thức GenerateBillPdfById từ DAO và nhận lại filePath
-                string filePath = await _billDao.GenerateBillPdfById(id);
+                string filePath = await _billDao.GenerateAndPrintBillPdf(id);
 
                 // Kiểm tra xem file có tồn tại không
                 if (!System.IO.File.Exists(filePath))
