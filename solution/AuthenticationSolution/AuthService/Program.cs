@@ -1,10 +1,10 @@
 using AuthService.DAO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
-using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AuthService.Repositories;
+using AuthService.IRepositories;
 
 namespace AuthService
 {
@@ -47,7 +47,11 @@ namespace AuthService
             });
 
             builder.Services.AddTransient<AuthDAO>();
+            builder.Services.AddTransient<IAuthRepository, AuthRepository>();
+
+
             builder.Services.AddTransient<UserDAO>();
+            builder.Services.AddTransient<IUserRepository, UserRepository>();
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl!, supabaseKey);

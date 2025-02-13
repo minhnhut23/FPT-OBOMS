@@ -1,4 +1,4 @@
-﻿using AuthService.DAO;
+﻿using AuthService.IRepositories;
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,11 +9,11 @@ namespace TestAuth.Controllers;
 [Route("/api/auth")]
 public class AuthController : Controller
 {
-    private readonly AuthDAO _dao;
+    private readonly IAuthRepository _repo;
 
-    public AuthController(AuthDAO dao)
+    public AuthController(IAuthRepository repo)
     {
-        _dao = dao;
+        _repo = repo;
     }
 
     [HttpPost("login")]
@@ -21,7 +21,7 @@ public class AuthController : Controller
     {
         try
         {
-            var loginResponse = await _dao.Login(request.Email, request.Password);
+            var loginResponse = await _repo.Login(request.Email, request.Password);
 
             return Ok(loginResponse);
         }
@@ -36,7 +36,7 @@ public class AuthController : Controller
     {
         try
         {
-            await _dao.Register(request);
+            await _repo.Register(request);
 
             return Ok();
         }
@@ -52,7 +52,7 @@ public class AuthController : Controller
     {
         try
         {
-            await _dao.Logout();
+            await _repo.Logout();
 
             return Ok();
         }
@@ -67,7 +67,7 @@ public class AuthController : Controller
     {
         try
         {
-            await _dao.ForgotPassword(requestDTO.Email);
+            await _repo.ForgotPassword(requestDTO.Email);
 
             return Ok();
         }
@@ -82,7 +82,7 @@ public class AuthController : Controller
     {
         try
         {
-            await _dao.ResetPassword(requestDTO);
+            await _repo.ResetPassword(requestDTO);
             return Ok(new { msg = "Password has been reset successfully." });
         }
         catch (Exception ex)
@@ -96,7 +96,7 @@ public class AuthController : Controller
         try
         {
             var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            await _dao.ChangePassword(requestDTO, token);
+            await _repo.ChangePassword(requestDTO, token);
             return Ok(new { msg = "Password has been change successfully." });
         }
         catch (Exception ex)
