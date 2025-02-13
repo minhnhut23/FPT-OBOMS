@@ -20,7 +20,7 @@ public class AuthDAO
     {
         try
         {
-            var session = await _client.Auth.SignIn(email, password);
+            var session = await _client.Auth.SignInWithPassword(email, password);
 
             var handler = new JwtSecurityTokenHandler();
             var jwtToken = handler.ReadJwtToken(session!.AccessToken);
