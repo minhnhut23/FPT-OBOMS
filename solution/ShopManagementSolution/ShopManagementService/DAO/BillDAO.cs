@@ -8,6 +8,7 @@ using iText.Layout.Element;
 using iText.Layout.Properties;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Diagnostics;
+using static Supabase.Postgrest.Constants;
 namespace BusinessObject.Services
 {
     public class BillDAO
@@ -132,6 +133,26 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
+
+        public async Task<Guid> GetBillIdByTableId(Guid tableId)
+        {
+            try
+            {
+                var billResponse = await _client
+                    .From<Bill>()
+                    .Where(b => b.TableId == tableId)
+                    .Order("created_at", Ordering.Descending) // Lấy hóa đơn mới nhất
+                    .Single();
+
+                return billResponse.Id;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+            }
+        }
+
+
 
         public async Task<BillResponseDTO> CreateBill(CreateBillRequestDTO createBill)
         {

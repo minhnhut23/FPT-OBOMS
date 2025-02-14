@@ -124,6 +124,18 @@ namespace BusinessObject.Controllers
             }
         }
 
+        [HttpGet("{id}/bill")]
+        public async Task<IActionResult> GetBillIdByTableId(Guid id)
+        {
+            var billId = await _billDao.GetBillIdByTableId(id);
+
+            if (billId == null)
+                return NotFound("No bill found for this table.");
+
+            return Ok(new { billId });
+        }
+
+
         [HttpGet("generate-pdf/{id}")]
         public async Task<IActionResult> GenerateBillPdf(Guid id)
         {
@@ -149,6 +161,7 @@ namespace BusinessObject.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
 
     }
 }
