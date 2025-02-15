@@ -5,7 +5,7 @@ using BusinessObject.Models;
 
 
 namespace ShopManagementService.Utils {
-    public class MappingProfile : Profile
+    public class MappingProfile : AutoMapper.Profile
     {
         public MappingProfile()
         {

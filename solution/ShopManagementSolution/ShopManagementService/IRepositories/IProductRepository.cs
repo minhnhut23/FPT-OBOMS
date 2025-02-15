@@ -11,9 +11,9 @@ public interface IProductRepository
 
     public Task<MenuItem> GetProductById(Guid id);
 
-    public Task CreateProduct(CreateProductRequestDTO request);
+    public Task CreateProduct(CreateProductRequestDTO request, string token);
 
-    public Task UpdateProduct(UpdateProductRequestDTO request, Guid id);
+    public Task UpdateProduct(UpdateProductRequestDTO request, Guid id, string token);
 
     public Task DeleteProduct(Guid id);
 

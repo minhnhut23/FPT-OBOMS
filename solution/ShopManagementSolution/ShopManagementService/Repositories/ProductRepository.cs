@@ -17,11 +17,11 @@ public class ProductRepository : IProductRepository
         _dao = dao;
     }
 
-    public Task CreateProduct(CreateProductRequestDTO request) => _dao.CreateProduct(request);
+    public Task CreateProduct(CreateProductRequestDTO request, string token) => _dao.CreateProduct(request, token);
 
     public Task<MenuItem> GetProductById(Guid id) => _dao.GetProductById(id);
 
-    public Task UpdateProduct(UpdateProductRequestDTO request, Guid id) => _dao.UpdateProduct(request, id);
+    public Task UpdateProduct(UpdateProductRequestDTO request, Guid id, string token) => _dao.UpdateProduct(request, id, token);
 
     public Task DeleteProduct(Guid id) => _dao.DeleteProduct(id);
     public Task<(List<GetProductResponseDTO>, ProductPaginationDTO)> GetAllProducts(GetProductRequestDTO request)

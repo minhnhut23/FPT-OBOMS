@@ -1,4 +1,5 @@
 ﻿using BusinessObject.DTOs.ProductDTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.IRepositories;
 
@@ -31,7 +32,7 @@ namespace ShopManagementService.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { Message = ex.Message });
+                return StatusCode(500, new { msg = ex.Message });
             }
         }
 
@@ -56,11 +57,13 @@ namespace ShopManagementService.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestDTO request)
         {
             try
             {
-                await _repo.CreateProduct(request);
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                await _repo.CreateProduct(request, token);
                 return Ok();
             }
             catch (Exception ex)
@@ -74,7 +77,8 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                await _repo.UpdateProduct(request, id);
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                await _repo.UpdateProduct(request, id, token);
                 return Ok();
             }
             catch (Exception ex)
