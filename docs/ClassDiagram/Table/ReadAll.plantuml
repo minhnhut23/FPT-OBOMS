@@ -91,16 +91,14 @@ class ErrorHandler {
     + IsJson(string input): bool
     + ProcessErrorMessage(string exceptionMessage): string
 }
+
 class MappingProfile {
-    + Table <-> GetTableResponseDTO
-    + CreateTableRequestDTO -> Table
-    + UpdateTableRequestDTO -> Table
-    + CreateProductRequestDTO -> MenuItem
-    + UpdateProductRequestDTO -> MenuItem
-    + MenuItem -> GetProductResponseDTO
+  + MappingProfile()
 }
 
 TableDAO -- MappingProfile
 TableDAO -- ErrorHandler
 
+MappingProfile -> Table : Maps
+MappingProfile -> GetTableResponseDTO : Maps
 @enduml
