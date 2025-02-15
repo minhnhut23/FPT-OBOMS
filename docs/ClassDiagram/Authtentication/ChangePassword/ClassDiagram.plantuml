@@ -1,9 +1,9 @@
-@startuml 
+@startuml getUserById
 hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
     - _repo: IAuthRepository
-    + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
+    +ChangePassword([FromBody] ChangePasswordRequestDTO requestDTO): Task<IActionResult> 
 }
 
 class ErrorHandler {
@@ -11,29 +11,24 @@ class ErrorHandler {
     + ProcessErrorMessage(string exceptionMessage): string
 } 
 
-interface IAuthRepository {
-    + Login(string email, string password): Task<LoginResponseDTO>
+interface IAuthRepository { 
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task    
 }
 
 class AuthDAO {
     - _client: Client
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task
 }
 
-class LoginRequestDTO{
-    + Email: string
-    + Password: string 
-}
-
-class LoginResponseDTO{
-    + AccessToken: string
-    + RefreshToken: string
-    + ExpiresAt: DateTime
+class ChangePasswordRequestDTO {
+    + OldPassword: string
+    + NewPassword: string
+    + ConfirmPassword: string
 }
 
 class Profile {
@@ -48,18 +43,17 @@ class Profile {
     + AccountId: Guid
 }
 
-
-
-AuthController -- LoginRequestDTO
+AuthController -- ChangePasswordRequestDTO
 AuthController -- IAuthRepository
 
-IAuthRepository -- LoginResponseDTO
 IAuthRepository <|-- AuthRepository
-AuthRepository -- LoginResponseDTO
-AuthRepository -- AuthDAO
+IAuthRepository -- ChangePasswordRequestDTO
 
+AuthRepository -- AuthDAO
+AuthRepository -- ChangePasswordRequestDTO
+
+AuthDAO -- ChangePasswordRequestDTO
 AuthDAO -- ErrorHandler
-AuthDAO -- LoginResponseDTO
 
 AuthDAO o-- Profile
 @enduml

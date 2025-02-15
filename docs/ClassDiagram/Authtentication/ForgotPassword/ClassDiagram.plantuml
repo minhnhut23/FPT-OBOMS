@@ -1,9 +1,9 @@
-@startuml 
+@startuml getUserById
 hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
     - _repo: IAuthRepository
-    + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
+    + ForgotPassword([FromBody] ForgotPasswordRequestDTO requestDTO): Task<IActionResult> 
 }
 
 class ErrorHandler {
@@ -11,29 +11,22 @@ class ErrorHandler {
     + ProcessErrorMessage(string exceptionMessage): string
 } 
 
-interface IAuthRepository {
-    + Login(string email, string password): Task<LoginResponseDTO>
+interface IAuthRepository { 
+    + ForgotPassword(string email): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ForgotPassword(string email): Task    
 }
 
 class AuthDAO {
     - _client: Client
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ForgotPassword(string email): Task
 }
 
-class LoginRequestDTO{
+class ForgotPasswordRequestDTO {
     + Email: string
-    + Password: string 
-}
-
-class LoginResponseDTO{
-    + AccessToken: string
-    + RefreshToken: string
-    + ExpiresAt: DateTime
 }
 
 class Profile {
@@ -48,18 +41,14 @@ class Profile {
     + AccountId: Guid
 }
 
-
-
-AuthController -- LoginRequestDTO
+AuthController -- ForgotPasswordRequestDTO
 AuthController -- IAuthRepository
 
-IAuthRepository -- LoginResponseDTO
 IAuthRepository <|-- AuthRepository
-AuthRepository -- LoginResponseDTO
 AuthRepository -- AuthDAO
 
+
 AuthDAO -- ErrorHandler
-AuthDAO -- LoginResponseDTO
 
 AuthDAO o-- Profile
 @enduml

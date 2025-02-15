@@ -35,7 +35,7 @@ public class ProductDAO
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-        }
+        }                                                
     }
     public async Task<(List<GetProductResponseDTO> Products, ProductPaginationDTO PaginationMetadata)> GetAllProducts(GetProductRequestDTO request)
     {

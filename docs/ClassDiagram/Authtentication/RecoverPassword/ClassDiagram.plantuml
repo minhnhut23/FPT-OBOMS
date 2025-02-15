@@ -1,9 +1,9 @@
-@startuml 
+@startuml getUserById
 hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
     - _repo: IAuthRepository
-    + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
+    + RecoverPassword([FromBody] RecoverPasswordRequestDTO requestDTO): Task<IActionResult> 
 }
 
 class ErrorHandler {
@@ -12,29 +12,25 @@ class ErrorHandler {
 } 
 
 interface IAuthRepository {
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
 }
 
 class AuthDAO {
     - _client: Client
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
 }
 
-class LoginRequestDTO{
-    + Email: string
-    + Password: string 
-}
-
-class LoginResponseDTO{
+class RecoverPasswordRequestDTO{
     + AccessToken: string
-    + RefreshToken: string
-    + ExpiresAt: DateTime
+    + NewPassword: string 
+    + ConfirmPassword: string
 }
+
 
 class Profile {
     + Id: Guid
@@ -50,16 +46,17 @@ class Profile {
 
 
 
-AuthController -- LoginRequestDTO
+AuthController -- RecoverPasswordRequestDTO
 AuthController -- IAuthRepository
 
-IAuthRepository -- LoginResponseDTO
 IAuthRepository <|-- AuthRepository
-AuthRepository -- LoginResponseDTO
+IAuthRepository -- RecoverPasswordRequestDTO
+
 AuthRepository -- AuthDAO
+AuthRepository -- RecoverPasswordRequestDTO
 
 AuthDAO -- ErrorHandler
-AuthDAO -- LoginResponseDTO
+AuthDAO -- RecoverPasswordRequestDTO
 
 AuthDAO o-- Profile
 @enduml
