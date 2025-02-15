@@ -1,9 +1,6 @@
 ﻿using BusinessObject.DTOs.ProductDTO;
 using Microsoft.AspNetCore.Mvc;
-using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
-
-using ShopManagementService.Repositories;
 
 namespace ShopManagementService.Controllers
 {

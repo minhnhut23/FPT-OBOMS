@@ -3,7 +3,7 @@ using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
 
-namespace ShopManagementService.Interface.Repositories;
+namespace ShopManagementService.IRepositories;
 
 public interface IProductRepository
 {
