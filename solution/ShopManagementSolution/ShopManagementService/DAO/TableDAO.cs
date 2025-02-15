@@ -2,22 +2,23 @@
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
+using Supabase;
 using static Supabase.Postgrest.Constants;
 
 namespace BusinessObject.Services
 {
     public class TableDAO
     {
-        private readonly Supabase.Client _client;
+        private readonly Client _client;
         private readonly IMapper _mapper;
 
-        public TableDAO(Supabase.Client client, IMapper mapper)
+        public TableDAO(Client client, IMapper mapper)
         {
             _client = client;
             _mapper = mapper;
         }
 
-        public async Task<(List<GetTableResponseDTO> Tables, DTOs.TableDTO.PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+        public async Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
         {
             try
             {

@@ -9,7 +9,7 @@ namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+/*    [Authorize]*/
     public class TableController : ControllerBase
     {
         private readonly ITableRepository _tableRepository;
@@ -26,7 +26,7 @@ namespace ShopManagementService.Controllers
             {
                 var (tables, paginationMetadata) = await _tableRepository.GetAllTables(request);
 
-                var response = new GetAllTablesResponseDTO
+                var response = new
                 {
                     Data = tables,
                     Pagination = paginationMetadata

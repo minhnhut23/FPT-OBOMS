@@ -1,4 +1,4 @@
-@startuml getUserById
+@startuml 
 hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
