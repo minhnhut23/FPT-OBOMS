@@ -3,32 +3,30 @@ hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
     - _repo: IAuthRepository
-    + Register([FromBody] RegisterRequestDTO request): Task<IActionResult> 
+    + ForgotPassword([FromBody] ForgotPasswordRequestDTO requestDTO): Task<IActionResult> 
 }
 
 class ErrorHandler {
     + IsJson(string input): bool
     + ProcessErrorMessage(string exceptionMessage): string
-}
+} 
 
-interface IAuthRepository {
-    + Register(RegisterRequestDTO request): Task
+interface IAuthRepository { 
+    + ForgotPassword(string email): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Register(RegisterRequestDTO request): Task
+    + ForgotPassword(string email): Task    
 }
 
 class AuthDAO {
     - _client: Client
-    + Register(RegisterRequestDTO request): Task
+    + ForgotPassword(string email): Task
 }
 
-class RegisterRequestDTO{
+class ForgotPasswordRequestDTO {
     + Email: string
-    + Password: string 
-    + ConfirmPassword: string
 }
 
 class Profile {
@@ -43,18 +41,14 @@ class Profile {
     + AccountId: Guid
 }
 
-
-AuthController -- RegisterRequestDTO
+AuthController -- ForgotPasswordRequestDTO
 AuthController -- IAuthRepository
 
 IAuthRepository <|-- AuthRepository
-IAuthRepository -- RegisterRequestDTO
-
 AuthRepository -- AuthDAO
-AuthRepository -- RegisterRequestDTO
+
 
 AuthDAO -- ErrorHandler
-AuthDAO -- RegisterRequestDTO
 
 AuthDAO o-- Profile
 @enduml

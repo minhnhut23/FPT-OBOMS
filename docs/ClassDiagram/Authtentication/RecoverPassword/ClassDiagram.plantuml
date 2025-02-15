@@ -3,33 +3,34 @@ hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
     - _repo: IAuthRepository
-    + Register([FromBody] RegisterRequestDTO request): Task<IActionResult> 
+    + RecoverPassword([FromBody] RecoverPasswordRequestDTO requestDTO): Task<IActionResult> 
 }
 
 class ErrorHandler {
     + IsJson(string input): bool
     + ProcessErrorMessage(string exceptionMessage): string
-}
+} 
 
 interface IAuthRepository {
-    + Register(RegisterRequestDTO request): Task
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Register(RegisterRequestDTO request): Task
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
 }
 
 class AuthDAO {
     - _client: Client
-    + Register(RegisterRequestDTO request): Task
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
 }
 
-class RegisterRequestDTO{
-    + Email: string
-    + Password: string 
+class RecoverPasswordRequestDTO{
+    + AccessToken: string
+    + NewPassword: string 
     + ConfirmPassword: string
 }
+
 
 class Profile {
     + Id: Guid
@@ -44,17 +45,18 @@ class Profile {
 }
 
 
-AuthController -- RegisterRequestDTO
+
+AuthController -- RecoverPasswordRequestDTO
 AuthController -- IAuthRepository
 
 IAuthRepository <|-- AuthRepository
-IAuthRepository -- RegisterRequestDTO
+IAuthRepository -- RecoverPasswordRequestDTO
 
 AuthRepository -- AuthDAO
-AuthRepository -- RegisterRequestDTO
+AuthRepository -- RecoverPasswordRequestDTO
 
 AuthDAO -- ErrorHandler
-AuthDAO -- RegisterRequestDTO
+AuthDAO -- RecoverPasswordRequestDTO
 
 AuthDAO o-- Profile
 @enduml

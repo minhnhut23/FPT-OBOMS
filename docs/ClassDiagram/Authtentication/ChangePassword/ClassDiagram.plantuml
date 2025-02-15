@@ -3,31 +3,31 @@ hide circle
 skinparam classAttributeIconSize 0
 class AuthController {
     - _repo: IAuthRepository
-    + Register([FromBody] RegisterRequestDTO request): Task<IActionResult> 
+    +ChangePassword([FromBody] ChangePasswordRequestDTO requestDTO): Task<IActionResult> 
 }
 
 class ErrorHandler {
     + IsJson(string input): bool
     + ProcessErrorMessage(string exceptionMessage): string
-}
+} 
 
-interface IAuthRepository {
-    + Register(RegisterRequestDTO request): Task
+interface IAuthRepository { 
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Register(RegisterRequestDTO request): Task
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task    
 }
 
 class AuthDAO {
     - _client: Client
-    + Register(RegisterRequestDTO request): Task
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task
 }
 
-class RegisterRequestDTO{
-    + Email: string
-    + Password: string 
+class ChangePasswordRequestDTO {
+    + OldPassword: string
+    + NewPassword: string
     + ConfirmPassword: string
 }
 
@@ -43,18 +43,17 @@ class Profile {
     + AccountId: Guid
 }
 
-
-AuthController -- RegisterRequestDTO
+AuthController -- ChangePasswordRequestDTO
 AuthController -- IAuthRepository
 
 IAuthRepository <|-- AuthRepository
-IAuthRepository -- RegisterRequestDTO
+IAuthRepository -- ChangePasswordRequestDTO
 
 AuthRepository -- AuthDAO
-AuthRepository -- RegisterRequestDTO
+AuthRepository -- ChangePasswordRequestDTO
 
+AuthDAO -- ChangePasswordRequestDTO
 AuthDAO -- ErrorHandler
-AuthDAO -- RegisterRequestDTO
 
 AuthDAO o-- Profile
 @enduml
