@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
-using ShopManagementService.Interface.Repositories;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Controllers
