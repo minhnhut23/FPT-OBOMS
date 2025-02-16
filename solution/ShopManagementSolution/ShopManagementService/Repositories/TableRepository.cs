@@ -2,6 +2,7 @@
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Services;
 using ShopManagementService.IRepositories;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace ShopManagementService.Repositories
 {
@@ -28,6 +29,9 @@ namespace ShopManagementService.Repositories
 
         public Task<DeleteTableRequestDTO> DeleteTable(Guid id)
             => _tableDao.DeleteTable(id);
+
+        public Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish)
+         => _tableDao.UpdateTableStatus(tableId,isFinish);
     }
     
 }
