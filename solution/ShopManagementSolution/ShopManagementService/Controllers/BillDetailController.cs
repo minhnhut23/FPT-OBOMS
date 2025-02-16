@@ -1,7 +1,7 @@
 ﻿using BusinessObject.DTOs.BillDetailDTO;
 using BusinessObject.DTOs.BillDTO;
-using BusinessObject.Services;
 using Microsoft.AspNetCore.Mvc;
+using ShopManagementService.IRepositories;
 using System;
 using System.Threading.Tasks;
 
@@ -11,11 +11,11 @@ namespace BusinessObject.Controllers
     [ApiController]
     public class BillDetailController : ControllerBase
     {
-        private readonly BillDetailDAO _billDetailDao;
+        private readonly IBillDetailRepository _billDetailRepository;
 
-        public BillDetailController(BillDetailDAO billDetailDao)
+        public BillDetailController(IBillDetailRepository billDetailRepository)
         {
-            _billDetailDao = billDetailDao;
+            _billDetailRepository = billDetailRepository;
         }
 
         // GET: api/billdetail/{id}
@@ -24,7 +24,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var billDetail = await _billDetailDao.GetBillDetailById(id);
+                var billDetail = await _billDetailRepository.GetBillDetailById(id);
                 if (billDetail == null)
                 {
                     return NotFound("Bill detail not found.");
@@ -49,7 +49,7 @@ namespace BusinessObject.Controllers
                     return BadRequest("Invalid input data.");
                 }
 
-                var createdBillDetail = await _billDetailDao.CreateBillDetail(createBillDetail);
+                var createdBillDetail = await _billDetailRepository.CreateBillDetail(createBillDetail);
                 return CreatedAtAction(nameof(GetBillDetailById), new { id = createdBillDetail.Id }, createdBillDetail);
             }
             catch (Exception ex)
@@ -69,7 +69,7 @@ namespace BusinessObject.Controllers
                     return BadRequest("Invalid input data.");
                 }
 
-                var updatedBillDetail = await _billDetailDao.UpdateBillDetail(id, updateBillDetail);
+                var updatedBillDetail = await _billDetailRepository.UpdateBillDetail(id, updateBillDetail);
                 return Ok(updatedBillDetail);
             }
             catch (Exception ex)
@@ -84,7 +84,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var result = await _billDetailDao.DeleteBillDetail(id);
+                var result = await _billDetailRepository.DeleteBillDetail(id);
                 if (!result.IsDeleted)
                 {
                     return NotFound(result.Message);
