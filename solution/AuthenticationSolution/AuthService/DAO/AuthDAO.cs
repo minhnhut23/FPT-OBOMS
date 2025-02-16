@@ -96,13 +96,6 @@ public class AuthDAO
     {
         try
         {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(request.AccessToken);
-            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
-            var email = claims["email"];
-
-            var session = await _client.Auth.VerifyOTP(email, request.AccessToken, Constants.EmailOtpType.Recovery);
-
             if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword)) 
             { 
                 throw new ArgumentException("Password fields cannot be null or empty."); 
