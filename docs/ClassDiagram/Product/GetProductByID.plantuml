@@ -1,0 +1,55 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+' Controller for product operations
+class ProductController {
+    - _repo: IProductRepository
+    + GetProductById(Guid id): Task<IActionResult>
+}
+
+' Repository interface defining the GetProductById method
+interface IProductRepository {
+    + GetProductById(Guid id): Task<MenuItem>
+}
+
+' Repository implementation that delegates to the DAO
+class ProductRepository {
+    - _dao: ProductDAO
+    + GetProductById(Guid id): Task<MenuItem>
+}
+
+' Data Access Object handling database interactions
+class ProductDAO {
+    - _client: Client
+    + GetProductById(Guid id): Task<MenuItem>
+}
+
+' Domain model representing a product
+class MenuItem {
+    + Id: Guid
+    + ShopId: Guid
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + Category: string
+    + IsAvailable: bool
+    + Ingredient: string
+    + NutritionalIfo: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+' Utility class to handle errors
+class ErrorHandler {
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+' Relationships among classes
+ProductController -- IProductRepository
+IProductRepository <|-- ProductRepository
+ProductRepository -- ProductDAO
+ProductDAO -- MenuItem
+ProductDAO -- ErrorHandler
+
+@enduml

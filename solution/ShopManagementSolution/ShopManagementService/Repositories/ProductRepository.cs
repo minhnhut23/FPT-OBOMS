@@ -24,6 +24,7 @@ public class ProductRepository : IProductRepository
     public Task UpdateProduct(UpdateProductRequestDTO request, Guid id, string token) => _dao.UpdateProduct(request, id, token);
 
     public Task DeleteProduct(Guid id) => _dao.DeleteProduct(id);
+
     public Task<(List<GetProductResponseDTO>, ProductPaginationDTO)> GetAllProducts(GetProductRequestDTO request)
        => _dao.GetAllProducts(request);
 
