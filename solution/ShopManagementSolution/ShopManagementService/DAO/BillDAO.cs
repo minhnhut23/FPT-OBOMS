@@ -92,7 +92,8 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-         public async Task<BillWithDetailsResponseDTO?> GetBillById(Guid id)
+
+        public async Task<BillWithDetailsResponseDTO?> GetBillById(Guid id)
         {
             try
             {
@@ -102,7 +103,7 @@ namespace BusinessObject.Services
 
                 var billDetailsResponse = await _client.From<BillDetail>().Where(bd => bd.BillId == id).Get();
 
-                var billDetailsDTOs = billDetailsResponse.Models.Select(bd => new BillDetailResponseDTO
+                var billDetailsDTO = billDetailsResponse.Models.Select(bd => new BillDetailResponseDTO
                 {
                     Id = bd.Id,
                     BillId = bd.BillId,
@@ -125,7 +126,7 @@ namespace BusinessObject.Services
                     UpdatedAt = billResponse.UpdatedAt,
                     CustomerId = billResponse.CustomerId,
                     ShopId = billResponse.ShopId,
-                    BillDetails = billDetailsDTOs
+                    BillDetails = billDetailsDTO
                 };
             }
             catch (Exception ex)
@@ -151,8 +152,6 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-
-
 
         public async Task<BillResponseDTO> CreateBill(CreateBillRequestDTO createBill)
         {
@@ -194,11 +193,6 @@ namespace BusinessObject.Services
             }
         }
 
-
-
-
-
-
         public bool IsFileLocked(string filePath)
         {
             try
@@ -215,8 +209,6 @@ namespace BusinessObject.Services
                 return true;
             }
         }
-
-
 
         public async Task<string> GenerateAndPrintBillPdf(Guid billId)
         {
@@ -283,7 +275,7 @@ namespace BusinessObject.Services
                             table.AddCell(item.Price.ToString());
                             table.AddCell((item.Quantity * item.Price).ToString());
                         }
-                         
+
                         document.Add(table);
                         document.Add(table);
                         document.Add(table);
@@ -305,7 +297,8 @@ namespace BusinessObject.Services
                         document.Close();
                     }
 
-                   
+
+
                 }
 
                 Console.WriteLine($"PDF generated successfully at: {filePath}");
@@ -342,10 +335,6 @@ namespace BusinessObject.Services
                 throw new Exception($"Error opening and printing PDF: {ex.Message}", ex);
             }
         }
-
-
-
-
 
 
         public async Task<BillResponseDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill)

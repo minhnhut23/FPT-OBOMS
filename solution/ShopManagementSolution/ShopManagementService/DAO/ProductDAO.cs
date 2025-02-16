@@ -3,7 +3,9 @@ using BusinessObject.DTOs.ProductDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
 using Supabase;
+using System.IdentityModel.Tokens.Jwt;
 using static Supabase.Postgrest.Constants;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace ShopManagementService.DAO;
@@ -33,7 +35,7 @@ public class ProductDAO
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-        }
+        }                                                
     }
     public async Task<(List<GetProductResponseDTO> Products, ProductPaginationDTO PaginationMetadata)> GetAllProducts(GetProductRequestDTO request)
     {
@@ -106,15 +108,30 @@ public class ProductDAO
         return query;
     }
 
-    public async Task CreateProduct(CreateProductRequestDTO request)
+    public async Task CreateProduct(CreateProductRequestDTO request, string token)
     {
         try
         {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            var accountId = Guid.Parse(claims["sub"]);
+
+            var profile = await _client
+                .From<BusinessObject.Models.Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
             var shop = await _client.From<Shop>().Where(s => s.Id == request.ShopId).Single();
 
             if (shop == null)
             {
                 throw new Exception("Shop not found!");
+            }
+
+            if (shop.OwnerId != profile!.Id)
+            {
+                throw new Exception("You are not shop's owner!");
             }
 
             var product = new MenuItem
@@ -139,11 +156,33 @@ public class ProductDAO
         }
     }
 
-    public async Task UpdateProduct(UpdateProductRequestDTO request, Guid id)
+    public async Task UpdateProduct(UpdateProductRequestDTO request, Guid id, string token)
     {
         try
         {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            var accountId = Guid.Parse(claims["sub"]);
+
+            var profile = await _client
+                .From<BusinessObject.Models.Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
             var product = await _client.From<MenuItem>().Where(s => s.Id == id).Single();
+
+            var shop = await _client.From<Shop>().Where(s => s.Id == product!.ShopId).Single();
+
+            if (shop == null)
+            {
+                throw new Exception("Shop not found!");
+            }
+
+            if (shop.OwnerId != profile!.Id)
+            {
+                throw new Exception("You are not shop's owner!");
+            }
 
             if (product == null)
             {

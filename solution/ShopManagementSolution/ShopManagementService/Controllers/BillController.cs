@@ -1,5 +1,5 @@
 ﻿using BusinessObject.DTOs.BillDTO;
-using BusinessObject.Services;
+using ShopManagementService.IRepositories;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -10,11 +10,11 @@ namespace BusinessObject.Controllers
     [ApiController]
     public class BillController : ControllerBase
     {
-        private readonly BillDAO _billDao;
+        private readonly IBillRepository _billRepository;
 
-        public BillController(BillDAO billDao)
+        public BillController(IBillRepository billRepository)
         {
-            _billDao = billDao;
+            _billRepository = billRepository;
         }
 
         [HttpGet]
@@ -22,7 +22,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var bills = await _billDao.GetAllBills();
+                var bills = await _billRepository.GetAllBills();
                 return Ok(bills);
             }
             catch (Exception ex)
@@ -36,7 +36,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var bill = await _billDao.GetBillById(id);
+                var bill = await _billRepository.GetBillById(id);
                 if (bill == null)
                 {
                     return NotFound("Bill not found.");
@@ -49,12 +49,13 @@ namespace BusinessObject.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
         [HttpGet("draft/{id}")]
         public async Task<IActionResult> GetDraftBillById(Guid id)
         {
             try
             {
-                var draftBill = await _billDao.GetDraftBillById(id);
+                var draftBill = await _billRepository.GetDraftBillById(id);
                 if (draftBill == null)
                 {
                     return NotFound(new { message = "Draft bill not found." });
@@ -67,6 +68,7 @@ namespace BusinessObject.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateBill([FromBody] CreateBillRequestDTO createBill)
         {
@@ -77,7 +79,7 @@ namespace BusinessObject.Controllers
                     return BadRequest("Invalid input data.");
                 }
 
-                var createdBill = await _billDao.CreateBill(createBill);
+                var createdBill = await _billRepository.CreateBill(createBill);
                 return CreatedAtAction(nameof(GetBillById), new { id = createdBill.Id }, createdBill);
             }
             catch (Exception ex)
@@ -96,7 +98,7 @@ namespace BusinessObject.Controllers
                     return BadRequest("Invalid input data.");
                 }
 
-                var updatedBill = await _billDao.UpdateBill(id, updateBill);
+                var updatedBill = await _billRepository.UpdateBill(id, updateBill);
                 return Ok(updatedBill);
             }
             catch (Exception ex)
@@ -110,7 +112,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var result = await _billDao.DeleteBill(id);
+                var result = await _billRepository.DeleteBill(id);
                 if (!result.IsDeleted)
                 {
                     return NotFound(result.Message);
@@ -127,7 +129,9 @@ namespace BusinessObject.Controllers
         [HttpGet("{id}/bill")]
         public async Task<IActionResult> GetBillIdByTableId(Guid id)
         {
+
             var billId = await _billDao.GetBillIdByTableId(id);
+
 
             if (billId == null)
                 return NotFound("No bill found for this table.");
@@ -137,23 +141,19 @@ namespace BusinessObject.Controllers
 
 
         [HttpGet("generate-pdf/{id}")]
-        public async Task<IActionResult> GenerateBillPdf(Guid id)
+        public async Task<IActionResult> GenerateAndPrintBillPdf(Guid id)
         {
             try
             {
-                // Gọi phương thức GenerateBillPdfById từ DAO và nhận lại filePath
-                string filePath = await _billDao.GenerateAndPrintBillPdf(id);
+                string filePath = await _billRepository.GenerateAndPrintBillPdf(id);
 
-                // Kiểm tra xem file có tồn tại không
+
                 if (!System.IO.File.Exists(filePath))
                 {
                     return NotFound(new { message = "File not found." });
                 }
 
-                // Đọc nội dung file PDF
                 var fileBytes = System.IO.File.ReadAllBytes(filePath);
-
-                // Trả về file PDF dưới dạng response
                 return File(fileBytes, "application/pdf", Path.GetFileName(filePath));
             }
             catch (Exception ex)
@@ -161,7 +161,5 @@ namespace BusinessObject.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
-
-
     }
 }

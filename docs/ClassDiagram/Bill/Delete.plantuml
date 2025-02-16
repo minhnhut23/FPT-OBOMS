@@ -1,0 +1,53 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BillController {
+    - _billRepository: IBillRepository
+    + DeleteBill(Guid id): Task<IActionResult>
+}
+
+interface IBillRepository {
+    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+}
+
+class BillDAO {
+    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+}
+
+class DeleteBillResponseDTO {
+    + IsDeleted: bool
+    + Message: string
+}
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+BillController -- IBillRepository
+IBillRepository <|.. BillRepository
+BillRepository -- BillDAO
+BillDAO -- DeleteBillResponseDTO
+BillDAO -- Bill
+BillDAO -- ErrorHandler
+
+@enduml

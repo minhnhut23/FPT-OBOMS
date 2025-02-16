@@ -1,0 +1,59 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+class AuthController {
+    - _repo: IAuthRepository
+    +ChangePassword([FromBody] ChangePasswordRequestDTO requestDTO): Task<IActionResult> 
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IAuthRepository { 
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task
+}
+
+class AuthRepository {
+    - _dao: AuthDAO
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task    
+}
+
+class AuthDAO {
+    - _client: Client
+    + ChangePassword(ChangePasswordRequestDTO request, string token): Task
+}
+
+class ChangePasswordRequestDTO {
+    + OldPassword: string
+    + NewPassword: string
+    + ConfirmPassword: string
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+AuthController -- ChangePasswordRequestDTO
+AuthController -- IAuthRepository
+
+IAuthRepository <|-- AuthRepository
+IAuthRepository -- ChangePasswordRequestDTO
+
+AuthRepository -- AuthDAO
+AuthRepository -- ChangePasswordRequestDTO
+
+AuthDAO -- ChangePasswordRequestDTO
+AuthDAO -- ErrorHandler
+
+AuthDAO o-- Profile
+@enduml

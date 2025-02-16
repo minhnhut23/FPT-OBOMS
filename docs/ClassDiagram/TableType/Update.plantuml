@@ -1,0 +1,58 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class TableTypeController {
+    - _tableTypeRepository: ITableTypeRepository
+    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<IActionResult>
+}
+
+interface ITableTypeRepository {
+    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<GetTableTypeResponseDTO>
+}
+
+class TableTypeRepository {
+    - _tableTypeDao: TableTypeDAO
+    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<GetTableTypeResponseDTO>
+}
+
+class TableTypeDAO {
+    - _client: Supabase.Client
+    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<GetTableTypeResponseDTO>
+}
+
+class TableType {
+    + Id: Guid
+    + Name: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class AddEditTypeRequestDTO {
+    + Name: string
+    + Description: string?
+}
+
+class GetTableTypeResponseDTO {
+    + Id: Guid
+    + Name: string
+    + Description: string?
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime?
+}
+
+class ErrorHandler {
+    + IsJson(input: string): bool
+    + ProcessErrorMessage(exceptionMessage: string): string
+}
+
+TableTypeController -- ITableTypeRepository
+ITableTypeRepository <|-- TableTypeRepository
+TableTypeRepository -- TableTypeDAO
+
+TableTypeDAO -- TableType
+TableTypeDAO -- ErrorHandler
+TableTypeDAO -- GetTableTypeResponseDTO
+TableTypeDAO -- AddEditTypeRequestDTO
+@enduml
