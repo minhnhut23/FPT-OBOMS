@@ -94,10 +94,10 @@ public class ProductDAO
             query = query.Filter("name", Operator.ILike, $"%{request.Name}%");
 
         if (request.MinPrice.HasValue)
-            query = query.Filter("price", Operator.GreaterThanOrEqual, request.MinPrice.Value);
+            query = query.Filter("price", Operator.GreaterThanOrEqual, (float)request.MinPrice.Value);
 
         if (request.MaxPrice.HasValue)
-            query = query.Filter("price", Operator.LessThanOrEqual, request.MaxPrice.Value);
+            query = query.Filter("price", Operator.LessThanOrEqual, (float)request.MaxPrice.Value);
 
         if (!string.IsNullOrEmpty(request.Category))
             query = query.Filter("category", Operator.ILike, $"%{request.Category}%");

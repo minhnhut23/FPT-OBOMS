@@ -11,9 +11,9 @@ namespace BusinessObject.Services
 {
     public class BillDetailDAO
     {
-        private readonly Supabase.Client _client;
+        private readonly Client _client;
 
-        public BillDetailDAO(Supabase.Client client)
+        public BillDetailDAO(Client client)
         {
             _client = client;
         }
