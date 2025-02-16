@@ -1,0 +1,73 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+class UserController{
+    - _repo: IUserRepository
+    + CreateProfile([FromBody] CreateProfileRequestDTO request): Task<IActionResult>
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IUserRepository {
+    + CreateUser(CreateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class UserRepository {
+    - _dao: UserDAO
+    + CreateUser(CreateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class UserDAO {
+    - _client: Client
+    + CreateUser(CreateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class GetUserResponeDTO {
+    + Email: string
+    + Password: string 
+    + ProfilePicture: string
+    + Bio: string 
+    + DateOfBirth: Datetime
+}
+
+class CreateProfileRequestDTO {
+    + FullName: string      
+    + ProfilePicture: string
+    + Bio: string 
+    + DateOfBirth: Datetime
+    + Role: string
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+UserController -- IUserRepository 
+UserController -- CreateProfileRequestDTO
+
+IUserRepository -- GetUserResponeDTO
+IUserRepository -- CreateProfileRequestDTO
+IUserRepository <|-- UserRepository
+
+UserRepository -- GetUserResponeDTO
+UserRepository --CreateProfileRequestDTO
+UserRepository -- UserDAO
+
+UserDAO -- ErrorHandler
+UserDAO -- GetUserResponeDTO
+UserDAO -- CreateProfileRequestDTO
+
+UserDAO o-- Profile
+
+@enduml

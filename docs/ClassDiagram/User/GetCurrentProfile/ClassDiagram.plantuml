@@ -1,0 +1,61 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+class UserController{
+    - _repo: IUserRepository
+    + GetProfile(): Task<IActionResult>
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IUserRepository {
+    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+}
+
+class UserRepository {
+    - _dao: UserDAO
+    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+}
+
+class UserDAO {
+    - _client: Client
+    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+}
+
+class GetUserResponeDTO {
+    + Email: string
+    + Password: string 
+    + ProfilePicture: string
+    + Bio: string 
+    + DateOfBirth: Datetime
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+UserController -- IUserRepository 
+
+IUserRepository -- GetUserResponeDTO
+IUserRepository <|-- UserRepository
+
+UserRepository -- GetUserResponeDTO
+UserRepository -- UserDAO
+
+UserDAO -- ErrorHandler
+UserDAO -- GetUserResponeDTO
+
+UserDAO o-- Profile
+
+@enduml
