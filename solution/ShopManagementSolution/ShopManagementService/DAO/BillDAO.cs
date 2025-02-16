@@ -298,6 +298,7 @@ namespace BusinessObject.Services
                     }
 
 
+
                 }
 
                 Console.WriteLine($"PDF generated successfully at: {filePath}");
@@ -334,6 +335,7 @@ namespace BusinessObject.Services
                 throw new Exception($"Error opening and printing PDF: {ex.Message}", ex);
             }
         }
+
 
         public async Task<BillResponseDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill)
         {

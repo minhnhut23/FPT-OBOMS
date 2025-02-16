@@ -11,8 +11,8 @@ namespace BusinessObject.DTOs.TableDTO
         [Range(1, int.MaxValue, ErrorMessage = "Capacity must be a positive number.")]
         public int Capacity { get; set; }
 
-        [Required(ErrorMessage = "Status is required.")]
-        [StringLength(50, ErrorMessage = "Status cannot exceed 50 characters.")]
+        [Required(ErrorMessage = "StatusEnum is required.")]
+        [StringLength(50, ErrorMessage = "StatusEnum cannot exceed 50 characters.")]
         public string Status { get; set; }
 
         [StringLength(1000, ErrorMessage = "Location description cannot exceed 1000 characters.")]

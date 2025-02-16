@@ -1,4 +1,5 @@
 ﻿using BusinessObject.DTOs.TableDTO;
+using BusinessObject.Services;
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-/*    [Authorize]*/
     public class TableController : ControllerBase
     {
         private readonly ITableRepository _tableRepository;
@@ -126,6 +126,16 @@ namespace ShopManagementService.Controllers
             {
                 return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
             }
+        }
+
+        [HttpPatch("{id}/status")]
+        public async Task<IActionResult> UpdateTableStatus(Guid id, [FromQuery] bool isFinish)
+        {
+            var result = await _tableRepository.UpdateTableStatus(id, isFinish);
+            if (!result.Success)
+                return NotFound(result.Message);
+
+            return Ok(result);
         }
     }
 }

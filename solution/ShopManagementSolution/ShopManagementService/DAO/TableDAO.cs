@@ -3,6 +3,7 @@ using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
 using Supabase;
+
 using static Supabase.Postgrest.Constants;
 
 namespace BusinessObject.Services
@@ -244,6 +245,69 @@ namespace BusinessObject.Services
                     IsDeleted = true,
                     Message = "Table successfully deleted."
                 };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+            }
+        }
+
+        public async Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish)
+        {
+            try
+            {
+                var table = await _client.From<Table>()
+                                         .Where(t => t.Id == tableId)
+                                         .Single();
+
+                if (table == null)
+                {
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = false,
+                        Message = "Table not found."
+                    };
+                }
+
+                // ❌ Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
+                if (table.Status != "onusing")
+                {
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = false,
+                        Message = "Table is not in use, so it cannot be canceled or finished."
+                    };
+                }
+
+                if (isFinish)
+                {
+                    // ✅ Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
+                    table.Status = "available";
+                    await _client.From<Table>().Update(table);
+
+                    var billDAO = new BillDAO(_client);
+                    var billId = await billDAO.GetBillIdByTableId(tableId);
+                    var billPath = await billDAO.GenerateAndPrintBillPdf(billId);
+
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = true,
+                        Message = "Table booking has been finished and bill printed.",
+                        BillPath = billPath
+                    };
+                }
+                else
+                {
+                    // ❌ Hủy đặt bàn
+                    table.Status = "available";
+                    await _client.From<Table>().Update(table);
+
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = true,
+                        Message = "Table booking has been canceled."
+                    };
+                }
             }
             catch (Exception ex)
             {

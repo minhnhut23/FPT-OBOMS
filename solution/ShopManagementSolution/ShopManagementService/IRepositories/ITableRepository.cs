@@ -10,5 +10,7 @@ namespace ShopManagementService.IRepositories
         Task<GetTableResponseDTO> CreateTable(CreateTableRequestDTO createTable);
         Task<GetTableResponseDTO> UpdateTable(Guid id, UpdateTableRequestDTO updateTable);
         Task<DeleteTableRequestDTO> DeleteTable(Guid id);
+
+        Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish);
     }
 }

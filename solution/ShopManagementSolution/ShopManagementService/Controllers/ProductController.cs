@@ -1,6 +1,8 @@
 ﻿using BusinessObject.DTOs.ProductDTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ShopManagementService.DAO;
+using ShopManagementService.Interface.Repositories;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Controllers
@@ -20,6 +22,12 @@ namespace ShopManagementService.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                    return BadRequest(new { Errors = errors });
+                }
+
                 var (products, paginationMetadata) = await _repo.GetAllProducts(request);
 
                 var response = new GetAllProductsResponseDTO
