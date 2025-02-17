@@ -1,0 +1,81 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BillController {
+    - _billRepository: IBillRepository
+    + GenerateAndPrintBillPdf(Guid id): Task<IActionResult>
+}
+
+interface IBillRepository {
+    + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
+}
+
+class BillDAO {
+    + IsFileLocked(string filePath) : bool
+    + OpenAndPrintPdf(string filePath): void
+    + GetBillById(Guid id) : Task<BillWithDetailsResponseDTO?> 
+    + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
+}
+
+class GenerateBillPdfResponseDTO {
+    + FilePath: string
+    + IsGenerated: bool
+    + Message: string
+}
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+class BillWithDetailsResponseDTO {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal?
+    + ChangeAmount: decimal?
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+    + BillDetails: List<BillDetailResponseDTO>
+}
+
+class BillDetailResponseDTO {
+    + Id: Guid
+    + BillId: Guid
+    + MenuItemId: Guid
+    + Quantity: int
+    + Price: decimal
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+BillController -- IBillRepository
+IBillRepository <|.. BillRepository
+BillRepository -- BillDAO
+BillDAO -- GenerateBillPdfResponseDTO
+BillDAO -- Bill
+BillDAO -- ErrorHandler
+BillDAO -- BillWithDetailsResponseDTO
+BillWithDetailsResponseDTO -- BillDetailResponseDTO
+@enduml

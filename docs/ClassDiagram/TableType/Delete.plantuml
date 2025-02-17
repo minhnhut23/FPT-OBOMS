@@ -1,0 +1,50 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class TableTypeController {
+    - _tableTypeRepository: ITableTypeRepository
+    + DeleteTableType(id: Guid): Task<IActionResult>
+}
+
+interface ITableTypeRepository {
+    + DeleteTableType(id: Guid): Task<DeleteTableTypeDTO>
+}
+
+class TableTypeRepository {
+    - _tableTypeDao: TableTypeDAO
+    + DeleteTableType(id: Guid): Task<DeleteTableTypeDTO>
+}
+
+class TableTypeDAO {
+    - _client: Supabase.Client
+    + DeleteTableType(id: Guid): Task<DeleteTableTypeDTO>
+}
+
+class TableType {
+    + Id: Guid
+    + Name: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class DeleteTableTypeDTO {
+    + IsDeleted: bool
+    + Message: string?
+}
+
+class ErrorHandler {
+    + IsJson(input: string): bool
+    + ProcessErrorMessage(exceptionMessage: string): string
+}
+
+TableTypeController -- ITableTypeRepository
+ITableTypeRepository <|-- TableTypeRepository
+TableTypeRepository -- TableTypeDAO
+
+TableTypeDAO -- TableType
+TableTypeDAO -- ErrorHandler
+TableTypeDAO -- DeleteTableTypeDTO
+@enduml
+
