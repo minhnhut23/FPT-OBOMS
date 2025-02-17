@@ -50,7 +50,7 @@ application -> apiGateway.post: "3. Forward getUserById request"
 apiGateway -> UserController.post: "4. Handle getUserById request"
 UserController -> UserRepository.post: "5. Forward to repository"
 UserRepository -> UserDAO.post: "6. Forward to DAO"
-UserDAO -> Supabase: "7. Check if user is logged in"
+UserDAO -> Supabase.Auth: "7. Check if user is logged in"
 
 alt: "alt" {
   class: frame
