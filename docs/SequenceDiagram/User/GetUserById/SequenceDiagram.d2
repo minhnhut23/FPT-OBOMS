@@ -1,0 +1,89 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "application"
+apiGateway: "apiGateway"
+UserController: "userController"
+UserRepository: "userRepository"
+UserDAO: "userDAO"
+DB: "DB" {
+  shape: cylinder
+}
+
+# Get user by ID sequence
+User -> application.post: "1. Navigate to user profile page"
+User -> application.post: "2. Request user information by ID"
+application -> apiGateway.post: "3. Forward getUserById request"
+apiGateway -> UserController.post: "4. Handle getUserById request"
+UserController -> UserRepository.post: "5. Forward to repository"
+UserRepository -> UserDAO.post: "6. Forward to DAO"
+UserDAO -> Supabase.Auth: "7. Check if user is logged in"
+
+alt: "alt" {
+  class: frame
+  User logged in: "[User logged in]" {
+    Supabase -> UserDAO: 8b. User logged in {class: return arrow}
+    UserDAO -> DB.query: "9b. Query user by ID"
+    DB -> UserDAO.post: "10b. Return user information" {class: return arrow}
+
+    alt: "alt" {
+      class: frame
+      User exists: "[User exists]" {
+        UserDAO -> UserRepository.post: "11b. Forward user information" {class: return arrow}
+        UserRepository -> UserController.post: "12b. Return user information" {class: return arrow}
+        UserController -> apiGateway.post: "13b. Send user information to frontend" {class: return arrow}
+        apiGateway -> application.post: "14b. Return user information" {class: return arrow}
+        application -> User: "15b. Display user information" {class: return arrow}
+      }
+      User does not exist: "[User does not exist]" {
+        DB -> UserDAO.post: "10c. User not found" {class: return arrow}
+        UserDAO -> UserRepository.post: "11c. Forward error" {class: return arrow}
+        UserRepository -> UserController.post: "12c. Return error" {class: return arrow}
+        UserController -> apiGateway.post: "13c. Send error to frontend" {class: return arrow}
+        apiGateway -> application.post: "14c. Return error" {class: return arrow}
+        application -> User: "15c. Display error message" {class: return arrow}
+      }
+    }
+  }
+  User not logged in: "[User not logged in]" {
+    Supabase -> UserDAO.post: "8a. User not logged in" {class: return arrow}
+    UserDAO -> UserRepository.post: "9a. Forward error" {class: return arrow}
+    UserRepository -> UserController.post: "10a. Return error" {class: return arrow}
+    UserController -> apiGateway.post: "11a. Send error to frontend" {class: return arrow}
+    apiGateway -> application.post: "12a. Return error" {class: return arrow}
+    application -> User: "13a. Display error message" {class: return arrow}
+  }
+}

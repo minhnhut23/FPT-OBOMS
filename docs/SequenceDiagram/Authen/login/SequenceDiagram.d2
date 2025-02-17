@@ -10,8 +10,6 @@ classes: {
   return arrow: {
     style: {
       stroke-dash: 3
-      stroke: black
-      font-color: black
     }
   }
 
@@ -46,7 +44,7 @@ DB: "DB" {
   shape: cylinder
 }
 
-User -> application.get: "1. Navigate to login page"
+User -> application.post: "1. Navigate to login page"
 User -> application.post: "2. Enter credentials and submit login form"
 application -> apiGateway.post: "3. Forward login request"
 apiGateway -> AuthController.post: "4. Authenticate user"
@@ -55,30 +53,30 @@ AuthRepository -> AuthDAO.post: "6. Forward to DAO"
 AuthDAO -> Supabase.Auth: "7. Validate user credentials"
 
 # Check credentials in the database
-Supabase.Auth -> Supabase.DB.query: "8. Check user in database"
-Supabase.DB -> Supabase.Auth.response: "9. Return user record"
+Supabase.Auth -> DB.query: "8. Check user in database"
+Supabase -> Supabase.Auth.response: "9. Return user record"
 
 alt: "alt" {
   class: frame
   Incorrect credentials: "[Incorrect credentials]" {
   # Conditional branch for incorrect credentials
-  Supabase.Auth -> AuthDAO.response: "10a. Invalid credentials"
-  AuthDAO -> AuthRepository.response: "11a. Forward error"
-  AuthRepository -> AuthController.response: "12a. Return error"
+  Supabase.Auth -> AuthDAO.post: "10a. Invalid credentials" {class: return arrow}
+  AuthDAO -> AuthRepository.post: "11a. Forward error" {class: return arrow}
+  AuthRepository -> AuthController.post: "12a. Return error" {class: return arrow}
 
-  AuthController -> apiGateway.response: "13a. Send error to frontend" 
-  apiGateway -> application.response: "14a. Return error"
-  application -> User: "15a. Display error message"
+  AuthController -> apiGateway.post: "13a. Send error to frontend" {class: return arrow}
+  apiGateway -> application.post: "14a. Return error" {class: return arrow}
+  application -> User: "15a. Display error message" {class: return arrow}
   }
   Correct credentials: "[Correct credentials]" {
     # Successful login branch
-  Supabase.Auth -> Supabase.Auth.response: "10b. Generate token"
-  Supabase.Auth -> AuthDAO.response: "11b. Return access token"
-  AuthDAO -> AuthRepository.response: "12b. Forward token"
-  AuthRepository -> AuthController.response: "13b. Return token"
-  AuthController -> apiGateway.response: "14b. Send token to frontend"
-  apiGateway -> application.response: "15b. Return token"
-  application -> User: "16b. Store token and login success"
+  Supabase.Auth -> Supabase.Auth.post: "10b. Generate token" 
+  Supabase.Auth -> AuthDAO.post: "11b. Return access token" {class: return arrow}
+  AuthDAO -> AuthRepository.post: "12b. Forward token" {class: return arrow}
+  AuthRepository -> AuthController.post: "13b. Return token" {class: return arrow}
+  AuthController -> apiGateway.post: "14b. Send token to frontend" {class: return arrow}
+  apiGateway -> application.post: "15b. Return token" {class: return arrow}
+  application -> User: "16b. Store token and login success" {class: return arrow}
   }
 }
 
