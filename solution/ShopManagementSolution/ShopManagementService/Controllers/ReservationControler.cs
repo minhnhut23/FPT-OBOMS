@@ -4,6 +4,7 @@ using BusinessObject.DTOs.ReservationDTO;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Controllers
 {
@@ -11,17 +12,17 @@ namespace ShopManagementService.Controllers
     [ApiController]
     public class ReservationController : ControllerBase
     {
-        private readonly ReservationDAO _reservationDAO;
+        private readonly IReservationRepository _reservationRepository;
 
-        public ReservationController(ReservationDAO reservationDAO)
+        public ReservationController(IReservationRepository reservationDAO)
         {
-            _reservationDAO = reservationDAO;
+            _reservationRepository = reservationDAO;
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateReservation([FromBody] ReservationRequestDTO request)
         {
-            var response = await _reservationDAO.CreateReservation(request);
+            var response = await _reservationRepository.CreateReservation(request);
             if (response.Success)
             {
                 return Ok(response);
@@ -32,14 +33,14 @@ namespace ShopManagementService.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllReservations()
         {
-            var reservations = await _reservationDAO.GetAllReservations();
+            var reservations = await _reservationRepository.GetAllReservations();
             return Ok(reservations);
         }
 
         [HttpGet("customer/{customerId}")]
         public async Task<IActionResult> GetReservationsByCustomer(Guid customerId)
         {
-            var reservations = await _reservationDAO.GetReservationsByCustomer(customerId);
+            var reservations = await _reservationRepository.GetReservationsByCustomer(customerId);
 
             if (reservations.Count == 0)
             {
@@ -53,7 +54,7 @@ namespace ShopManagementService.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetReservationById(Guid id)
         {
-            var reservation = await _reservationDAO.GetReservationById(id);
+            var reservation = await _reservationRepository.GetReservationById(id);
             if (reservation != null)
             {
                 return Ok(reservation);
@@ -64,7 +65,7 @@ namespace ShopManagementService.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateReservation(Guid id, [FromBody] ReservationRequestDTO request)
         {
-            var response = await _reservationDAO.UpdateReservation(id, request);
+            var response = await _reservationRepository.UpdateReservation(id, request);
             if (response.Success)
             {
                 return Ok(response);
@@ -75,7 +76,7 @@ namespace ShopManagementService.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReservation(Guid id)
         {
-            var response = await _reservationDAO.DeleteReservation(id);
+            var response = await _reservationRepository.DeleteReservation(id);
             if (response.Success)
             {
                 return Ok(response);
@@ -86,7 +87,7 @@ namespace ShopManagementService.Controllers
         [HttpPut("cancel/{id}")]
         public async Task<IActionResult> CancelReservation(Guid id)
         {
-            var response = await _reservationDAO.CancelReservation(id);
+            var response = await _reservationRepository.CancelReservation(id);
             if (response.Success)
             {
                 return Ok(response);
