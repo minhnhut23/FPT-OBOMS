@@ -1,0 +1,110 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+label: "Sequence Diagram for GetCurrentUser"
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+  return_arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+    }
+  }
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+  label_right: {
+    style.font-color: black
+  }
+}
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "application"
+apiGateway: "apiGateway"
+UserController: "userController"
+UserRepository: "userRepository"
+UserDAO: "userDAO"
+DB: "DB" {
+  shape: cylinder
+}
+
+# Get current user with token
+User -> application.get: "1. Retrieve current user with token"
+application -> apiGateway.get: "2. Forward get current user request"
+apiGateway -> UserController.get: "3. Forward request with token"
+UserController -> UserRepository.get: "4. Forward token to repository"
+UserRepository -> UserDAO.get: "5. Forward token to DAO"
+
+# Validate token and retrieve user
+UserDAO -> JwtSecurityTokenHandler: "6. Read and validate token"
+JwtSecurityTokenHandler -> UserDAO: "7. Return token claims"
+UserDAO -> DB.query: "8. Retrieve user profile"
+DB -> UserDAO.response: "9. Return user profile"
+
+alt: "alt" {
+  class: frame
+  User profile found: "[User profile found]" {
+    UserDAO -> UserRepository.response: "10b. Return user profile"
+    UserRepository -> UserController.response: "11b. Forward user profile"
+    UserController -> apiGateway.response: "12b. Send user profile to frontend"
+    apiGateway -> application.response: "13b. Return user profile"
+    application -> User: "14b. Display user profile"
+  }
+  User profile not found: "[User profile not found]" {
+    UserDAO -> UserRepository.response: "10a. User not found"
+    UserRepository -> UserController.response: "11a. Return error"
+    UserController -> apiGateway.response: "12a. Send error to frontend"
+    apiGateway -> application.response: "13a. Return error"
+    application -> User: "14a. Display error message"
+  }
+}
