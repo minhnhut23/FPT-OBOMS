@@ -2,6 +2,7 @@
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Services;
 using ShopManagementService.IRepositories;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace ShopManagementService.Repositories
 {
@@ -11,7 +12,7 @@ namespace ShopManagementService.Repositories
 
         public TableRepository(TableDAO tableDao) => _tableDao = tableDao;
 
-        public Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+        public Task<(List<GetTableResponseDTO> Tables, PagingTableDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
             => _tableDao.GetAllTables(request);
 
         public Task<GetTableResponseDTO?> GetTableById(Guid id)
@@ -28,6 +29,9 @@ namespace ShopManagementService.Repositories
 
         public Task<DeleteTableRequestDTO> DeleteTable(Guid id)
             => _tableDao.DeleteTable(id);
+
+        public Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish)
+         => _tableDao.UpdateTableStatus(tableId,isFinish);
     }
     
 }

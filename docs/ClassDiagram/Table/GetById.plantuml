@@ -1,0 +1,77 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class TableController {
+    - _tableRepository: ITableRepository
+    +  GetTableById(Guid id) : Task<IActionResult> 
+}
+
+interface ITableRepository {
+    + GetTableById(Guid id) : Task<GetTableResponseDTO?> 
+}
+
+class TableRepository {
+    - _tableDao: TableDAO
+    + GetTableById(Guid id): Task<GetTableResponseDTO?>
+}
+class TableDAO {
+    - _client: Client
+    - _mapper: IMapper
+    + GetTableById(Guid id):Task<GetTableResponseDTO?> 
+    + IsTypeExists(Guid typeId): Task<bool> 
+}
+
+
+class GetTableResponseDTO {
+    + Id: Guid
+    + TableNumber: string
+    + Capacity: int
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + TableType: string
+}
+class Table {
+    + Id: Guid
+    + TableNumber: string
+    + Capacity: int
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + ShopId: Guid
+    + TypeId: Guid
+}
+class MappingProfile {
+  + MappingProfile()
+}
+class TableType {
+    + Id: Guid
+    + Name: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+
+TableController -- ITableRepository
+ITableRepository <|-- TableRepository
+TableRepository -- TableDAO
+TableDAO -- Table
+TableDAO -- TableType
+TableDAO -- GetTableResponseDTO
+TableDAO -- MappingProfile
+TableDAO -- ErrorHandler
+
+Table -- TableType
+MappingProfile -- Table : Maps
+MappingProfile -- GetTableResponseDTO : Maps
+
+@enduml

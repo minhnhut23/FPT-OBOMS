@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 
-using ShopManagementService.Repositories;
-
 namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
@@ -23,6 +21,12 @@ namespace ShopManagementService.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                    return BadRequest(new { Errors = errors });
+                }
+
                 var (products, paginationMetadata) = await _repo.GetAllProducts(request);
 
                 var response = new GetAllProductsResponseDTO

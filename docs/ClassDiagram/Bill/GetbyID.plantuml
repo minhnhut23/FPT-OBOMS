@@ -1,0 +1,84 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BillController {
+    - _billRepository: IBillRepository
+    + GetBillById(Guid id): Task<IActionResult>
+}
+
+interface IBillRepository {
+    + GetBillById(Guid id): Task<BillWithDetailsResponseDTO>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + GetBillById(Guid id): Task<BillWithDetailsResponseDTO>
+}
+
+class BillDAO {
+    + GetBillById(Guid id): Task<BillWithDetailsResponseDTO>
+}
+
+class BillWithDetailsResponseDTO {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal?
+    + ChangeAmount: decimal?
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+    + BillDetails: List<BillDetailResponseDTO>
+}
+
+class BillDetailResponseDTO {
+    + Id: Guid
+    + BillId: Guid
+    + MenuItemId: Guid
+    + Quantity: int
+    + Price: decimal
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+class BillDetail {
+    + Id: Guid
+    + BillId: Guid
+    + MenuItemId: Guid
+    + Quantity: int
+    + Price: decimal
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+BillController -- IBillRepository
+IBillRepository <|.. BillRepository
+BillRepository -- BillDAO
+BillDAO -- BillWithDetailsResponseDTO
+BillWithDetailsResponseDTO -- BillDetailResponseDTO
+BillDAO -- Bill
+Bill -- BillDetail
+BillDAO -- ErrorHandler
+
+@enduml

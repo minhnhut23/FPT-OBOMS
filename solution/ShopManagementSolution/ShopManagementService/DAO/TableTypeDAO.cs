@@ -1,6 +1,6 @@
-﻿
-using BusinessObject.DTOs.TableTypeDTO;
+﻿using BusinessObject.DTOs.TableTypeDTO;
 using BusinessObject.Models;
+using BusinessObject.Utils;
 using Supabase;
 using System;
 using System.Collections.Generic;
@@ -22,26 +22,19 @@ namespace BusinessObject.Services
         {
             try
             {
-                var response = await _client
-                    .From<TableType>()
-                    .Get();
-
-                var tableTypes = response.Models
-                    .Select(type => new GetTableTypeResponseDTO
-                    {
-                        Id = type.Id,
-                        Name = type.Name,
-                        Description = type.Description,
-                        CreatedAt = type.CreatedAt,
-                        UpdatedAt = type.UpdatedAt
-                    })
-                    .ToList();
-
-                return tableTypes;
+                var response = await _client.From<TableType>().Get();
+                return response.Models.Select(type => new GetTableTypeResponseDTO
+                {
+                    Id = type.Id,
+                    Name = type.Name,
+                    Description = type.Description,
+                    CreatedAt = type.CreatedAt,
+                    UpdatedAt = type.UpdatedAt
+                }).ToList();
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while fetching Table Types: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
 
@@ -49,15 +42,9 @@ namespace BusinessObject.Services
         {
             try
             {
-                var response = await _client
-                    .From<TableType>()
-                    .Where(x => x.Id == id)
-                    .Single();
-
+                var response = await _client.From<TableType>().Where(x => x.Id == id).Single();
                 if (response == null)
-                {
                     throw new Exception("Table Type not found!");
-                }
 
                 return new GetTableTypeResponseDTO
                 {
@@ -70,7 +57,7 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while fetching Table Type by ID: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
 
@@ -79,9 +66,7 @@ namespace BusinessObject.Services
             try
             {
                 if (string.IsNullOrWhiteSpace(createTableType.Name))
-                {
                     throw new Exception("Name is required!");
-                }
 
                 var tableType = new TableType
                 {
@@ -92,16 +77,10 @@ namespace BusinessObject.Services
                     UpdatedAt = DateTime.UtcNow,
                 };
 
-                var response = await _client
-                    .From<TableType>()
-                    .Insert(tableType);
-
+                var response = await _client.From<TableType>().Insert(tableType);
                 var createdType = response.Models.FirstOrDefault();
-
                 if (createdType == null)
-                {
                     throw new Exception("Failed to create Table Type.");
-                }
 
                 return new GetTableTypeResponseDTO
                 {
@@ -114,7 +93,7 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while creating Table Type: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
 
@@ -122,31 +101,18 @@ namespace BusinessObject.Services
         {
             try
             {
-                var response = await _client
-                    .From<TableType>()
-                    .Where(x => x.Id == id)
-                    .Single();
-
+                var response = await _client.From<TableType>().Where(x => x.Id == id).Single();
                 if (response == null)
-                {
                     throw new Exception("Table Type not found!");
-                }
 
                 response.Name = updateTableType.Name;
                 response.Description = updateTableType.Description;
                 response.UpdatedAt = DateTime.UtcNow;
 
-                var updatedResponse = await _client
-                    .From<TableType>()
-                    .Where(x => x.Id == id)
-                    .Update(response);
-
+                var updatedResponse = await _client.From<TableType>().Where(x => x.Id == id).Update(response);
                 var updatedType = updatedResponse.Models.FirstOrDefault();
-
                 if (updatedType == null)
-                {
                     throw new Exception("Failed to update Table Type.");
-                }
 
                 return new GetTableTypeResponseDTO
                 {
@@ -159,7 +125,7 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while updating Table Type: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
 
@@ -168,7 +134,6 @@ namespace BusinessObject.Services
             try
             {
                 var existingType = await GetTableTypeById(id);
-
                 if (existingType == null)
                 {
                     return new DeleteTableTypeDTO
@@ -178,11 +143,7 @@ namespace BusinessObject.Services
                     };
                 }
 
-                await _client
-                    .From<TableType>()
-                    .Where(x => x.Id == id)
-                    .Delete();
-
+                await _client.From<TableType>().Where(x => x.Id == id).Delete();
                 return new DeleteTableTypeDTO
                 {
                     IsDeleted = true,
@@ -191,7 +152,7 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error while deleting Table Type: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
     }
