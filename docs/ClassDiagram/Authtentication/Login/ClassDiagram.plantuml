@@ -1,6 +1,8 @@
 @startuml 
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
 class AuthController {
     - _repo: IAuthRepository
     + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 

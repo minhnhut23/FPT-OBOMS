@@ -1,6 +1,8 @@
 @startuml getUserById
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
 class AuthController {
     - _repo: IAuthRepository
     +ChangePassword([FromBody] ChangePasswordRequestDTO requestDTO): Task<IActionResult> 
