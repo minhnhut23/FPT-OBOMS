@@ -64,6 +64,9 @@ namespace ShopManagementService
             builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
             builder.Services.AddScoped<ShopDAO>();
 
+            builder.Services.AddScoped<SubscriptionDAO>();
+            builder.Services.AddTransient<ISubscriptionRepository, SubscriptionsRepository>();
+
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
             supabaseClient.InitializeAsync().Wait();
