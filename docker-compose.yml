@@ -4,7 +4,7 @@ services:
       context: ./solution/APIGatewaySolution
       dockerfile: ApiGateway/Dockerfile
     ports:
-      - '8000:8080'
+      - '5001:5000'
     depends_on:
       - auth-service
       - shop-service
@@ -18,7 +18,7 @@ services:
     volumes:
       - ./data-protection-keys:/home/app/.aspnet/DataProtection-Keys
     ports:
-      - '5001:8080'
+      - '5002:5000'
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       SUPABASE_URL: https://cnbwnwbtafbarsgmcabf.supabase.co
@@ -32,7 +32,7 @@ services:
     volumes:
       - ./data-protection-keys:/home/app/.aspnet/DataProtection-Keys
     ports:
-      - '5002:8080'
+      - '5003:5000'
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       SUPABASE_URL: https://cnbwnwbtafbarsgmcabf.supabase.co

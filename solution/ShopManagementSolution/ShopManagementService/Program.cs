@@ -61,6 +61,7 @@ namespace ShopManagementService
             builder.Services.AddTransient<IProductRepository, ProductRepository>();
             builder.Services.AddTransient<IBillRepository, BillRepository>();
             builder.Services.AddTransient<IBillDetailRepository, BillDetailRepository>();
+            builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
