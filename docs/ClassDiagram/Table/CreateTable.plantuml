@@ -1,0 +1,89 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+class TableController {
+    - _tableRepository: ITableRepository
+    + CreateTable(CreateTableRequestDTO createTable): Task<IActionResult> 
+}
+
+interface ITableRepository {
+    + CreateTable(CreateTableRequestDTO createTable): Task<GetTableResponseDTO> 
+}
+
+class TableRepository {
+    - _tableDao: TableDAO
+    + CreateTable(CreateTableRequestDTO createTable): Task<GetTableResponseDTO>
+}
+
+class TableDAO {
+    - _client: Client
+    - _mapper: IMapper
+    + CreateTable(CreateTableRequestDTO createTable): Task<GetTableResponseDTO> 
+    + IsShopExists(Guid shopId): Task<bool> 
+    + IsTypeExists(Guid typeId): Task<bool> 
+    + GetTableByNumber(string number, Guid shopId): Task<bool> 
+}
+
+class CreateTableRequestDTO {
+    + TableNumber: string
+    + Capacity: int
+    + Description: string
+    + ShopId: Guid
+    + TypeId: Guid
+}
+
+class GetTableResponseDTO {
+    + Id: Guid
+    + TableNumber: string
+    + Capacity: int
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + TableType: string
+}
+
+class Table {
+    + Id: Guid
+    + TableNumber: string
+    + Capacity: int
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + ShopId: Guid
+    + TypeId: Guid
+}
+
+class TableType {
+    + Id: Guid
+    + Name: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class MappingProfile {
+    + MappingProfile()
+}
+
+class ErrorHandler {
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+TableController -- ITableRepository
+ITableRepository <|-- TableRepository
+TableRepository -- TableDAO
+TableDAO -- Table
+TableDAO -- TableType
+TableDAO -- GetTableResponseDTO
+TableDAO -- CreateTableRequestDTO
+TableDAO -- ErrorHandler
+TableDAO -- MappingProfile
+
+Table -- TableType
+MappingProfile -- Table : Maps
+MappingProfile -- GetTableResponseDTO : Maps
+
+@enduml

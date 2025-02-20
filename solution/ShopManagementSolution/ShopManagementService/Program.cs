@@ -1,6 +1,7 @@
-
+﻿
 using BusinessObject.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
@@ -51,11 +52,17 @@ namespace ShopManagementService
 
             builder.Services.AddScoped<TableDAO>();
             builder.Services.AddScoped<TableTypeDAO>();
-            builder.Services.AddTransient<ITableRepository, TableRepository>();
             builder.Services.AddScoped<BillDAO>();
             builder.Services.AddScoped<BillDetailDAO>();
             builder.Services.AddScoped<ProductDAO>();
+            builder.Services.AddScoped<ReservationDAO>();
+            builder.Services.AddTransient<ITableRepository, TableRepository>();
+            builder.Services.AddTransient<ITableTypeRepository, TableTypeRepository>();
             builder.Services.AddTransient<IProductRepository, ProductRepository>();
+            builder.Services.AddTransient<IBillRepository, BillRepository>();
+            builder.Services.AddTransient<IBillDetailRepository, BillDetailRepository>();
+            builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
+            builder.Services.AddScoped<ShopDAO>();
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
@@ -65,6 +72,9 @@ namespace ShopManagementService
             builder.Services.AddSingleton(supabaseClient);
 
             builder.Services.AddHttpContextAccessor();
+
+            builder.Services.AddDataProtection()
+                .PersistKeysToFileSystem(new DirectoryInfo("/home/app/.aspnet/DataProtection-Keys"));
 
             var app = builder.Build();
 

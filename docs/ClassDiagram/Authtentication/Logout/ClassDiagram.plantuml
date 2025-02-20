@@ -1,0 +1,35 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+class AuthController {
+    - _repo: IAuthRepository
+    + Logout(): Task<IActionResult> 
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IAuthRepository { 
+    + Logout: Task<IActionResult>
+}
+
+class AuthRepository {
+    - _dao: AuthDAO
+    + Logout(): Task    
+}
+
+class AuthDAO {
+    - _client: Client
+    + Logout(): Task
+}
+
+AuthController -- IAuthRepository
+
+IAuthRepository <|-- AuthRepository
+AuthRepository -- AuthDAO
+
+AuthDAO -- ErrorHandler
+
+@enduml
