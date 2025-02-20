@@ -1,4 +1,11 @@
 # FPT-OBOMS
+
+Để chạy hết service:
+docker compose-up -build
+
+Khởi chạy lại từng service:
+docker compose up --no-deps --build -d "tên service"
+
 # Shop Management API Documentation
 
 This document describes the API endpoints for the **Shop Management System**. These APIs allow users to manage shop details, menu items, reservations, and billing history. The API is RESTful and communicates using JSON.

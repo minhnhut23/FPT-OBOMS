@@ -7,6 +7,7 @@ namespace ShopManagementService.IRepositories
     {
         Task<List<BillResponseDTO>> GetAllBills();
         Task<BillWithDetailsResponseDTO?> GetBillById(Guid id);
+        Task<Guid> GetBillIdByTableId(Guid tableId);
         Task<BillWithDetailsResponseDTO?> GetDraftBillById(Guid id);
         Task<BillResponseDTO> CreateBill(CreateBillRequestDTO createBill);
         Task<BillResponseDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill);

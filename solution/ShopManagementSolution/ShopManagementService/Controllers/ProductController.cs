@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
-using ShopManagementService.Interface.Repositories;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Controllers
@@ -80,7 +79,7 @@ namespace ShopManagementService.Controllers
             }
         }
 
-        [HttpPut("id")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequestDTO request)
         {
             try
@@ -95,7 +94,7 @@ namespace ShopManagementService.Controllers
             }
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             try

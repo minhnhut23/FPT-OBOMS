@@ -10,19 +10,20 @@ EXPOSE 5000
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["ApiGateway/ApiGateway.csproj", "ApiGateway/"]
-RUN dotnet restore "./ApiGateway/ApiGateway.csproj"
+COPY ["ShopManagementService/ShopManagementService.csproj", "ShopManagementService/"]
+COPY ["BusinessObject/BusinessObject.csproj", "BusinessObject/"]
+RUN dotnet restore "./ShopManagementService/ShopManagementService.csproj"
 COPY . .
-WORKDIR "/src/ApiGateway"
-RUN dotnet build "./ApiGateway.csproj" -c $BUILD_CONFIGURATION -o /app/build
+WORKDIR "/src/ShopManagementService"
+RUN dotnet build "./ShopManagementService.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./ApiGateway.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./ShopManagementService.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "ApiGateway.dll"]
+ENTRYPOINT ["dotnet", "ShopManagementService.dll"]

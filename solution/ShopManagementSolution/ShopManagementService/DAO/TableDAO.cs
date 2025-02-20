@@ -19,23 +19,25 @@ namespace BusinessObject.Services
             _mapper = mapper;
         }
 
-        public async Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+        public async Task<(List<GetTableResponseDTO> Tables, PagingTableDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
         {
             try
             {
                 var query = _client.From<Table>().Select("*");
                 query = ApplyFilters(query, request);
 
+                //Count for paging
                 var counting = _client.From<Table>().Select("*");
                 counting = ApplyFilters(counting, request);
                 var totalRecordsResponse = await counting.Select("id").Get();
                 var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
-
+                //Limit tables in requested page
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
+                //Show tables info
                 var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
                 var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
@@ -52,7 +54,7 @@ namespace BusinessObject.Services
                 {
                     return (
                         new List<GetTableResponseDTO>(),
-                        new DTOs.TableDTO.PaginationMetadataDTO
+                        new PagingTableDTO
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -62,7 +64,7 @@ namespace BusinessObject.Services
                     );
                 }
 
-                var paginationMetadata = new DTOs.TableDTO.PaginationMetadataDTO
+                var paginationMetadata = new PagingTableDTO
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,
@@ -74,10 +76,10 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error fetching tables: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-        private dynamic ApplyFilters(dynamic query, GetTableRequestDTO request)
+        private dynamic ApplyFilters(dynamic query, GetTablesRequestDTO request)
         {
             if (!string.IsNullOrEmpty(request.Status))
                 query = query.Filter("status", Operator.Equals, request.Status);
@@ -269,7 +271,7 @@ namespace BusinessObject.Services
                     };
                 }
 
-                // ❌ Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
+                // Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
                 if (table.Status != "onusing")
                 {
                     return new UpdateTableStatusResponseDTO
@@ -281,7 +283,7 @@ namespace BusinessObject.Services
 
                 if (isFinish)
                 {
-                    // ✅ Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
+                    // Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
                     table.Status = "available";
                     await _client.From<Table>().Update(table);
 
@@ -298,7 +300,7 @@ namespace BusinessObject.Services
                 }
                 else
                 {
-                    // ❌ Hủy đặt bàn
+                    //  Hủy đặt bàn
                     table.Status = "available";
                     await _client.From<Table>().Update(table);
 
