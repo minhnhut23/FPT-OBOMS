@@ -9,7 +9,8 @@ services:
       - auth-service
       - shop-service
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - ASPNETCORE_ENVIRONMENT=Development
 
   auth-service:
     build:
@@ -20,10 +21,11 @@ services:
     ports:
       - '5002:5000'
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      SUPABASE_URL: https://cnbwnwbtafbarsgmcabf.supabase.co
-      SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuYndud2J0YWZiYXJzZ21jYWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0MDM3NjEsImV4cCI6MjA0Njk3OTc2MX0.mNGsOKRoaTQdB7fG8OJiddqslin08Yvx3uR13hDFNAA
-      DB_CONNECTION_STRING: 'Host=db;Database=postgres;Username=postgres;Password=ukjZocOd5LtG2WqN;SSL Mode=Disable'
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SUPABASE_URL=https://cnbwnwbtafbarsgmcabf.supabase.co
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuYndud2J0YWZiYXJzZ21jYWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0MDM3NjEsImV4cCI6MjA0Njk3OTc2MX0.mNGsOKRoaTQdB7fG8OJiddqslin08Yvx3uR13hDFNAA
+      - DB_CONNECTION_STRING=Host=db;Database=postgres;Username=postgres;Password=ukjZocOd5LtG2WqN;SSL Mode=Disable
 
   shop-service:
     build:
@@ -34,7 +36,8 @@ services:
     ports:
       - '5003:5000'
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      SUPABASE_URL: https://cnbwnwbtafbarsgmcabf.supabase.co
-      SUPABASE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuYndud2J0YWZiYXJzZ21jYWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0MDM3NjEsImV4cCI6MjA0Njk3OTc2MX0.mNGsOKRoaTQdB7fG8OJiddqslin08Yvx3uR13hDFNAA
-      DB_CONNECTION_STRING: 'Host=db;Database=postgres;Username=postgres;Password=ukjZocOd5LtG2WqN;SSL Mode=Disable'
+      - ASPNETCORE_URLS=http://0.0.0.0:5000
+      - ASPNETCORE_ENVIRONMENT=Development
+      - SUPABASE_URL=https://cnbwnwbtafbarsgmcabf.supabase.co
+      - SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuYndud2J0YWZiYXJzZ21jYWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0MDM3NjEsImV4cCI6MjA0Njk3OTc2MX0.mNGsOKRoaTQdB7fG8OJiddqslin08Yvx3uR13hDFNAA
+      - DB_CONNECTION_STRING=Host=db;Database=postgres;Username=postgres;Password=ukjZocOd5LtG2WqN;SSL Mode=Disable

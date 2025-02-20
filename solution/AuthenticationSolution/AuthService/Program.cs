@@ -1,4 +1,4 @@
-using AuthService.DAO;
+﻿using AuthService.DAO;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
