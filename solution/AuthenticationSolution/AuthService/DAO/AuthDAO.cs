@@ -86,8 +86,7 @@ public class AuthDAO
     {
         try
         {
-            var options = new SignInWithPasswordlessEmailOptions(email);
-            await _client.Auth.SignInWithOtp(options);
+            await _client.Auth.ResetPasswordForEmail(email);
         }
         catch (Exception ex)
         {
