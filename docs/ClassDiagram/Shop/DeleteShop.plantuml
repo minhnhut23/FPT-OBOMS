@@ -1,0 +1,73 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class ShopController {
+    - _shopRepository: IShopRepository
+    + DeleteShop(Guid id) : Task<IActionResult> 
+}
+
+interface IShopRepository {
+    + DeleteShop(Guid id) : Task<DeleteShopRequestDTO> 
+}
+
+class ShopRepository {
+    - _shopDao: ShopDAO
+    + DeleteShop(Guid id) : Task<DeleteShopRequestDTO>
+}
+
+class ShopDAO {
+    - _client: Client
+    - _mapper: IMapper
+    + DeleteShop(Guid id) : Task<DeleteShopRequestDTO>
+    + GetShopById(Guid id) : Task<GetShopResponseDTO?>
+}
+
+class DeleteShopRequestDTO {
+    + IsDeleted: bool
+    + Message: string
+}
+
+class GetShopResponseDTO {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class Shop {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class MappingProfile {
+  + MappingProfile()
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+ShopController -- IShopRepository
+IShopRepository <|-- ShopRepository
+ShopRepository -- ShopDAO
+ShopDAO -- Shop
+ShopDAO -- GetShopResponseDTO
+ShopDAO -- DeleteShopRequestDTO
+ShopDAO -- MappingProfile
+ShopDAO -- ErrorHandler
+
+MappingProfile -- Shop : Maps
+MappingProfile -- GetShopResponseDTO : Maps
+
+@enduml

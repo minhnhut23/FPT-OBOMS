@@ -1,0 +1,70 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BillController {
+    - _billRepository: IBillRepository
+    + UpdateBill(Guid id, UpdateBillRequestDTO request): Task<IActionResult>
+}
+
+interface IBillRepository {
+    + UpdateBill(Guid id, UpdateBillRequestDTO request): Task<BillResponseDTO>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + UpdateBill(Guid id, UpdateBillRequestDTO request): Task<BillResponseDTO>
+}
+
+class BillDAO {
+    + UpdateBill(Guid id, UpdateBillRequestDTO request): Task<BillResponseDTO>
+}
+
+class UpdateBillRequestDTO {
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+}
+
+class BillResponseDTO {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+    + BillDetailsQuantity: int
+}
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+BillController -- IBillRepository
+IBillRepository <|.. BillRepository
+BillRepository -- BillDAO
+BillDAO -- BillResponseDTO
+BillDAO -- UpdateBillRequestDTO
+BillDAO -- Bill
+BillDAO -- ErrorHandler
+
+@enduml
