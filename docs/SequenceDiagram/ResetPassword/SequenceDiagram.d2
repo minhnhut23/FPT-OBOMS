@@ -60,36 +60,92 @@ Supabase: "supabase"
 DB: "DB" {
   shape: cylinder
 }
+User -> application.bar: "1. Create Table Request"
+application -> apiGateway.bar: "2. Forward request"
+apiGateway -> TableController.bar: "3. Forward to TableController"
+TableController -> TableRepository.bar: "4. Validate data"
 
-# Recover password sequence
-User -> application.post: "1. Navigate to reset password page"
-User -> application.post: "2. Enter reset token and new password, then submit"
-application -> apiGateway.post: "3. Forward reset password request"
-apiGateway -> AuthController.post: "4. Handle reset password request"
-AuthController -> AuthRepository.post: "5. Forward to repository"
-AuthRepository -> AuthDAO.post: "6. Forward to DAO"
-AuthDAO -> AuthDAO.check: "7. Validate new password"
-AuthDAO -> Supabase: "8. Validate reset token and hash new password"
-Supabase -> Supabase.check: "9. Validate reset token"
-Supabase -> Supabase.hash: "10. Hash the new password"
-Supabase -> DB.update: "11. Update user password"
-
-alt: "alt" {
+# Kiểm tra Shop ID
+alt: "Shop ID Validation" {
   class: frame
-  Reset successful: "[Reset successful]" {
-    Supabase -> AuthDAO.post: "13b. Return success status" {class: return arrow}
-    AuthDAO -> AuthRepository.post: "14b. Forward success status" {class: return arrow}
-    AuthRepository -> AuthController.post: "15b. Return success status" {class: return arrow}
-    AuthController -> apiGateway.post: "16b. Send success status to frontend" {class: return arrow}
-    apiGateway -> application.post: "17b. Return success status" {class: return arrow}
-    application -> User: "18b. Display password reset success message" {class: return arrow}
+
+  "Shop ID does not exist": {
+    TableRepository -> TableDAO.bar: "5a. Check if Shop ID exists"
+    TableDAO -> DB.bar: "6a. Query Shop ID"
+    DB.bar -> TableDAO.bar: "7a. Return result"
+    TableDAO -> TableRepository.bar: "8a. Throw Exception: 'Shop ID does not exist!'"
+    TableRepository -> TableController.bar: "9a. Return error"
+    TableController -> apiGateway.bar: "10a. Forward error"
+    apiGateway -> application.bar: "11a. Forward error"
+    application -> User: "12a. Display error message"
   }
-  Reset failed: "[Reset failed]" {
-    Supabase -> AuthDAO.post: "13a. Return error status" {class: return arrow}
-    AuthDAO -> AuthRepository.post: "14a. Forward error status" {class: return arrow}
-    AuthRepository -> AuthController.post: "15a. Return error status" {class: return arrow}
-    AuthController -> apiGateway.post: "16a. Send error status to frontend" {class: return arrow}
-    apiGateway -> application.post: "17a. Return error status" {class: return arrow}
-    application -> User: "18a. Display error message"
+
+  else: "Shop ID exists" {
+    TableRepository -> TableDAO.bar: "5b. Proceed to next validation"
+  }
+}
+
+# Kiểm tra Type ID
+alt: "Type ID Validation" {
+  class: frame
+
+  "Type ID does not exist": {
+    TableRepository -> TableDAO.bar: "6b. Check if Type ID exists"
+    TableDAO -> DB.bar: "7b. Query Type ID"
+    DB.bar -> TableDAO.bar: "8b. Return result"
+    TableDAO -> TableRepository.bar: "9b. Throw Exception: 'Type ID does not exist!'"
+    TableRepository -> TableController.bar: "10b. Return error"
+    TableController -> apiGateway.bar: "11b. Forward error"
+    apiGateway -> application.bar: "12b. Forward error"
+    application -> User: "13b. Display error message"
+  }
+
+  else: "Type ID exists" {
+    TableRepository -> TableDAO.bar: "6c. Proceed to next validation"
+  }
+}
+
+# Kiểm tra Table Number
+alt: "Table Number Validation" {
+  class: frame
+
+  "Table Number already exists": {
+    TableRepository -> TableDAO.bar: "7c. Check if Table Number exists"
+    TableDAO -> DB.bar: "8c. Query Table Number"
+    DB.bar -> TableDAO.bar: "9c. Return result"
+    TableDAO -> TableRepository.bar: "10c. Throw Exception: 'Table Number already exists!'"
+    TableRepository -> TableController.bar: "11c. Return error"
+    TableController -> apiGateway.bar: "12c. Forward error"
+    apiGateway -> application.bar: "13c. Forward error"
+    application -> User: "14c. Display error message"
+  }
+
+  else: "Table Number is available" {
+    TableRepository -> TableDAO.bar: "7d. Proceed to insert table"
+  }
+}
+
+# Tạo bàn mới
+TableRepository -> TableDAO.bar: "8d. Map DTO and Generate ID"
+TableDAO -> DB.bar: "9d. Insert table data"
+DB.bar -> TableDAO.bar: "10d. Return insert result"
+
+alt: "Insert Success or Fail" {
+  class: frame
+
+  "Insert failed": {
+    TableDAO -> TableRepository.bar: "11d. Throw Exception: 'Insert error!'"
+    TableRepository -> TableController.bar: "12d. Return error"
+    TableController -> apiGateway.bar: "13d. Forward error"
+    apiGateway -> application.bar: "14d. Forward error"
+    application -> User: "15d. Display error message"
+  }
+
+  else: "Insert successful" {
+    TableDAO -> TableRepository.bar: "11e. Fetch inserted table"
+    TableRepository -> TableController.bar: "12e. Return new table data"
+    TableController -> apiGateway.bar: "13e. Forward response"
+    apiGateway -> application.bar: "14e. Forward response"
+    application -> User: "15e. Display success message"
   }
 }
