@@ -1,4 +1,5 @@
 label.style.font-color: black
+label.style.font-size: 55
 
 classes: {
   text-black: {
@@ -34,51 +35,49 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-application: chat application
-apiGateway: apiGateway
-AuthController: authController
-AuthRepository: authRepository
-AuthDAO: authDAO
+application: Web application
+apiGateway: ApiGateway
+AuthController: AuthController
+AuthRepository: AuthRepository
+AuthDAO: AuthDAO
+Supabase: "Supabase"
 
 DB: "DB" {
   shape: cylinder
 }
 
-User -> application.post: "1. Navigate to login page"
-User -> application.post: "2. Enter credentials and submit login form"
-application -> apiGateway.post: "3. Forward login request"
-apiGateway -> AuthController.post: "4. Authenticate user"
-AuthController -> AuthRepository.post: "5. Forward to repository"
-AuthRepository -> AuthDAO.post: "6. Forward to DAO"
-AuthDAO -> Supabase.Auth: "7. Validate user credentials"
-
-# Check credentials in the database
-Supabase.Auth -> DB.query: "8. Check user in database"
-Supabase -> Supabase.Auth.response: "9. Return user record"
-
-alt: "alt" {
+loop  { 
   class: frame
-  Incorrect credentials: "[Incorrect credentials]" {
-  # Conditional branch for incorrect credentials
-  Supabase.Auth -> AuthDAO.post: "10a. Invalid credentials" {class: return arrow}
-  AuthDAO -> AuthRepository.post: "11a. Forward error" {class: return arrow}
-  AuthRepository -> AuthController.post: "12a. Return error" {class: return arrow}
+  Validate Input: "[Empty or Invalid Input]" {
+    User -> application.post: "1. Enter credentials and submit login form"
+    application.post -> application.post.get: "2. Check empty and valid input"
+    alt {  
+      application.post -> User: "2.1. Show validation message" {class: return arrow}      
+    }
+  }  
+}  
+application.post -> apiGateway.post: "3. Forward login request"  
+apiGateway -> AuthController.post: "4. Authenticate user"
+AuthController.post -> AuthRepository.post: "5. Forward to repository"
+AuthRepository.post -> AuthDAO.post: "6. Forward to DAO"
+AuthDAO -> Supabase.post: "7. Validate user credentials"
 
-  AuthController -> apiGateway.post: "13a. Send error to frontend" {class: return arrow}
-  apiGateway -> application.post: "14a. Return error" {class: return arrow}
-  application -> User: "15a. Display error message" {class: return arrow}
-  }
-  Correct credentials: "[Correct credentials]" {
-    # Successful login branch
-  Supabase.Auth -> Supabase.Auth.post: "10b. Generate token" 
-  Supabase.Auth -> AuthDAO.post: "11b. Return access token" {class: return arrow}
-  AuthDAO -> AuthRepository.post: "12b. Forward token" {class: return arrow}
-  AuthRepository -> AuthController.post: "13b. Return token" {class: return arrow}
-  AuthController -> apiGateway.post: "14b. Send token to frontend" {class: return arrow}
-  apiGateway -> application.post: "15b. Return token" {class: return arrow}
-  application -> User: "16b. Store token and login success" {class: return arrow}
-  }
+Supabase.post -> DB.post: "8. Check user in database"
+DB.post -> AuthDAO.post: "9. Forward result" {class: return arrow}
+AuthDAO.post -> AuthRepository.post: "10. Forward result" {class: return arrow}
+AuthRepository.post -> AuthController.post: "11. Forward result" {class: return arrow}
+
+alt {  
+  class: frame  
+  Incorrect credentials: "[Incorrect credentials]" {  
+    AuthController.post -> apiGateway.post: "11.1. Send error to frontend" {class: return arrow}  
+    apiGateway.post -> application.post: "11.1.1. Return error" {class: return arrow}  
+    application.post -> User: "11.1.1.1. Display error message" {class: return arrow}  
+  }  
+
+  Correct credentials: "[Correct credentials]" {  
+    AuthController.post -> apiGateway.post: "11.2 Send token to frontend" {class: return arrow}  
+    apiGateway.post -> application.post: "11.2.1. Return token" {class: return arrow}  
+    application.post -> User: "11.2.1.1. Store token and login success" {class: return arrow}  
+  }  
 }
-
-
-
