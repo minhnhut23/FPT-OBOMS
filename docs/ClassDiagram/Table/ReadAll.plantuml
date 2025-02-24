@@ -1,25 +1,26 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
+class APIGateway {
+}
 class TableController {
     - _tableRepository: ITableRepository
     + GetAllTables ([FromQuery] GetTableRequestDTO request): Task<IActionResult>
 }
-
-interface ITableRepository {
-    + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> 
+interface ITableRepository<<interface>>  {
+    + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, TablePaginationDTO)> 
 }
 
 class TableRepository {
     - _tableDao: TableDAO
-    + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, PaginationMetadataDTO)>
+    + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, TablePaginationDTO)>
 }
 class TableDAO {
     - _client: Supabase.Client
-    - _mapper: IMapper
-    + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, PaginationMetadataDTO)>
-    + ApplyFilters(query, GetTableRequestDTO request): dynamic
+    + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, TablePaginationDTO)>
+    + ApplyFilters(dynamic query, GetTableRequestDTO request): dynamic
 }
 class Table {
     + Id: Guid
@@ -37,68 +38,15 @@ class TableType {
     + Id: Guid
     + Name: string
     + Description: string
+    + PriceByHour: decimal
     + CreatedAt: DateTime
     + UpdatedAt: DateTime
 }
-
-TableDAO -- Table
-TableDAO -- TableType
-Table -- TableType : "TypeId"
-
-
-class GetTableRequestDTO {
-    + Status: string?
-    + TableNumber: string?
-    + MinCapacity: int?
-    + MaxCapacity: int?
-    + TypeId: Guid?
-    + SortBy: string
-    + SortOrder: string
-    + PageNumber: int
-    + PageSize: int
-}
-
-
-class GetTableResponseDTO {
-    + Id: Guid
-    + TableNumber: string
-    + Capacity: int
-    + Status: string
-    + Description: string
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-    + TableType: string
-}
-class PaginationMetadataDTO {
-    + TotalResults: int
-    + TotalPages: int
-    + CurrentPage: int
-    + PageSize: int
-}
+APIGateway -- TableController
 TableController -- ITableRepository
 ITableRepository <|-- TableRepository
 TableRepository -- TableDAO
+TableDAO -- Table
+TableDAO -- TableType
 
-
-
-
-TableDAO -- GetTableRequestDTO
-TableDAO -- GetTableResponseDTO
-TableDAO -- PaginationMetadataDTO
-
-
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
-class MappingProfile {
-  + MappingProfile()
-}
-
-TableDAO -- MappingProfile
-TableDAO -- ErrorHandler
-
-MappingProfile -> Table : Maps
-MappingProfile -> GetTableResponseDTO : Maps
 @enduml

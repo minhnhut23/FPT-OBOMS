@@ -2,20 +2,19 @@
 using BusinessObject.DTOs.BillDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
-using iText.Kernel.Exceptions;
 using iText.Kernel.Pdf;
 using iText.Layout.Element;
 using iText.Layout.Properties;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Supabase;
 using System.Diagnostics;
 using static Supabase.Postgrest.Constants;
 namespace BusinessObject.Services
 {
     public class BillDAO
     {
-        private readonly Supabase.Client _client;
+        private readonly Client _client;
 
-        public BillDAO(Supabase.Client client)
+        public BillDAO(Client client)
         {
             _client = client;
         }
@@ -53,47 +52,8 @@ namespace BusinessObject.Services
             }
         }
 
-        public async Task<BillWithDetailsResponseDTO?> GetDraftBillById(Guid id)
-        {
-            try
-            {
-                var billResponse = await _client.From<Bill>().Where(b => b.Id == id).Single();
-                if (billResponse == null)
-                    return null;
-
-                var billDetailsResponse = await _client.From<BillDetail>().Where(bd => bd.BillId == id).Get();
-
-                var billDetailsDTOs = billDetailsResponse.Models.Select(bd => new BillDetailResponseDTO
-                {
-                    Id = bd.Id,
-                    BillId = bd.BillId,
-                    MenuItemId = bd.MenuItemId,
-                    Quantity = bd.Quantity,
-                    Price = bd.Price,
-                    CreatedAt = bd.CreatedAt,
-                    UpdatedAt = bd.UpdatedAt
-                }).ToList();
-
-                return new BillWithDetailsResponseDTO
-                {
-                    Id = billResponse.Id,
-                    ReservationId = billResponse.ReservationId,
-                    TotalAmount = billResponse.TotalAmount,
-                    TableId = billResponse.TableId,
-                    CreatedAt = billResponse.CreatedAt,
-                    UpdatedAt = billResponse.UpdatedAt,
-                    CustomerId = billResponse.CustomerId,
-                    ShopId = billResponse.ShopId,
-                    BillDetails = billDetailsDTOs
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-            }
-        }
-
-        public async Task<BillWithDetailsResponseDTO?> GetBillById(Guid id)
+        
+        public async Task<BillWithDetailsResponseDTO> GetBillByID(Guid id)
         {
             try
             {
@@ -135,24 +95,26 @@ namespace BusinessObject.Services
             }
         }
 
-        public async Task<Guid> GetBillIdByTableId(Guid tableId)
+        public async Task<BillWithDetailsResponseDTO> GetBillByTableID(Guid tableId)
         {
             try
             {
-                var billResponse = await _client
-                    .From<Bill>()
-                    .Where(b => b.TableId == tableId)
-                    .Order("created_at", Ordering.Descending) // Lấy hóa đơn mới nhất
-                    .Single();
+                var billResponse = await _client.From<Bill>()
+                                                .Where(b => b.TableId == tableId)
+                                                .Order("created_at", Ordering.Descending)
+                                                .Single();
+                if (billResponse == null)
+                {
+                    return null;
+                }
 
-                return billResponse.Id;
+                return await GetBillByID(billResponse.Id);
             }
             catch (Exception ex)
             {
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-
         public async Task<BillResponseDTO> CreateBill(CreateBillRequestDTO createBill)
         {
             try
@@ -214,7 +176,7 @@ namespace BusinessObject.Services
         {
             try
             {
-                var bill = await GetBillById(billId);
+                var bill = await GetBillByID(billId);
                 if (bill == null)
                     throw new Exception("Bill not found.");
 
@@ -383,7 +345,7 @@ namespace BusinessObject.Services
         {
             try
             {
-                var bill = await GetBillById(id);
+                var bill = await GetBillByID(id);
                 if (bill == null)
                     return new DeleteBillResponseDTO { IsDeleted = false, Message = "Bill not found." };
 

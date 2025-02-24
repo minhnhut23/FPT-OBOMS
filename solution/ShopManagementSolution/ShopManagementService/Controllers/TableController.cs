@@ -51,7 +51,7 @@ namespace ShopManagementService.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
+                return BadRequest(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
 
