@@ -76,5 +76,6 @@ BillRepository -- BillDAO
 BillDAO -- GenerateBillPdfResponseDTO
 BillDAO -- Bill
 BillDAO -- ErrorHandler
-
+BillDAO -- BillWithDetailsResponseDTO
+BillWithDetailsResponseDTO -- BillDetailResponseDTO
 @enduml

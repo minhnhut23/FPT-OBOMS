@@ -130,7 +130,7 @@ namespace BusinessObject.Controllers
         public async Task<IActionResult> GetBillIdByTableId(Guid id)
         {
 
-            var billId = await _billDao.GetBillIdByTableId(id);
+            var billId = await _billRepository.GetBillIdByTableId(id);
 
 
             if (billId == null)

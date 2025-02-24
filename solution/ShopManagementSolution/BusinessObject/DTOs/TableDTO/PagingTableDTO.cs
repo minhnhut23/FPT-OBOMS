@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTOs.TableDTO
 {
-    public class PaginationMetadataDTO
+    public class PagingTableDTO
     {
         public int TotalResults { get; set; }
         public int TotalPages { get; set; }

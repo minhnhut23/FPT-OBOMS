@@ -17,6 +17,7 @@ namespace ShopManagementService.DAO
         {
             _client = client;
         }
+
         public async Task<ReservationResponseDTO> CreateReservation(ReservationRequestDTO request)
         {
             try
@@ -114,7 +115,6 @@ namespace ShopManagementService.DAO
             return response.Models;
         }
 
-
         public async Task<Reservation?> GetReservationById(Guid id)
         {
             return await _client.From<Reservation>().Where(r => r.Id == id).Single();
@@ -183,6 +183,7 @@ namespace ShopManagementService.DAO
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
+
         public async Task<ReservationResponseDTO> CancelReservation(Guid id)
         {
             try

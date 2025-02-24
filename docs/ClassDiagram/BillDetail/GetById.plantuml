@@ -1,0 +1,61 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BillDetailController {
+    - _billDetailRepository: IBillDetailRepository 
+    + GetBillDetailById(id: Guid): BillDetailResponseDTO
+}
+
+interface IBillDetailRepository {
+    +GetBillDetailById(id: Guid): Task<BillDetailResponseDTO>
+}
+
+class BillDetailRepository {
+    - _billDetailDAO : BillDetailDAO
+    +GetBillDetailById(id: Guid): Task<BillDetailResponseDTO>
+}
+
+class BillDetailDAO {
+    - _client: Supabase.Client
+    +GetBillDetailById(id: Guid): Task<BillDetailResponseDTO>
+}
+
+class BillDetail {
+    +Id: Guid
+    +MenuItemId: Guid
+    +BillId: Guid
+    +Quantity: int
+    +Price: decimal
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class BillDetailResponseDTO {
+    +Id: Guid
+    +MenuItemId: Guid
+    +BillId: Guid
+    +Quantity: int
+    +Price: decimal
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+class ErrorHandler {
+    +IsJson(input: string): bool
+    +ProcessErrorMessage(exceptionMessage: string): string
+}
+
+class SupabaseClient {
+    +Query(): object
+}
+
+BillDetailController -- IBillDetailRepository
+IBillDetailRepository <|.. BillDetailRepository
+BillDetailRepository -- BillDetailDAO
+BillDetailDAO -- BillDetail
+BillDetailResponseDTO -- BillDetailDAO
+BillDetailDAO -- ErrorHandler
+BillDetailDAO -- SupabaseClient
+
+@enduml
