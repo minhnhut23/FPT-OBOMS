@@ -20,7 +20,7 @@ namespace ShopManagementService.Controllers
         }
 
         [HttpGet("tables")]
-        public async Task<IActionResult> GetAllTables([FromQuery] GetTableRequestDTO request)
+        public async Task<IActionResult> GetAllTables([FromQuery] GetTablesRequestDTO request)
         {
             try
             {

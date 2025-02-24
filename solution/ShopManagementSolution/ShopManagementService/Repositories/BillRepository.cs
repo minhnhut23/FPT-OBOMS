@@ -1,5 +1,6 @@
 ﻿using BusinessObject.DTOs.BillDTO;
 using BusinessObject.DTOs.TableDTO;
+using BusinessObject.Models;
 using BusinessObject.Services;
 using ShopManagementService.IRepositories;
 
@@ -28,5 +29,8 @@ namespace ShopManagementService.Repositories
 
         public Task<string> GenerateAndPrintBillPdf(Guid billId)
             => _billDao.GenerateAndPrintBillPdf(billId);
+
+        public Task<Guid> GetBillIdByTableId(Guid tableId)
+             => _billDao.GetBillIdByTableId(tableId);
     }
 }

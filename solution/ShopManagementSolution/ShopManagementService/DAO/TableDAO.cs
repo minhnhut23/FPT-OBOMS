@@ -19,7 +19,9 @@ namespace BusinessObject.Services
             _mapper = mapper;
         }
 
+
         public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+
         {
             try
             {
@@ -34,11 +36,13 @@ namespace BusinessObject.Services
                 var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
+
                 //Count for skipping page page, if page 1 then skip 0 page, if page 2-> skip 1 page
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
                 //List of the request page
+
                 var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
                 var typeNameList = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
@@ -59,6 +63,7 @@ namespace BusinessObject.Services
                     return (
                         new List<GetTableResponseDTO>(),
                         new TablePaginationDTO
+
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -68,7 +73,9 @@ namespace BusinessObject.Services
                     );
                 }
 
+
                 var paginationMetadata = new TablePaginationDTO
+
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,
@@ -83,7 +90,7 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-        private dynamic ApplyFilters(dynamic query, GetTableRequestDTO request)
+        private dynamic ApplyFilters(dynamic query, GetTablesRequestDTO request)
         {
             if (!string.IsNullOrEmpty(request.Status))
                 query = query.Filter("status", Operator.Equals, request.Status);
@@ -271,7 +278,7 @@ namespace BusinessObject.Services
                     };
                 }
 
-                // ❌ Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
+                // Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
                 if (table.Status != "onusing")
                 {
                     return new UpdateTableStatusResponseDTO
@@ -283,7 +290,7 @@ namespace BusinessObject.Services
 
                 if (isFinish)
                 {
-                    // ✅ Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
+                    // Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
                     table.Status = "available";
                     await _client.From<Table>().Update(table);
 
@@ -300,7 +307,7 @@ namespace BusinessObject.Services
                 }
                 else
                 {
-                    // ❌ Hủy đặt bàn
+                    //  Hủy đặt bàn
                     table.Status = "available";
                     await _client.From<Table>().Update(table);
 

@@ -112,6 +112,7 @@ namespace BusinessObject.Controllers
         public async Task<IActionResult> GetBillByTableID(Guid tableId)
         {
             var billId = await _billRepository.GetBillByTableID(tableId);
+
             if (billId == null)
                 return NotFound("There are no bill of this table.");
 
