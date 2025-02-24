@@ -12,7 +12,9 @@ namespace ShopManagementService.Repositories
 
         public TableRepository(TableDAO tableDao) => _tableDao = tableDao;
 
-        public Task<(List<GetTableResponseDTO> Tables, PagingTableDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
+
+        public Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+
             => _tableDao.GetAllTables(request);
 
         public Task<GetTableResponseDTO?> GetTableById(Guid id)

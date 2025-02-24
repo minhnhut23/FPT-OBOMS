@@ -3,12 +3,16 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+
+
+class APIGateway {
+}
 class TableController {
     - _tableRepository: ITableRepository
     + DeleteTable(Guid id) : Task<IActionResult> 
 }
 
-interface ITableRepository {
+interface ITableRepository<<interface>> {
     + DeleteTable(Guid id) : Task<DeleteTableRequestDTO> 
 }
 
@@ -19,26 +23,10 @@ class TableRepository {
 
 class TableDAO {
     - _client: Client
-    - _mapper: IMapper
     + DeleteTable(Guid id) : Task<DeleteTableRequestDTO>
     + GetTableById(Guid id) : Task<GetTableResponseDTO?>
 }
 
-class DeleteTableRequestDTO {
-    + IsDeleted: bool
-    + Message: string
-}
-
-class GetTableResponseDTO {
-    + Id: Guid
-    + TableNumber: string
-    + Capacity: int
-    + Status: string
-    + Description: string
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-    + TableType: string
-}
 
 class Table {
     + Id: Guid
@@ -52,35 +40,11 @@ class Table {
     + TypeId: Guid
 }
 
-class MappingProfile {
-  + MappingProfile()
-}
 
-class TableType {
-    + Id: Guid
-    + Name: string
-    + Description: string
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-}
-
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
+APIGateway -- TableController
 TableController -- ITableRepository
 ITableRepository <|-- TableRepository
 TableRepository -- TableDAO
 TableDAO -- Table
-TableDAO -- TableType
-TableDAO -- GetTableResponseDTO
-TableDAO -- DeleteTableRequestDTO
-TableDAO -- MappingProfile
-TableDAO -- ErrorHandler
-
-Table -- TableType
-MappingProfile -- Table : Maps
-MappingProfile -- GetTableResponseDTO : Maps
 
 @enduml

@@ -3,12 +3,16 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+
+
+class APIGateway {
+}
 class TableController {
     - _tableRepository: ITableRepository
     + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<IActionResult> 
 }
 
-interface ITableRepository {
+interface ITableRepository<<interface>>  {
     + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<GetTableResponseDTO> 
 }
 
@@ -19,31 +23,10 @@ class TableRepository {
 
 class TableDAO {
     - _client: Client
-    - _mapper: IMapper
     + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<GetTableResponseDTO>
-    + GetTableById(Guid id) : Task<GetTableResponseDTO?>
+    + GetTableById(Guid id) : Task<GetTableResponseDTO>
 }
 
-class UpdateTableRequestDTO {
-    + Name: string
-    + Price: decimal
-    + Description: string
-    + Category: string
-    + Ingredient: string
-    + NutritionalInfo: string
-    + IsAvailable: bool
-}
-
-class GetTableResponseDTO {
-    + Id: Guid
-    + TableNumber: string
-    + Capacity: int
-    + Status: string
-    + Description: string
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-    + TableType: string
-}
 
 class Table {
     + Id: Guid
@@ -57,35 +40,21 @@ class Table {
     + TypeId: Guid
 }
 
-class MappingProfile {
-  + MappingProfile()
-}
 
 class TableType {
     + Id: Guid
     + Name: string
     + Description: string
+    + PriceByHour: decimal
     + CreatedAt: DateTime
     + UpdatedAt: DateTime
 }
 
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
+APIGateway -- TableController
 TableController -- ITableRepository
 ITableRepository <|-- TableRepository
 TableRepository -- TableDAO
-TableDAO -- Table 
+TableDAO -- Table
 TableDAO -- TableType
-TableDAO -- GetTableResponseDTO
-TableDAO -- UpdateTableRequestDTO
-TableDAO -- MappingProfile
-TableDAO -- ErrorHandler
-
-Table -- TableType
-MappingProfile -- Table : Maps
-MappingProfile -- GetTableResponseDTO : Maps
 
 @enduml

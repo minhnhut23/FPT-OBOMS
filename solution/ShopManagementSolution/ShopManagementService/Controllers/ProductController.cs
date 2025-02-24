@@ -29,7 +29,7 @@ namespace ShopManagementService.Controllers
 
                 var (products, paginationMetadata) = await _repo.GetAllProducts(request);
 
-                var response = new GetAllProductsResponseDTO
+                var response = new 
                 {
                     Data = products,
                     Pagination = paginationMetadata

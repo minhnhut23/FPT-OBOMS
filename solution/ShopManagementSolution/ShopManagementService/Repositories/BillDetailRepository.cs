@@ -13,14 +13,9 @@ namespace ShopManagementService.Repositories
             _billDetailDAO = billDetailDAO;
         }
 
-        public async Task<List<BillDetailResponseDTO>> GetAllBillDetails()
+        public async Task<BillDetailResponseDTO?> GetBillDetailByID(Guid id)
         {
-            return await _billDetailDAO.GetAllBillDetails();
-        }
-
-        public async Task<BillDetailResponseDTO?> GetBillDetailById(Guid id)
-        {
-            return await _billDetailDAO.GetBillDetailById(id);
+            return await _billDetailDAO.GetBillDetailByID(id);
         }
 
         public async Task<BillDetailResponseDTO> CreateBillDetail(CreateBillDetailRequestDTO createBillDetail)

@@ -1,0 +1,101 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+' Controllers
+class ProductController {
+    - _repo: IProductRepository
+    + GetAllProducts([FromQuery] GetProductRequestDTO request): Task<IActionResult>
+}
+
+' Repository Interface
+interface IProductRepository {
+    + GetAllProducts(GetProductRequestDTO request): Task<(List<GetProductResponseDTO>, ProductPaginationDTO)>
+}
+
+' Repository Implementation
+class ProductRepository {
+    - _dao: ProductDAO
+    + GetAllProducts(GetProductRequestDTO request): Task<(List<GetProductResponseDTO>, ProductPaginationDTO)>
+}
+
+' Data Access Object
+class ProductDAO {
+    - _client: Client
+    - _mapper: IMapper
+    + GetAllProducts(GetProductRequestDTO request): Task<(List<GetProductResponseDTO>, ProductPaginationDTO)>
+}
+
+' Domain Model
+class MenuItem {
+    + Id: Guid
+    + ShopId: Guid
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + Category: string
+    + IsAvailable: bool
+    + Ingredient: string
+    + NutritionalInfo: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+' Request Data Transfer Object
+class GetProductRequestDTO {
+    + Name: string
+    + MinPrice: decimal?
+    + MaxPrice: decimal?
+    + Category: string
+    + IsAvailable: bool?
+    + PageNumber: int
+    + PageSize: int
+}
+
+' Response Data Transfer Object
+class GetProductResponseDTO {
+    + Id: Guid
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + Category: string
+    + IsAvailable: bool
+}
+
+' Pagination Data Transfer Object
+class ProductPaginationDTO {
+    + TotalResults: int
+    + TotalPages: int
+    + CurrentPage: int
+    + PageSize: int
+}
+
+' Utility classes
+class ErrorHandler {
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+class MappingProfile {
+    + Map<MenuItem, GetProductResponseDTO>()
+}
+
+' Relationships
+ProductController -- IProductRepository
+ProductController -- GetProductRequestDTO
+
+IProductRepository <|-- ProductRepository
+IProductRepository -- GetProductResponseDTO
+IProductRepository -- ProductPaginationDTO
+
+ProductRepository -- ProductDAO
+
+
+ProductDAO -- ErrorHandler
+ProductDAO -- GetProductResponseDTO
+ProductDAO -- ProductPaginationDTO
+ProductDAO -- MenuItem
+
+MappingProfile -- MenuItem
+MappingProfile -- GetProductResponseDTO
+
+@enduml

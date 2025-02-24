@@ -2,18 +2,14 @@
 using BusinessObject.Models;
 using BusinessObject.Utils;
 using Supabase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BusinessObject.Services
 {
     public class TableTypeDAO
     {
-        private readonly Supabase.Client _client;
+        private readonly Client _client;
 
-        public TableTypeDAO(Supabase.Client client)
+        public TableTypeDAO(Client client)
         {
             _client = client;
         }
@@ -28,6 +24,7 @@ namespace BusinessObject.Services
                     Id = type.Id,
                     Name = type.Name,
                     Description = type.Description,
+                    PriceByHour = type.PriceByHour,
                     CreatedAt = type.CreatedAt,
                     UpdatedAt = type.UpdatedAt
                 }).ToList();
@@ -51,6 +48,7 @@ namespace BusinessObject.Services
                     Id = response.Id,
                     Name = response.Name,
                     Description = response.Description,
+                    PriceByHour = response.PriceByHour,
                     CreatedAt = response.CreatedAt,
                     UpdatedAt = response.UpdatedAt
                 };
@@ -73,6 +71,7 @@ namespace BusinessObject.Services
                     Id = Guid.NewGuid(),
                     Name = createTableType.Name,
                     Description = createTableType.Description,
+                    PriceByHour = createTableType.PriceByHour,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                 };
@@ -87,6 +86,7 @@ namespace BusinessObject.Services
                     Id = createdType.Id,
                     Name = createdType.Name,
                     Description = createdType.Description,
+                    PriceByHour = createdType.PriceByHour,
                     CreatedAt = createdType.CreatedAt,
                     UpdatedAt = createdType.UpdatedAt
                 };
@@ -107,6 +107,7 @@ namespace BusinessObject.Services
 
                 response.Name = updateTableType.Name;
                 response.Description = updateTableType.Description;
+                response.PriceByHour = updateTableType.PriceByHour;
                 response.UpdatedAt = DateTime.UtcNow;
 
                 var updatedResponse = await _client.From<TableType>().Where(x => x.Id == id).Update(response);
@@ -119,6 +120,7 @@ namespace BusinessObject.Services
                     Id = updatedType.Id,
                     Name = updatedType.Name,
                     Description = updatedType.Description,
+                    PriceByHour = updatedType.PriceByHour,
                     CreatedAt = updatedType.CreatedAt,
                     UpdatedAt = updatedType.UpdatedAt
                 };
@@ -133,6 +135,15 @@ namespace BusinessObject.Services
         {
             try
             {
+                var count = await _client.From<Table>().Where(x => x.TypeId == id).Get();
+                if (count != null)
+                {
+                    return new DeleteTableTypeDTO
+                    {
+                        IsDeleted = false,
+                        Message = "Cannot delete TableType. Some tables are using this type."
+                    };
+                }
                 var existingType = await GetTableTypeById(id);
                 if (existingType == null)
                 {

@@ -4,21 +4,21 @@ skinparam classAttributeIconSize 0
 
 class TableTypeController {
     - _tableTypeRepository: ITableTypeRepository
-    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<IActionResult>
+    + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<IActionResult>
 }
 
-interface ITableTypeRepository {
-    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<GetTableTypeResponseDTO>
+interface ITableTypeRepository<<interface>>  {
+    + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<GetTableTypeResponseDTO>
 }
 
 class TableTypeRepository {
     - _tableTypeDao: TableTypeDAO
-    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<GetTableTypeResponseDTO>
+    + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<GetTableTypeResponseDTO>
 }
 
 class TableTypeDAO {
-    - _client: Supabase.Client
-    + UpdateTableType(id: Guid, updateTableType: AddEditTypeRequestDTO): Task<GetTableTypeResponseDTO>
+    - _client: Client
+    + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<GetTableTypeResponseDTO>
 }
 
 class TableType {
@@ -29,30 +29,10 @@ class TableType {
     + UpdatedAt: DateTime
 }
 
-class AddEditTypeRequestDTO {
-    + Name: string
-    + Description: string?
-}
-
-class GetTableTypeResponseDTO {
-    + Id: Guid
-    + Name: string
-    + Description: string?
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime?
-}
-
-class ErrorHandler {
-    + IsJson(input: string): bool
-    + ProcessErrorMessage(exceptionMessage: string): string
-}
 
 TableTypeController -- ITableTypeRepository
 ITableTypeRepository <|-- TableTypeRepository
 TableTypeRepository -- TableTypeDAO
 
 TableTypeDAO -- TableType
-TableTypeDAO -- ErrorHandler
-TableTypeDAO -- GetTableTypeResponseDTO
-TableTypeDAO -- AddEditTypeRequestDTO
 @enduml
