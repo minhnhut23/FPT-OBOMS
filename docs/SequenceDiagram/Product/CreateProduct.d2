@@ -1,0 +1,81 @@
+label.style.font-color: black
+
+classes: {
+  forward arrow: {
+    style: {
+      font-color: black
+      bold: true
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+      bold: true
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+label: "Sequence Diagram for CreateAllProduct"
+
+application: <<user interaction>> \n Oboms
+apiGateway: <<coordinator>> \n apiGateway
+ProductController: :ProductController
+ProductRepository: :ProductRepository
+ProductDAO: :ProductDAO
+
+Supabase: "Supabase" {
+  shape: cylinder
+}
+
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> application.get: 1. User click "Create Product" {class: forward arrow}
+application.get -> apiGateway.get: 2. Request create new product {class: forward arrow}
+apiGateway.get -> ProductController.get: 3. Create Product {class: forward arrow}
+ProductController.get -> ProductRepository.get: 4. Forward to Repository {class: forward arrow}
+ProductRepository.get -> ProductDAO.get: 5. Forward to DAO {class: forward arrow}
+ProductDAO.get -> Supabase.get : 6. Create new product {class: forward arrow}
+Supabase.get -> DB.get: 7. Check user in database {class: forward arrow}
+ProductDAO.get <- DB.get: 8. Return result {class: return arrow}
+ProductDAO.get -> ProductRepository.get : 9. Forward result {class: return arrow}
+ProductRepository.get -> ProductController.get : 10. Forward result {class: return arrow}
+
+alt: "alt" {
+  If post id not exist: "ID not exist" {
+    class: frame
+      ProductController.get -> apiGateway.get : 10.1 Return status success {class: return arrow}
+      apiGateway.get -> application.get : 10.1.1 Return status success {class: return arrow}
+      application.get -> User : 10.1.1.1 Display create product succeed {class: return arrow}
+}
+If post id exist: "ID exist" {
+  class: frame
+    ProductController.get -> apiGateway.get : 10.2 Return 403 error {class: return arrow}
+    apiGateway.get -> application.get : 10.2.1 Return 403 error {class: return arrow}
+    application.get -> User : 10.2.1.1 Display create product failed {class: return arrow}
+}
+}
