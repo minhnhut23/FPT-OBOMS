@@ -1,0 +1,62 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+class AuthController {
+    - _repo: IAuthRepository
+    + RecoverPassword([FromBody] RecoverPasswordRequestDTO requestDTO): Task<IActionResult> 
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IAuthRepository {
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
+}
+
+class AuthRepository {
+    - _dao: AuthDAO
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
+}
+
+class AuthDAO {
+    - _client: Client
+    + ResetPassword(RecoverPasswordRequestDTO request): Task
+}
+
+class RecoverPasswordRequestDTO{
+    + AccessToken: string
+    + NewPassword: string 
+    + ConfirmPassword: string
+}
+
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+
+
+AuthController -- RecoverPasswordRequestDTO
+AuthController -- IAuthRepository
+
+IAuthRepository <|-- AuthRepository
+IAuthRepository -- RecoverPasswordRequestDTO
+
+AuthRepository -- AuthDAO
+AuthRepository -- RecoverPasswordRequestDTO
+
+AuthDAO -- ErrorHandler
+AuthDAO -- RecoverPasswordRequestDTO
+
+AuthDAO o-- Profile
+@enduml

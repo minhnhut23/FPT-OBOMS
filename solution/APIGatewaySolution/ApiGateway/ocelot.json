@@ -6,14 +6,26 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "auth-service",
-          "Port": 5001
+          "Port": 5002
         }
       ],
       "UpstreamPathTemplate": "/auth/{everything}",
       "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "shop-service",
+          "Port": 5003
+        }
+      ],
+      "UpstreamPathTemplate": "/api/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ]
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:8000"
+    "BaseUrl": "http://localhost:5001"
   }
 }
