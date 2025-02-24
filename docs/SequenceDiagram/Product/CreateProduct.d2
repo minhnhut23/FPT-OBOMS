@@ -58,25 +58,24 @@ User -> application.get: 1. User click "Create Product" {class: forward arrow}
 application.get -> apiGateway.get: 2. Request create new product {class: forward arrow}
 apiGateway.get -> ProductController.get: 3. Create Product {class: forward arrow}
 ProductController.get -> ProductRepository.get: 4. Forward to Repository {class: forward arrow}
-ProductRepository.get -> ProductDAO.get: 5.  Forward to DAO {class: forward arrow}
+ProductRepository.get -> ProductDAO.get: 5. Forward to DAO {class: forward arrow}
 ProductDAO.get -> Supabase.get : 6. Create new product {class: forward arrow}
 Supabase.get -> DB.get: 7. Check user in database {class: forward arrow}
-ProductDAO.get <- DB.get: 8. Forward result {class: return arrow}
-ProductDAO.get -> ProductRepository.get : 9. Create new product {class: return arrow}
-ProductRepository.get -> ProductController.get : 10. Create new product {class: return arrow}
-ProductController.get -> apiGateway.get : 11. Create new product {class: return arrow}
+ProductDAO.get <- DB.get: 8. Return result {class: return arrow}
+ProductDAO.get -> ProductRepository.get : 9. Forward result {class: return arrow}
+ProductRepository.get -> ProductController.get : 10. Forward result {class: return arrow}
 
 alt: "alt" {
-  If post id not exist: "[Return success]" {
+  If post id not exist: "ID not exist" {
     class: frame
-      ProductController.get -> apiGateway.get : 11.1 Create new product {class: return arrow}
-      apiGateway.get -> application.get : 11.1.1 Create new product {class: return arrow}
-      application.get -> User : 11.1.1.1 Create new product {class: return arrow}
+      ProductController.get -> apiGateway.get : 10.1 Return status success {class: return arrow}
+      apiGateway.get -> application.get : 10.1.1 Return status success {class: return arrow}
+      application.get -> User : 10.1.1.1 Display create product succeed {class: return arrow}
 }
-If post id exist: "[Return error]" {
+If post id exist: "ID exist" {
   class: frame
-    ProductController.get -> apiGateway.get : 11.2 Return 403 error {class: return arrow}
-    apiGateway.get -> application.get : 11.2.1 Return 403 error {class: return arrow}
-    application.get -> User : 11.2.1.1 Return 403 error {class: return arrow}
+    ProductController.get -> apiGateway.get : 10.2 Return 403 error {class: return arrow}
+    apiGateway.get -> application.get : 10.2.1 Return 403 error {class: return arrow}
+    application.get -> User : 10.2.1.1 Display create product failed {class: return arrow}
 }
 }
