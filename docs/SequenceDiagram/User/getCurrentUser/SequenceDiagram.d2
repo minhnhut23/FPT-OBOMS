@@ -32,11 +32,12 @@ User: {
 }
 
 
-application: "application"
-apiGateway: "apiGateway"
-UserController: "userController"
-UserRepository: "userRepository"
-UserDAO: "userDAO"
+application: "Web application"
+apiGateway: "ApiGateway"
+UserController: "UserController"
+UserRepository: "UserRepository"
+UserDAO: "UserDAO"
+Supabase: "Supabase"
 DB: "DB" {
   shape: cylinder
 }
@@ -49,25 +50,22 @@ UserController -> UserRepository.get: "4. Forward token to repository"
 UserRepository -> UserDAO.get: "5. Forward token to DAO"
 
 # Validate token and retrieve user
-UserDAO -> JwtSecurityTokenHandler: "6. Read and validate token"
-JwtSecurityTokenHandler -> UserDAO: "7. Return token claims"
-UserDAO -> DB.query: "8. Retrieve user profile"
-DB -> UserDAO.response: "9. Return user profile"
+UserDAO.get -> Supabase.get: "6. Validate token"
+Supabase.get -> DB.get: "8. Retrieve user profile"
+DB.get -> UserDAO.get: "9. Return result"
+UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
+UserRepository .get-> UserController.get: "11. Forward result" {class: return arrow}
 
 alt: "alt" {
   class: frame
   User profile found: "[User profile found]" {
-    UserDAO -> UserRepository.get: "10b. Return user profile" {class: return arrow}
-    UserRepository -> UserController.get: "11b. Forward user profile" {class: return arrow}
-    UserController -> apiGateway.get: "12b. Send user profile to frontend" {class: return arrow}
-    apiGateway -> application.get: "13b. Return user profile" {class: return arrow}
-    application -> User: "14b. Display user profile" {class: return arrow}
+    UserController.get -> apiGateway.get: "11.1. Send user profile to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.1.1. Return user profile" {class: return arrow}
+    application.get -> User: "11.1.1.1. Display user profile" {class: return arrow}
   }
   User profile not found: "[User profile not found]" {
-    UserDAO -> UserRepository.get: "10a. User not found" {class: return arrow}
-    UserRepository -> UserController.get: "11a. Return error" {class: return arrow}
-    UserController -> apiGateway.get: "12a. Send error to frontend" {class: return arrow}
-    apiGateway -> application.get: "13a. Return error" {class: return arrow}
-    application -> User: "14a. Display error message" {class: return arrow}
+    UserController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
+    application.get -> User: "11.2.1.1. Display error message" {class: return arrow}
   }
 }
