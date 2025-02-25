@@ -1,20 +1,18 @@
-@startuml getUserById
+@startuml 
 hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
+
+class APIGateway {
+}
 
 class AuthController {
     - _repo: IAuthRepository
     + Logout(): Task<IActionResult> 
 }
 
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-} 
-
-interface IAuthRepository { 
-    + Logout: Task<IActionResult>
+interface IAuthRepository<<interface>> { 
+    + Logout(): Task<IActionResult>
 }
 
 class AuthRepository {
@@ -27,11 +25,13 @@ class AuthDAO {
     + Logout(): Task
 }
 
+APIGateway -- AuthController
+
 AuthController -- IAuthRepository
 
 IAuthRepository <|-- AuthRepository
+
 AuthRepository -- AuthDAO
 
-AuthDAO -- ErrorHandler
 
 @enduml

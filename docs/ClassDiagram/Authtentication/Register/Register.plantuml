@@ -8,21 +8,21 @@ class APIGateway {
 
 class AuthController {
     - _repo: IAuthRepository
-    + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
+    + Register([FromBody] RegisterRequestDTO request): Task<IActionResult> 
 }
 
 interface IAuthRepository<<interface>> {
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + Register(RegisterRequestDTO request): Task
 }
 
 class AuthRepository {
     - _dao: AuthDAO
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + Register(RegisterRequestDTO request): Task
 }
 
 class AuthDAO {
     - _client: Client
-    + Login(string email, string password): Task<LoginResponseDTO>
+    + Register(RegisterRequestDTO request): Task
 }
 
 class Profile {
@@ -38,6 +38,7 @@ class Profile {
 }
 
 APIGateway -- AuthController
+
 AuthController -- IAuthRepository
 
 IAuthRepository <|-- AuthRepository
