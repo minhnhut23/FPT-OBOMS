@@ -1,0 +1,75 @@
+label: "Sequence Diagram for UpdateUser"
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+  return_arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+  label_right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "Web application"
+apiGateway: "ApiGateway"
+UserController: "UserController"
+UserRepository: "UserRepository"
+UserDAO: "UserDAO"
+Supabase: "Supabase"
+DB: "DB" {
+  shape: cylinder
+}
+
+loop  { 
+  class: frame
+  User -> application.get: "1. Enter user status to update"
+  application.get -> application.get.post: "2. Check empty and valid input"    
+  application.get -> User: "2.1. Show validation message" {class: return arrow}      
+}
+
+application.get -> apiGateway.get: "3. Request update user"
+apiGateway.get -> UserController.get: "4. Forward request with token"
+UserController -> UserRepository.get: "5. Forward request to repository"
+UserRepository -> UserDAO.get: "6. Forward request to DAO"
+
+# Validate token and retrieve user
+UserDAO.get -> Supabase.get: "7. Validate token"
+Supabase.get -> DB.get: "8. Update user profile"
+DB.get -> UserDAO.get: "9. Return result"
+UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
+UserRepository.get-> UserController.get: "11. Forward result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  User profile found: "[User profile found]" {
+    UserController.get -> apiGateway.get: "11.1. Send user profile after to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.1.1. Return user profile" {class: return arrow}
+    application.get -> User: "11.1.1.1. Display user profile" {class: return arrow}
+  }
+  User profile not found: "[User profile not found]" {
+    UserController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
+    application.get -> User: "11.2.1.1. Display error message" {class: return arrow}
+  }
+}
