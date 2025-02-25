@@ -47,13 +47,9 @@ DB: "DB" {
 # Change password sequence
 loop  { 
   class: frame
-  Validate Input: "[Empty or Invalid Input]" {
-    User -> application.post: "1. Enter and submit change password form"
-    application.post -> application.post.get: "2. Check empty and valid input"
-    alt {  
-      application.post -> User: "2.1. Show validation message" {class: return arrow}      
-    }
-  }  
+  User -> application.post: "1. Enter and submit change password form"
+  application.post -> application.post.get: "2. Check empty and valid input"
+  application.post -> User: "2.1. Show validation message" {class: return arrow}           
 }  
 application -> apiGateway.post: "3. Forward change password request"
 apiGateway -> AuthController.post: "4. Handle change password request"
