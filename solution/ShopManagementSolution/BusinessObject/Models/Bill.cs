@@ -13,7 +13,7 @@ namespace BusinessObject.Models
 
         [Column("reservation_id")]
         [Required(ErrorMessage = "Reservation ID is required.")]
-        public Guid ReservationId { get; set; }
+        public Guid? ReservationId { get; set; }
 
         [Column("total_amount")]
         [Range(0, double.MaxValue, ErrorMessage = "Total amount must be a positive value.")]
