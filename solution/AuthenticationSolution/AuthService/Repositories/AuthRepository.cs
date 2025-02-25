@@ -21,7 +21,7 @@ public class AuthRepository : IAuthRepository
 
     public Task Logout() => _dao.Logout();
 
-    public Task Register(RegisterRequestDTO request) => _dao.Register(request);
+    public Task<GetUserResponeDTO> Register(RegisterRequestDTO request) => _dao.Register(request);
 
     public Task ResetPassword(RecoverPasswordRequestDTO request) => _dao.ResetPassword(request);
 }

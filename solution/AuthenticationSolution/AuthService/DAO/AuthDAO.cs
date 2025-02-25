@@ -1,5 +1,7 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
+using BusinessObject.Models;
+using Microsoft.AspNetCore.Identity.Data;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
@@ -43,7 +45,7 @@ public class AuthDAO
         }
     }
 
-    public async Task Register(RegisterRequestDTO request)
+    public async Task<GetUserResponeDTO> Register(RegisterRequestDTO request)
     {
         try
         {
@@ -63,6 +65,57 @@ public class AuthDAO
             }
 
             var session = await _client.Auth.SignUp(request.Email, request.Password);
+
+            if (session == null || session.User == null)
+            {
+                throw new Exception("Failed to register user. Please verify your email.");
+            }
+
+            var accountId = Guid.Parse(session.User.Id!);
+
+            var existingProfile = await _client
+                .From<Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
+            if (existingProfile != null)
+            {
+                throw new Exception("The user already exists!");
+            }
+
+            if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+            {
+                throw new Exception("Invalid Birthday!");
+            }
+
+            var validRoles = new HashSet<string> { "Customer", "Owner", "Admin" };
+            if (!validRoles.Contains(request.Role))
+            {
+                throw new Exception("Invalid Role");
+            }
+
+            var profile = new Profile
+            {
+                FullName = request.FullName,
+                ProfilePicture = request.ProfilePicture,
+                Bio = request.Bio,
+                Role = request.Role,
+                DateOfBirth = request.DateOfBirth,
+                AccountId = accountId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            await _client.From<Profile>().Insert(profile);
+
+            return new GetUserResponeDTO
+            {
+                Email = session.User.Email!,
+                FullName = profile.FullName,
+                Bio = profile.Bio!,
+                DateOfBirth = profile.DateOfBirth,
+                ProfilePicture = profile.ProfilePicture!
+            };
         }
         catch (Exception ex)
         {

@@ -13,8 +13,6 @@ public class UserRepository : IUserRepository
         _dao = dao;
     }
 
-    public Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token) => _dao.CreateUser(request, token);
-
     public Task<GetUserResponeDTO> GetCurrentUser(string token) => _dao.GetCurrentUser(token);
 
     public Task<GetUserResponeDTO> GetUserById(Guid profileId) => _dao.GetUserById(profileId);

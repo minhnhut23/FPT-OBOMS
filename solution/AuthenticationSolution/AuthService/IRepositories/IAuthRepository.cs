@@ -6,7 +6,7 @@ public interface IAuthRepository
 {
     public Task<LoginResponseDTO> Login(string email, string password);
 
-    public Task Register(RegisterRequestDTO request);
+    public Task<GetUserResponeDTO> Register(RegisterRequestDTO request);
 
     public Task Logout();
 
