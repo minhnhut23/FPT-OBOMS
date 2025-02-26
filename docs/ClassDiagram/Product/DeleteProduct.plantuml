@@ -2,30 +2,28 @@
 hide circle
 skinparam classAttributeIconSize 0
 
-' Controller handling product endpoints
+class APIGateway {
+}
+
 class ProductController {
     - _repo: IProductRepository
     + DeleteProduct(Guid id): Task<IActionResult>
 }
 
-' Repository interface with DeleteProduct declaration
-interface IProductRepository {
+interface IProductRepository<<interface>> {
     + DeleteProduct(Guid id): Task
 }
 
-' Repository implementation delegating to the DAO
 class ProductRepository {
     - _dao: ProductDAO
     + DeleteProduct(Guid id): Task
 }
 
-' Data Access Object handling database operations
 class ProductDAO {
     - _client: Client
     + DeleteProduct(Guid id): Task
 }
 
-' Domain model representing a product record
 class MenuItem {
     + Id: Guid
     + ShopId: Guid
@@ -40,16 +38,12 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
-' Utility class for error handling
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
 
-' Relationships among classes
+
+APIGateway -- ProductController
 ProductController -- IProductRepository
 IProductRepository <|-- ProductRepository
 ProductRepository -- ProductDAO
 ProductDAO -- MenuItem
-ProductDAO -- ErrorHandler
-
 @enduml
+ 

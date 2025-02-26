@@ -1,0 +1,47 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class APIGateway {
+}
+
+class UserController{
+    - _repo: IUserRepository
+    + GetUserById([FromQuery] Guid id): Task<IActionResult>
+}
+
+interface IUserRepository<<interface>> {
+    + GetUserById(Guid profileId): Task<GetUserResponeDTO>
+}
+
+class UserRepository {
+    - _dao: UserDAO
+    + GetUserById(Guid profileId): Task<GetUserResponeDTO>
+}
+
+class UserDAO {
+    - _client: Client
+    + GetUserById(Guid profileId): Task<GetUserResponeDTO>
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+APIGateway -- UserController
+UserController -- IUserRepository 
+IUserRepository <|-- UserRepository
+
+UserRepository -- UserDAO
+UserDAO -- Profile
+
+@enduml

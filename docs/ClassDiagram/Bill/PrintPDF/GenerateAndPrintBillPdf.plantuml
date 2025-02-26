@@ -1,0 +1,50 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class APIGateway {
+}
+
+class BillController {
+    - _billRepository: IBillRepository
+    + GenerateAndPrintBillPdf(Guid id): Task<IActionResult>
+}
+
+interface IBillRepository<<interface>> {
+    + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
+}
+
+class BillDAO {
+    - _client: Client
+    + IsFileLocked(string filePath) : bool
+    + OpenAndPrintPdf(string filePath): void
+    + GetBillById(Guid id) : Task<BillWithDetailsResponseDTO?> 
+    + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
+}
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+APIGateway -- BillController
+BillController -- IBillRepository
+IBillRepository <|.. BillRepository
+BillRepository -- BillDAO
+BillDAO -- Bill
+
+
+@enduml

@@ -2,14 +2,16 @@
 hide circle
 skinparam classAttributeIconSize 0
 
-' Controllers
+class APIGateway {
+}
+
 class ShopController {
     - _repo: IShopRepository
     + GetAllShops([FromQuery] GetShopRequestDTO request): Task<IActionResult>
 }
 
 ' Repository Interface
-interface IShopRepository {
+interface IShopRepository<<interface>> {
     + GetAllShops(GetShopRequestDTO request): Task<(List<GetShopResponseDTO>, ShopPaginationDTO)>
 }
 
@@ -38,56 +40,10 @@ class Shop {
     + UpdatedAt: DateTime
 }
 
-' Request Data Transfer Object
-class GetShopRequestDTO {
-    + Name: string
-    + OwnerId: Guid?
-    + PageNumber: int
-    + PageSize: int
-}
-
-' Response Data Transfer Object
-class GetShopResponseDTO {
-    + Id: Guid
-    + Name: string
-    + Address: string
-    + PhoneNumber: string
-    + Email: string
-}
-
-' Pagination Data Transfer Object
-class ShopPaginationDTO {
-    + TotalResults: int
-    + TotalPages: int
-    + CurrentPage: int
-    + PageSize: int
-}
-
-' Utility classes
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
-class MappingProfile {
-    + Map<Shop, GetShopResponseDTO>()
-}
-
-' Relationships
+APIGateway -- ShopController
 ShopController -- IShopRepository
-ShopController -- GetShopRequestDTO
 
 IShopRepository <|-- ShopRepository
-IShopRepository -- GetShopResponseDTO
-IShopRepository -- ShopPaginationDTO
-
 ShopRepository -- ShopDAO
-
-ShopDAO -- ErrorHandler
-ShopDAO -- GetShopResponseDTO
-ShopDAO -- ShopPaginationDTO
 ShopDAO -- Shop
-
-MappingProfile -- Shop
-MappingProfile -- GetShopResponseDTO
-
 @enduml
