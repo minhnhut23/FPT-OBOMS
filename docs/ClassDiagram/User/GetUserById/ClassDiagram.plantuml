@@ -4,7 +4,7 @@ skinparam classAttributeIconSize 0
 skinparam linetype ortho
 class UserController{
     - _repo: IUserRepository
-    + GetProfile(): Task<IActionResult>
+    + GetUserById([FromQuery] Guid id): Task<IActionResult>
 }
 
 class ErrorHandler {
@@ -13,17 +13,17 @@ class ErrorHandler {
 } 
 
 interface IUserRepository {
-    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+    + GetUserById(Guid profileId): Task<GetUserResponeDTO>
 }
 
 class UserRepository {
     - _dao: UserDAO
-    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+    + GetUserById(Guid profileId): Task<GetUserResponeDTO>
 }
 
 class UserDAO {
     - _client: Client
-    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+    + GetUserById(Guid profileId): Task<GetUserResponeDTO>
 }
 
 class GetUserResponeDTO {

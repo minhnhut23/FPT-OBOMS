@@ -1,0 +1,54 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class BillController {
+    - _billRepository: IBillRepository
+    + GetAllBills(): Task<IActionResult>
+}
+
+interface IBillRepository<<interface>> {
+    + GetAllBills(): Task<List<BillResponseDTO>>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + GetAllBills(): Task<List<BillResponseDTO>>
+}
+
+class BillDAO {
+    - _client: Client
+    + GetAllBills(): Task<List<BillResponseDTO>>
+}
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+class BillDetail {
+    + Id: Guid
+    + BillId: Guid
+    + MenuItemId: Guid
+    + Quantity: int
+    + Price: decimal
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+BillController -- IBillRepository
+IBillRepository <|.. BillRepository
+BillRepository -- BillDAO
+BillDAO -- Bill
+BillDAO -- BillDetail
+
+
+@enduml

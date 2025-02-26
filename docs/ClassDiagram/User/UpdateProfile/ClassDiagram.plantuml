@@ -4,7 +4,7 @@ skinparam classAttributeIconSize 0
 skinparam linetype ortho
 class UserController{
     - _repo: IUserRepository
-    + GetProfile(): Task<IActionResult>
+    + UpdateProfile([FromBody] UpdateProfileRequestDTO request): Task<IActionResult>
 }
 
 class ErrorHandler {
@@ -13,17 +13,17 @@ class ErrorHandler {
 } 
 
 interface IUserRepository {
-    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
 class UserRepository {
     - _dao: UserDAO
-    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
 class UserDAO {
     - _client: Client
-    + GetCurrentUser(string token): Task<GetUserResponeDTO>
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
 class GetUserResponeDTO {
@@ -31,6 +31,14 @@ class GetUserResponeDTO {
     + Password: string 
     + ProfilePicture: string
     + Bio: string 
+    + DateOfBirth: Datetime
+}
+
+class UpdateProfileRequestDTO {
+    + Email: string      
+    + FullName: string
+    + ProfilePicture: string     
+    + Bio: string
     + DateOfBirth: Datetime
 }
 
@@ -47,15 +55,19 @@ class Profile {
 }
 
 UserController -- IUserRepository 
+UserController -- UpdateProfileRequestDTO
 
 IUserRepository -- GetUserResponeDTO
+IUserRepository -- UpdateProfileRequestDTO
 IUserRepository <|-- UserRepository
 
 UserRepository -- GetUserResponeDTO
+UserRepository -- UpdateProfileRequestDTO
 UserRepository -- UserDAO
 
 UserDAO -- ErrorHandler
 UserDAO -- GetUserResponeDTO
+UserDAO -- UpdateProfileRequestDTO
 
 UserDAO o-- Profile
 

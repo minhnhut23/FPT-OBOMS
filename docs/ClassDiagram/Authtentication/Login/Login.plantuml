@@ -3,17 +3,15 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+class APIGateway {
+}
+
 class AuthController {
     - _repo: IAuthRepository
     + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
 }
 
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-} 
-
-interface IAuthRepository {
+interface IAuthRepository<<interface>> {
     + Login(string email, string password): Task<LoginResponseDTO>
 }
 
@@ -25,17 +23,6 @@ class AuthRepository {
 class AuthDAO {
     - _client: Client
     + Login(string email, string password): Task<LoginResponseDTO>
-}
-
-class LoginRequestDTO{
-    + Email: string
-    + Password: string 
-}
-
-class LoginResponseDTO{
-    + AccessToken: string
-    + RefreshToken: string
-    + ExpiresAt: DateTime
 }
 
 class Profile {
@@ -50,18 +37,13 @@ class Profile {
     + AccountId: Guid
 }
 
+APIGateway -- AuthController
 
-
-AuthController -- LoginRequestDTO
 AuthController -- IAuthRepository
 
-IAuthRepository -- LoginResponseDTO
 IAuthRepository <|-- AuthRepository
-AuthRepository -- LoginResponseDTO
+
 AuthRepository -- AuthDAO
 
-AuthDAO -- ErrorHandler
-AuthDAO -- LoginResponseDTO
-
-AuthDAO o-- Profile
+AuthDAO -- Profile
 @enduml

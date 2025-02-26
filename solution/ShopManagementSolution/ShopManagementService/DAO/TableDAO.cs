@@ -19,13 +19,17 @@ namespace BusinessObject.Services
             _mapper = mapper;
         }
 
-        public async Task<(List<GetTableResponseDTO> Tables, PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+
+        public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+
         {
             try
             {
+                //Get list of all table and apply filters
                 var query = _client.From<Table>().Select("*");
                 query = ApplyFilters(query, request);
 
+                //Also apply filters but for counting since if using .Count it will reset filters
                 var counting = _client.From<Table>().Select("*");
                 counting = ApplyFilters(counting, request);
                 var totalRecordsResponse = await counting.Select("id").Get();
@@ -33,26 +37,33 @@ namespace BusinessObject.Services
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
 
+                //Count for skipping page page, if page 1 then skip 0 page, if page 2-> skip 1 page
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
+                //List of the request page
+
                 var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
-                var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
+                var typeNameList = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
+
+                //Set tabletype name to list of dto since table only have id 
                 var tables = tablesResponse.Models
                     .Select(table =>
                     {
                         var dto = _mapper.Map<GetTableResponseDTO>(table);
-                        dto.TableType = typeNameDict.ContainsKey(table.TypeId) ? typeNameDict[table.TypeId] : "Unknown";
+                        dto.TableType = typeNameList.ContainsKey(table.TypeId) ? typeNameList[table.TypeId] : "Unknown";
                         return dto;
                     })
                     .ToList();
 
+                //If there no item or error of page number, return emty
                 if (totalRecords == 0 || request.PageNumber > totalPages)
                 {
                     return (
                         new List<GetTableResponseDTO>(),
-                        new DTOs.TableDTO.PaginationMetadataDTO
+                        new TablePaginationDTO
+
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -62,7 +73,9 @@ namespace BusinessObject.Services
                     );
                 }
 
-                var paginationMetadata = new DTOs.TableDTO.PaginationMetadataDTO
+
+                var paginationMetadata = new TablePaginationDTO
+
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,
@@ -74,10 +87,10 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error fetching tables: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-        private dynamic ApplyFilters(dynamic query, GetTableRequestDTO request)
+        private dynamic ApplyFilters(dynamic query, GetTablesRequestDTO request)
         {
             if (!string.IsNullOrEmpty(request.Status))
                 query = query.Filter("status", Operator.Equals, request.Status);
@@ -105,21 +118,17 @@ namespace BusinessObject.Services
                     .From<Table>()
                     .Where(x => x.Id == id)
                     .Single();
-
                 if (tableResponse == null)
                 {
-                    throw new Exception("Table not found!");
+                    return null;
                 }
                 string tableTypeName = "Unknown";
-                if (await IsTypeExists(tableResponse.TypeId))
-                {
-                    var tableTypeResponse = await _client
+                var tableTypeResponse = await _client
                         .From<TableType>()
                         .Where(x => x.Id == tableResponse.TypeId)
                         .Single();
+                tableTypeName = tableTypeResponse?.Name ?? "Unknown";
 
-                    tableTypeName = tableTypeResponse?.Name ?? "Unknown";
-                }
                 var tableDetail = _mapper.Map<GetTableResponseDTO>(tableResponse);
                 tableDetail.TableType = tableTypeName;
                 return tableDetail;
@@ -269,7 +278,7 @@ namespace BusinessObject.Services
                     };
                 }
 
-                // ❌ Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
+                // Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
                 if (table.Status != "onusing")
                 {
                     return new UpdateTableStatusResponseDTO
@@ -281,7 +290,7 @@ namespace BusinessObject.Services
 
                 if (isFinish)
                 {
-                    // ✅ Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
+                    // Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
                     table.Status = "available";
                     await _client.From<Table>().Update(table);
 
@@ -298,7 +307,7 @@ namespace BusinessObject.Services
                 }
                 else
                 {
-                    // ❌ Hủy đặt bàn
+                    //  Hủy đặt bàn
                     table.Status = "available";
                     await _client.From<Table>().Update(table);
 

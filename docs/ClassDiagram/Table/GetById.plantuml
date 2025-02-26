@@ -1,13 +1,18 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
+
+
+class APIGateway {
+}
 class TableController {
     - _tableRepository: ITableRepository
     +  GetTableById(Guid id) : Task<IActionResult> 
 }
 
-interface ITableRepository {
+interface ITableRepository<<interface>>  {
     + GetTableById(Guid id) : Task<GetTableResponseDTO?> 
 }
 
@@ -22,17 +27,6 @@ class TableDAO {
     + IsTypeExists(Guid typeId): Task<bool> 
 }
 
-
-class GetTableResponseDTO {
-    + Id: Guid
-    + TableNumber: string
-    + Capacity: int
-    + Status: string
-    + Description: string
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-    + TableType: string
-}
 class Table {
     + Id: Guid
     + TableNumber: string
@@ -44,34 +38,21 @@ class Table {
     + ShopId: Guid
     + TypeId: Guid
 }
-class MappingProfile {
-  + MappingProfile()
-}
 class TableType {
     + Id: Guid
     + Name: string
     + Description: string
+    + PriceByHour: decimal
     + CreatedAt: DateTime
     + UpdatedAt: DateTime
 }
 
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
-
+APIGateway -- TableController
 TableController -- ITableRepository
 ITableRepository <|-- TableRepository
 TableRepository -- TableDAO
 TableDAO -- Table
 TableDAO -- TableType
-TableDAO -- GetTableResponseDTO
-TableDAO -- MappingProfile
-TableDAO -- ErrorHandler
 
-Table -- TableType
-MappingProfile -- Table : Maps
-MappingProfile -- GetTableResponseDTO : Maps
 
 @enduml

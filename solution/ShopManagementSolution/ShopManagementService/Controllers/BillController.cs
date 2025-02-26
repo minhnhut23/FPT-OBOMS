@@ -32,11 +32,11 @@ namespace BusinessObject.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetBillById(Guid id)
+        public async Task<IActionResult> GetBillByID(Guid id)
         {
             try
             {
-                var bill = await _billRepository.GetBillById(id);
+                var bill = await _billRepository.GetBillByID(id);
                 if (bill == null)
                 {
                     return NotFound("Bill not found.");
@@ -50,25 +50,7 @@ namespace BusinessObject.Controllers
             }
         }
 
-        [HttpGet("draft/{id}")]
-        public async Task<IActionResult> GetDraftBillById(Guid id)
-        {
-            try
-            {
-                var draftBill = await _billRepository.GetDraftBillById(id);
-                if (draftBill == null)
-                {
-                    return NotFound(new { message = "Draft bill not found." });
-                }
-
-                return Ok(draftBill);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }
-
+       
         [HttpPost]
         public async Task<IActionResult> CreateBill([FromBody] CreateBillRequestDTO createBill)
         {
@@ -80,7 +62,7 @@ namespace BusinessObject.Controllers
                 }
 
                 var createdBill = await _billRepository.CreateBill(createBill);
-                return CreatedAtAction(nameof(GetBillById), new { id = createdBill.Id }, createdBill);
+                return CreatedAtAction(nameof(GetBillByID), new { id = createdBill.Id }, createdBill);
             }
             catch (Exception ex)
             {
@@ -89,7 +71,7 @@ namespace BusinessObject.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBill(Guid id, [FromBody] UpdateBillRequestDTO updateBill)
+        public async Task<IActionResult> UpdateBill(Guid id,UpdateBillRequestDTO updateBill)
         {
             try
             {
@@ -127,14 +109,12 @@ namespace BusinessObject.Controllers
         }
 
         [HttpGet("{id}/bill")]
-        public async Task<IActionResult> GetBillIdByTableId(Guid id)
+        public async Task<IActionResult> GetBillByTableID(Guid tableId)
         {
-
-            var billId = await _billDao.GetBillIdByTableId(id);
-
+            var billId = await _billRepository.GetBillByTableID(tableId);
 
             if (billId == null)
-                return NotFound("No bill found for this table.");
+                return NotFound("There are no bill of this table.");
 
             return Ok(new { billId });
         }
