@@ -61,20 +61,20 @@ AuthRepository -> AuthDAO.post: "6. Forward to DAO"
 AuthDAO.post -> Supabase.post: "7. Validate user and password"
 Supabase.post-> DB.insert: "8. Insert new account record"
 DB.insert -> AuthDAO.post: "9. Return result" {class: return arrow}
-AuthDAO -> AuthRepository.post: "10. Forward result" {class: return arrow}
-AuthRepository -> AuthController.post: "11. Return result" {class: return arrow}
+AuthDAO.post -> AuthRepository.post: "10. Forward result" {class: return arrow}
+AuthRepository.post -> AuthController.post: "11. Return result" {class: return arrow}
 
 
 alt: "alt" {
   class: frame
   Registration successful: "[Registration successful]" {
-    AuthController -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
-    apiGateway -> application.post: "11.1.1. Return success status" {class: return arrow}
-    application -> User: "11.1.1.1. Display registration success message" {class: return arrow}
+    AuthController.post -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "11.1.1. Return success status" {class: return arrow}
+    application.post -> User: "11.1.1.1. Display registration success message" {class: return arrow}
   }
   Registration failed: "[Registration failed]" { 
-    AuthController -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
-    apiGateway -> application.post: "11.2.1. Return error status" {class: return arrow}
-    application -> User: "11.2.1.1. Display registration error message" {class: return arrow}
+    AuthController.post -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "11.2.1. Return error status" {class: return arrow}
+    application.post -> User: "11.2.1.1. Display registration error message" {class: return arrow}
   }
 }
