@@ -1,4 +1,4 @@
-label: "Sequence Diagram for GetCurrentUser"
+label: "Sequence Diagram for UpdateUser"
 
 classes: {
   text-black: {
@@ -31,7 +31,6 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-
 application: "Web application"
 apiGateway: "ApiGateway"
 UserController: "UserController"
@@ -42,24 +41,29 @@ DB: "DB" {
   shape: cylinder
 }
 
-# Get current user with token
-User -> application.get: "1. Retrieve current user with token"
-application -> apiGateway.get: "2. Forward get current user request"
-apiGateway -> UserController.get: "3. Forward request with token"
-UserController -> UserRepository.get: "4. Forward token to repository"
-UserRepository -> UserDAO.get: "5. Forward token to DAO"
+loop  { 
+  class: frame
+  User -> application.get: "1. Enter user status to update"
+  application.get -> application.get.post: "2. Check empty and valid input"    
+  application.get -> User: "2.1. Show validation message" {class: return arrow}      
+}
+
+application.get -> apiGateway.get: "3. Request update user"
+apiGateway.get -> UserController.get: "4. Forward request with token"
+UserController -> UserRepository.get: "5. Forward request to repository"
+UserRepository -> UserDAO.get: "6. Forward request to DAO"
 
 # Validate token and retrieve user
-UserDAO.get -> Supabase.get: "6. Validate token"
-Supabase.get -> DB.get: "8. Retrieve user profile"
+UserDAO.get -> Supabase.get: "7. Validate token"
+Supabase.get -> DB.get: "8. Update user profile"
 DB.get -> UserDAO.get: "9. Return result"
 UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
-UserRepository .get-> UserController.get: "11. Forward result" {class: return arrow}
+UserRepository.get-> UserController.get: "11. Forward result" {class: return arrow}
 
 alt: "alt" {
   class: frame
   User profile found: "[User profile found]" {
-    UserController.get -> apiGateway.get: "11.1. Send user profile to frontend" {class: return arrow}
+    UserController.get -> apiGateway.get: "11.1. Send user profile after to frontend" {class: return arrow}
     apiGateway.get -> application.get: "11.1.1. Return user profile" {class: return arrow}
     application.get -> User: "11.1.1.1. Display user profile" {class: return arrow}
   }

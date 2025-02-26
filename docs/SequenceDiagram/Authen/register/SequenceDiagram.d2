@@ -48,14 +48,12 @@ DB: "DB" {
 # User registration sequence
 loop  { 
   class: frame
-  Validate Input: "[Empty or Invalid Input]" {
-    User -> application.post: "1. Enter credentials and submit register form"
-    application.post -> application.post.get: "2. Check empty and valid input"
-    alt {  
-      application.post -> User: "2.1. Show validation message" {class: return arrow}      
-    }
-  }  
+  User -> application.post: "1. Enter credentials and submit register form"
+  application.post -> application.post.get: "2. Check empty and valid input"    
+  application.post -> User: "2.1. Show validation message" {class: return arrow}      
+    
 }  
+ 
 application -> apiGateway.post: "3. Forward registration request"
 apiGateway -> AuthController.post: "4. Create new account"
 AuthController -> AuthRepository.post: "5. Forward to repository"
