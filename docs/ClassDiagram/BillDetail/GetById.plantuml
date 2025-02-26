@@ -4,6 +4,7 @@ skinparam classAttributeIconSize 0
 
 class BillDetailController {
     - _billDetailRepository: IBillDetailRepository 
+
     + GetBillDetailByID(Guid id): Task<IActionResult> 
 }
 
@@ -13,6 +14,7 @@ interface IBillDetailRepository<<interface>>  {
 
 class BillDetailRepository {
     - _billDetailDAO : BillDetailDAO
+
     + GetBillDetailByID(Guid id): Task<BillDetailResponseDTO> 
 
 }
@@ -31,6 +33,7 @@ class BillDetail {
     +CreatedAt: DateTime
     +UpdatedAt: DateTime
 }
+
 
 BillDetailController -- IBillDetailRepository
 IBillDetailRepository <|.. BillDetailRepository

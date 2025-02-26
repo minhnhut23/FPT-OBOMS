@@ -1,0 +1,77 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "Web application"
+apiGateway: "ApiGateway"
+AuthController: "AuthController"
+AuthRepository: "AuthRepository"
+AuthDAO: "AuthDAO"
+Supabase: "Supabase"
+DB: "DB" {
+  shape: cylinder
+}
+
+# Change password sequence
+loop  { 
+  class: frame
+  User -> application.post: "1. Enter and submit change password form"
+  application.post -> application.post.get: "2. Check empty and valid input"
+  application.post -> User: "2.1. Show validation message" {class: return arrow}           
+}  
+application -> apiGateway.post: "3. Forward change password request"
+apiGateway -> AuthController.post: "4. Handle change password request"
+AuthController -> AuthRepository.post: "5. Forward to repository"
+AuthRepository -> AuthDAO.post: "6. Forward to DAO"
+AuthDAO.post -> Supabase.post: "7. Validate user and password"
+Supabase.post -> DB.post: "8. Update user password"
+DB.post -> AuthDAO.post: "9. Return result" {class: return arrow} 
+AuthDAO.post -> AuthRepository.post: "10. Forward result" {class: return arrow} 
+AuthRepository.post -> AuthController.post: "11. Return result" {class: return arrow} 
+
+
+alt: "alt" {
+  class: frame
+  Current password valid: "[Current password valid]" {
+    AuthController.post -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow} 
+    apiGateway.post -> application.post: "11.1.1. Return success status" {class: return arrow} 
+    application.post -> User: "11.1.1. Display password change success message" {class: return arrow} 
+  }
+  Current password invalid: "[Current password invalid]" {
+    AuthController.post -> apiGateway.post: "11.2. Send error to frontend" {class: return arrow} 
+    apiGateway.post -> application.post: "11.2.1. Return error" {class: return arrow} 
+    application.post -> User: "11.2.1.1. Display error message" {class: return arrow} 
+  }
+}
