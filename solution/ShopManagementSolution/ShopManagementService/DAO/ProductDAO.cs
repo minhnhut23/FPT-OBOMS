@@ -5,7 +5,6 @@ using BusinessObject.Utils;
 using Supabase;
 using System.IdentityModel.Tokens.Jwt;
 using static Supabase.Postgrest.Constants;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace ShopManagementService.DAO;
