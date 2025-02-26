@@ -7,7 +7,7 @@ class TableTypeController {
     + GetAllTableTypes(): Task<IActionResult>
 }
 
-interface ITableTypeRepository {
+interface ITableTypeRepository<<interface>>  {
     + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
 }
 
@@ -17,7 +17,7 @@ class TableTypeRepository {
 }
 
 class TableTypeDAO {
-    - _client: Supabase.Client
+    - _client: Client
     + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
 }
 
@@ -25,28 +25,14 @@ class TableType {
     + Id: Guid
     + Name: string
     + Description: string
+    + PriceByHour: decimal
     + CreatedAt: DateTime
     + UpdatedAt: DateTime
-}
-
-class GetTableTypeResponseDTO {
-    + Id: Guid
-    + Name: string
-    + Description: string?
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime?
-}
-
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
 }
 
 TableTypeController -- ITableTypeRepository
 ITableTypeRepository <|-- TableTypeRepository
 TableTypeRepository -- TableTypeDAO
-
 TableTypeDAO -- TableType
-TableTypeDAO -- ErrorHandler
-TableTypeDAO -- GetTableTypeResponseDTO
+
 @enduml

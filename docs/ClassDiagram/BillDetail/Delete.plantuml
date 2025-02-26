@@ -4,21 +4,21 @@ skinparam classAttributeIconSize 0
 
 class BillDetailController {
     - _billDetailRepository: IBillDetailRepository 
-    + DeleteBillDetail(id: Guid): DeleteBillDetailResponseDTO
+    + DeleteBillDetail(Guid id): Task<IActionResult>
 }
 
-interface IBillDetailRepository {
-    +DeleteBillDetail(id: Guid): Task<DeleteBillDetailResponseDTO>
+interface IBillDetailRepository<<interface>>  {
+    +DeleteBillDetail(Guid id): Task<DeleteBillDetailResponseDTO>
 }
 
 class BillDetailRepository {
     - _billDetailDAO : BillDetailDAO
-    +DeleteBillDetail(id: Guid): Task<DeleteBillDetailResponseDTO>
+    +DeleteBillDetail(Guid id): Task<DeleteBillDetailResponseDTO>
 }
 
 class BillDetailDAO {
-    - _client: Supabase.Client
-    +DeleteBillDetail(id: Guid): Task<DeleteBillDetailResponseDTO>
+    - _client: Client
+    +DeleteBillDetail(Guid id): Task<DeleteBillDetailResponseDTO>
 }
 
 class BillDetail {
@@ -31,26 +31,9 @@ class BillDetail {
     +UpdatedAt: DateTime
 }
 
-class DeleteBillDetailResponseDTO {
-    +IsDeleted: bool
-    +Message: string
-}
-
-class ErrorHandler {
-    +IsJson(input: string): bool
-    +ProcessErrorMessage(exceptionMessage: string): string
-}
-
-class SupabaseClient {
-    +Query(): object
-}
-
 BillDetailController -- IBillDetailRepository
 IBillDetailRepository <|.. BillDetailRepository
 BillDetailRepository -- BillDetailDAO
 BillDetailDAO -- BillDetail
-DeleteBillDetailResponseDTO -- BillDetailDAO
-BillDetailDAO -- ErrorHandler
-BillDetailDAO -- SupabaseClient
 
 @enduml

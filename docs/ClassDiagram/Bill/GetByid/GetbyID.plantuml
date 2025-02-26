@@ -4,26 +4,23 @@ skinparam classAttributeIconSize 0
 
 class BillController {
     - _billRepository: IBillRepository
-    + DeleteBill(Guid id): Task<IActionResult>
+    + GetBillByID(Guid id): Task<IActionResult>
 }
 
-interface IBillRepository {
-    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+interface IBillRepository<<interface>> {
+    + GetBillByID(Guid id): Task<BillWithDetailsResponseDTO>
 }
 
 class BillRepository {
     - _billDao: BillDAO
-    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+    + GetBillByID(Guid id): Task<BillWithDetailsResponseDTO>
 }
 
 class BillDAO {
-    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+    - _client: Client
+    + GetBillByID(Guid id): Task<BillWithDetailsResponseDTO>
 }
 
-class DeleteBillResponseDTO {
-    + IsDeleted: bool
-    + Message: string
-}
 
 class Bill {
     + Id: Guid
@@ -38,16 +35,20 @@ class Bill {
     + ShopId: Guid
 }
 
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
+class BillDetail {
+    + Id: Guid
+    + BillId: Guid
+    + MenuItemId: Guid
+    + Quantity: int
+    + Price: decimal
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
 }
 
 BillController -- IBillRepository
 IBillRepository <|.. BillRepository
 BillRepository -- BillDAO
-BillDAO -- DeleteBillResponseDTO
 BillDAO -- Bill
-BillDAO -- ErrorHandler
+BillDAO -- BillDetail
 
 @enduml

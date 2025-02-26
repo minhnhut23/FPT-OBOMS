@@ -19,42 +19,51 @@ namespace BusinessObject.Services
             _mapper = mapper;
         }
 
-        public async Task<(List<GetTableResponseDTO> Tables, PagingTableDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
+
+        public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+
         {
             try
             {
+                //Get list of all table and apply filters
                 var query = _client.From<Table>().Select("*");
                 query = ApplyFilters(query, request);
 
-                //Count for paging
+                //Also apply filters but for counting since if using .Count it will reset filters
                 var counting = _client.From<Table>().Select("*");
                 counting = ApplyFilters(counting, request);
                 var totalRecordsResponse = await counting.Select("id").Get();
                 var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
-                //Limit tables in requested page
+
+                //Count for skipping page page, if page 1 then skip 0 page, if page 2-> skip 1 page
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
-                //Show tables info
+                //List of the request page
+
                 var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
-                var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
+                var typeNameList = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
+
+                //Set tabletype name to list of dto since table only have id 
                 var tables = tablesResponse.Models
                     .Select(table =>
                     {
                         var dto = _mapper.Map<GetTableResponseDTO>(table);
-                        dto.TableType = typeNameDict.ContainsKey(table.TypeId) ? typeNameDict[table.TypeId] : "Unknown";
+                        dto.TableType = typeNameList.ContainsKey(table.TypeId) ? typeNameList[table.TypeId] : "Unknown";
                         return dto;
                     })
                     .ToList();
 
+                //If there no item or error of page number, return emty
                 if (totalRecords == 0 || request.PageNumber > totalPages)
                 {
                     return (
                         new List<GetTableResponseDTO>(),
-                        new PagingTableDTO
+                        new TablePaginationDTO
+
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -64,7 +73,9 @@ namespace BusinessObject.Services
                     );
                 }
 
-                var paginationMetadata = new PagingTableDTO
+
+                var paginationMetadata = new TablePaginationDTO
+
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,
@@ -107,21 +118,17 @@ namespace BusinessObject.Services
                     .From<Table>()
                     .Where(x => x.Id == id)
                     .Single();
-
                 if (tableResponse == null)
                 {
-                    throw new Exception("Table not found!");
+                    return null;
                 }
                 string tableTypeName = "Unknown";
-                if (await IsTypeExists(tableResponse.TypeId))
-                {
-                    var tableTypeResponse = await _client
+                var tableTypeResponse = await _client
                         .From<TableType>()
                         .Where(x => x.Id == tableResponse.TypeId)
                         .Single();
+                tableTypeName = tableTypeResponse?.Name ?? "Unknown";
 
-                    tableTypeName = tableTypeResponse?.Name ?? "Unknown";
-                }
                 var tableDetail = _mapper.Map<GetTableResponseDTO>(tableResponse);
                 tableDetail.TableType = tableTypeName;
                 return tableDetail;
