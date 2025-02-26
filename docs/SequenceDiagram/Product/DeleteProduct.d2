@@ -55,7 +55,7 @@ DB: "DB" {
   shape: cylinder
 }
 
-User -> WebAplication.get: 1. User click\n "Delete Product" {class: forward arrow}
+User -> WebAplication.get: 1. User click\n "Create Product" {class: forward arrow}
 WebAplication.get -> apiGateway.get: 2. Request create\n new product {class: forward arrow}
 apiGateway.get -> ProductController.get: 3. Create Product {class: forward arrow}
 ProductController.get -> ProductRepository.get: 4. Forward to\n Repository {class: forward arrow}
@@ -69,20 +69,20 @@ ProductRepository.get -> ProductController.get: 10. Return result {class: return
 alt: "alt" {
   If id not exist: "[Create product successfully]" {
     class: frame
-      ProductController.get -> apiGateway.get: 10.1. Send\n Response {class: return arrow}
-      apiGateway.get -> WebAplication.get: 10.1.1. Forward\n response {class: return arrow}
-      WebAplication.get -> User: 10.1.1.1. Display\n create product succeed {class: return arrow}
+      ProductController.get -> apiGateway.get: 10.1. Send Response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 10.1.1. Forward response {class: return arrow}
+      WebAplication.get -> User: 10.1.1.1. Display delete\n product succeed {class: return arrow}
   }
   If id exist: "[ID owner not valid]" {
     class: frame
-      ProductController.get -> apiGateway.get: 10.2. Send\n Response {class: return arrow}
-      apiGateway.get -> WebAplication.get: 10.2.1. Forward\n response {class: return arrow}
-      WebAplication.get -> User: 10.2.1.1. Display\n account not valid {class: return arrow}
+      ProductController.get -> apiGateway.get: 10.2. Send Response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 10.2.1. Forward response {class: return arrow}
+      WebAplication.get -> User: 10.2.1.1. Display deleted\n product failed {class: return arrow}
   }
-  If product exist: "[Product already exist]" {
+  If product exist: "[Product not exist]" {
     class: frame
-      ProductController.get -> apiGateway.get: 10.3. Send\n Response {class: return arrow}
-      apiGateway.get -> WebAplication.get: 10.3.1. Forward\n response {class: return arrow}
-      WebAplication.get -> User: 10.3.1.1. Display\n product already exist {class: return arrow}
+      ProductController.get -> apiGateway.get: 10.3. Send Response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 10.3.1. Forward response {class: return arrow}
+      WebAplication.get -> User: 10.3.1.1. Display \n product not exist {class: return arrow}
   }
 }
