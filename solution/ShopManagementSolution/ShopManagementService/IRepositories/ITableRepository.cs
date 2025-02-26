@@ -5,7 +5,7 @@ namespace ShopManagementService.IRepositories
     public interface ITableRepository
     {
 
-        Task<(List<GetTableResponseDTO>, TablePaginationDTO)> GetAllTables(GetTableRequestDTO request);
+        Task<(List<GetTableResponseDTO>, TablePaginationDTO)> GetAllTables(GetTablesRequestDTO request);
 
         Task<GetTableResponseDTO?> GetTableById(Guid id);
         Task<bool> GetTableByNumber(string number, Guid shopId);

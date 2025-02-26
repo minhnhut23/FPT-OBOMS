@@ -13,9 +13,8 @@ namespace ShopManagementService.Repositories
         public TableRepository(TableDAO tableDao) => _tableDao = tableDao;
 
 
-        public Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
-
-            => _tableDao.GetAllTables(request);
+        
+           
 
         public Task<GetTableResponseDTO?> GetTableById(Guid id)
             => _tableDao.GetTableById(id);
@@ -34,6 +33,11 @@ namespace ShopManagementService.Repositories
 
         public Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish)
          => _tableDao.UpdateTableStatus(tableId,isFinish);
+
+        public Task<(List<GetTableResponseDTO>, TablePaginationDTO)> GetAllTables(GetTablesRequestDTO request)
+        
+            => _tableDao.GetAllTables(request);
+        
     }
     
 }
