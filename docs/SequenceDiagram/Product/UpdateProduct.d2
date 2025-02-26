@@ -1,0 +1,86 @@
+label.style.font-color: black
+
+classes: {
+  forward arrow: {
+    style: {
+      font-color: black
+      bold: true
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+      bold: true
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+      bold: true
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+label: "Sequence Diagram for CreateAllProduct"
+
+WebAplication: Web Aplication
+apiGateway: API Gateway
+ProductController: :ProductController
+ProductRepository: :ProductRepository
+ProductDAO: :ProductDAO
+
+Supabase: "Supabase" {
+  shape: cylinder
+}
+
+Supabase: "Supabase" {
+  shape: cylinder
+}
+
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> WebAplication.get: 1. User click\n "Create Product" {class: forward arrow}
+WebAplication.get -> apiGateway.get: 2. Request create\n new product {class: forward arrow}
+apiGateway.get -> ProductController.get: 3. Create Product {class: forward arrow}
+ProductController.get -> ProductRepository.get: 4. Forward to\n Repository {class: forward arrow}
+ProductRepository.get -> ProductDAO.get: 5. Forward\n to DAO {class: forward arrow}
+ProductDAO.get -> Supabase.get: 6. Validate\n product {class: forward arrow}
+Supabase.get -> DB.get: 7. Save\n product to DB {class: forward arrow}
+DB.get -> ProductDAO.get: 8. Return\n product ID {class: return arrow}
+ProductDAO.get -> ProductRepository.get: 9. Return\n product ID {class: return arrow}
+ProductRepository.get -> ProductController.get: 10. Return\n product ID {class: return arrow}
+
+alt: "alt" {
+    If id not exist: "[Update product successfully]" {
+      class: frame
+        ProductController.get -> apiGateway.get: 10.1. Send\n Response {class: return arrow}
+        apiGateway.get -> WebAplication.get: 10.1.1. Forward\n response {class: return arrow}
+        WebAplication.get -> User: 10.1.1.1. Display update\n product succeed {class: return arrow}
+    }
+    If id exist: "[ID owner not valid]" {
+      class: frame
+        ProductController.get -> apiGateway.get: 10.2. Send\n Response {class: return arrow}
+        apiGateway.get -> WebAplication.get: 10.2.1. Forward\n response {class: return arrow}
+        WebAplication.get -> User: 10.2.1.1. Display update\n product failed {class: return arrow}
+    }
+}
