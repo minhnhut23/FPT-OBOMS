@@ -1,0 +1,73 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class ShopController {
+    - _shopRepository: IShopRepository
+    + UpdateShop(Guid id, UpdateShopRequestDTO updateShop): Task<IActionResult>
+}
+
+interface IShopRepository {
+    + UpdateShop(Guid id, UpdateShopRequestDTO updateShop): Task<GetShopResponseDTO>
+}
+
+class ShopRepository {
+    - _shopDao: ShopDAO
+    + UpdateShop(Guid id, UpdateShopRequestDTO updateShop): Task<GetShopResponseDTO>
+}
+
+class ShopDAO {
+    - _client: Client
+    - _mapper: IMapper
+    + UpdateShop(Guid id, UpdateShopRequestDTO updateShop): Task<GetShopResponseDTO>
+    + GetShopById(Guid id): Task<Shop>
+    + IsShopNameExists(string name): Task<bool>
+}
+
+class UpdateShopRequestDTO {
+    + Name: string
+    + Address: string
+    + Description: string
+}
+
+class GetShopResponseDTO {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class Shop {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + OwnerId: Guid
+}
+
+class MappingProfile {
+    + MappingProfile()
+}
+
+class ErrorHandler {
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+ShopController -- IShopRepository
+IShopRepository <|-- ShopRepository
+ShopRepository -- ShopDAO
+ShopDAO -- Shop
+ShopDAO -- GetShopResponseDTO
+ShopDAO -- UpdateShopRequestDTO
+ShopDAO -- ErrorHandler
+ShopDAO -- MappingProfile
+
+MappingProfile -- Shop : Maps
+MappingProfile -- GetShopResponseDTO : Maps
+
+@enduml

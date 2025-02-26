@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 
-using ShopManagementService.Repositories;
-
 namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
@@ -23,9 +21,15 @@ namespace ShopManagementService.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values.SelectMany(v => v.Errors.Select(e => e.ErrorMessage)).ToList();
+                    return BadRequest(new { Errors = errors });
+                }
+
                 var (products, paginationMetadata) = await _repo.GetAllProducts(request);
 
-                var response = new GetAllProductsResponseDTO
+                var response = new 
                 {
                     Data = products,
                     Pagination = paginationMetadata
@@ -75,7 +79,7 @@ namespace ShopManagementService.Controllers
             }
         }
 
-        [HttpPut("id")]
+        [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequestDTO request)
         {
             try
@@ -90,7 +94,7 @@ namespace ShopManagementService.Controllers
             }
         }
 
-        [HttpDelete("id")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProduct(Guid id)
         {
             try

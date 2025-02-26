@@ -1,0 +1,62 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class AuthController {
+    - _repo: IAuthRepository
+    + Register([FromBody] RegisterRequestDTO request): Task<IActionResult> 
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+interface IAuthRepository {
+    + Register(RegisterRequestDTO request): Task
+}
+
+class AuthRepository {
+    - _dao: AuthDAO
+    + Register(RegisterRequestDTO request): Task
+}
+
+class AuthDAO {
+    - _client: Client
+    + Register(RegisterRequestDTO request): Task
+}
+
+class RegisterRequestDTO{
+    + Email: string
+    + Password: string 
+    + ConfirmPassword: string
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+
+AuthController -- RegisterRequestDTO
+AuthController -- IAuthRepository
+
+IAuthRepository <|-- AuthRepository
+IAuthRepository -- RegisterRequestDTO
+
+AuthRepository -- AuthDAO
+AuthRepository -- RegisterRequestDTO
+
+AuthDAO -- ErrorHandler
+AuthDAO -- RegisterRequestDTO
+
+AuthDAO o-- Profile
+@enduml

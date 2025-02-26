@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTOs.TableDTO
 {
-    public class GetTableRequestDTO
+    public class GetTablesRequestDTO
     {
         public string? Status { get; set; }
         public string? TableNumber { get; set; }

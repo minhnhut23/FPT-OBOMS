@@ -1,8 +1,7 @@
-﻿using BusinessObject.DTO;
-using BusinessObject.DTOs.TableTypeDTO;
-using BusinessObject.Services;
+﻿using BusinessObject.DTOs.TableTypeDTO;
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Mvc;
+using ShopManagementService.IRepositories;
 using System;
 using System.Threading.Tasks;
 
@@ -12,11 +11,11 @@ namespace ShopManagementService.Controllers
     [ApiController]
     public class TableTypeController : ControllerBase
     {
-        private readonly TableTypeDAO _tableTypeDAO;
+        private readonly ITableTypeRepository _tableTypeRepository;
 
-        public TableTypeController(TableTypeDAO tableTypeService)
+        public TableTypeController(ITableTypeRepository tableTypeRepository)
         {
-            _tableTypeDAO = tableTypeService;
+            _tableTypeRepository = tableTypeRepository;
         }
 
         // Get all Table Types
@@ -25,7 +24,7 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                var tableTypes = await _tableTypeDAO.GetAllTableTypes();
+                var tableTypes = await _tableTypeRepository.GetAllTableTypes();
                 return Ok(tableTypes);
             }
             catch (Exception ex)
@@ -40,7 +39,7 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                var tableType = await _tableTypeDAO.GetTableTypeById(id);
+                var tableType = await _tableTypeRepository.GetTableTypeById(id);
                 if (tableType == null) return NotFound("Table Type not found.");
                 return Ok(tableType);
             }
@@ -61,7 +60,7 @@ namespace ShopManagementService.Controllers
                     return BadRequest("Invalid data provided.");
                 }
 
-                var createdTableType = await _tableTypeDAO.CreateTableType(createTableType);
+                var createdTableType = await _tableTypeRepository.CreateTableType(createTableType);
                 return Ok(createdTableType);
             }
             catch (Exception ex)
@@ -81,13 +80,13 @@ namespace ShopManagementService.Controllers
                     return BadRequest("Invalid data.");
                 }
 
-                var existingTableType = await _tableTypeDAO.GetTableTypeById(id);
+                var existingTableType = await _tableTypeRepository.GetTableTypeById(id);
                 if (existingTableType == null)
                 {
                     return NotFound("Table Type not found.");
                 }
 
-                var updatedTableType = await _tableTypeDAO.UpdateTableType(id, updateTableType);
+                var updatedTableType = await _tableTypeRepository.UpdateTableType(id, updateTableType);
                 return Ok(updatedTableType);
             }
             catch (Exception ex)
@@ -102,7 +101,7 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                var deleted = await _tableTypeDAO.DeleteTableType(id);
+                var deleted = await _tableTypeRepository.DeleteTableType(id);
                 if (!deleted.IsDeleted) return BadRequest(deleted.Message);
                 return Ok(deleted.Message);
             }

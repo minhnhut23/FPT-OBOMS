@@ -1,0 +1,52 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class TableTypeController {
+    - _tableTypeRepository: ITableTypeRepository
+    + GetAllTableTypes(): Task<IActionResult>
+}
+
+interface ITableTypeRepository {
+    + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
+}
+
+class TableTypeRepository {
+    - _tableTypeDao: TableTypeDAO
+    + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
+}
+
+class TableTypeDAO {
+    - _client: Supabase.Client
+    + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
+}
+
+class TableType {
+    + Id: Guid
+    + Name: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class GetTableTypeResponseDTO {
+    + Id: Guid
+    + Name: string
+    + Description: string?
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime?
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+TableTypeController -- ITableTypeRepository
+ITableTypeRepository <|-- TableTypeRepository
+TableTypeRepository -- TableTypeDAO
+
+TableTypeDAO -- TableType
+TableTypeDAO -- ErrorHandler
+TableTypeDAO -- GetTableTypeResponseDTO
+@enduml

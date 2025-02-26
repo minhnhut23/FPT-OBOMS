@@ -1,0 +1,74 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+class UserController{
+    - _repo: IUserRepository
+    + UpdateProfile([FromBody] UpdateProfileRequestDTO request): Task<IActionResult>
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IUserRepository {
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class UserRepository {
+    - _dao: UserDAO
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class UserDAO {
+    - _client: Client
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class GetUserResponeDTO {
+    + Email: string
+    + Password: string 
+    + ProfilePicture: string
+    + Bio: string 
+    + DateOfBirth: Datetime
+}
+
+class UpdateProfileRequestDTO {
+    + Email: string      
+    + FullName: string
+    + ProfilePicture: string     
+    + Bio: string
+    + DateOfBirth: Datetime
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+UserController -- IUserRepository 
+UserController -- UpdateProfileRequestDTO
+
+IUserRepository -- GetUserResponeDTO
+IUserRepository -- UpdateProfileRequestDTO
+IUserRepository <|-- UserRepository
+
+UserRepository -- GetUserResponeDTO
+UserRepository -- UpdateProfileRequestDTO
+UserRepository -- UserDAO
+
+UserDAO -- ErrorHandler
+UserDAO -- GetUserResponeDTO
+UserDAO -- UpdateProfileRequestDTO
+
+UserDAO o-- Profile
+
+@enduml

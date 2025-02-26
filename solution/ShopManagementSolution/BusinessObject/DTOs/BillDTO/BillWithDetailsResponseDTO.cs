@@ -5,7 +5,7 @@ namespace BusinessObject.DTOs.BillDTO
     public class BillWithDetailsResponseDTO
     {
         public Guid Id { get; set; }
-        public Guid ReservationId { get; set; }
+        public Guid? ReservationId { get; set; }
         public decimal TotalAmount { get; set; }
         public decimal? ReceivedAmount { get; set; }
         public decimal? ChangeAmount { get; set; }

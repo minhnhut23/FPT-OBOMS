@@ -2,38 +2,42 @@
 using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
+using Supabase;
+
 using static Supabase.Postgrest.Constants;
 
 namespace BusinessObject.Services
 {
     public class TableDAO
     {
-        private readonly Supabase.Client _client;
+        private readonly Client _client;
         private readonly IMapper _mapper;
 
-        public TableDAO(Supabase.Client client, IMapper mapper)
+        public TableDAO(Client client, IMapper mapper)
         {
             _client = client;
             _mapper = mapper;
         }
 
-        public async Task<(List<GetTableResponseDTO> Tables, DTOs.TableDTO.PaginationMetadataDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+        public async Task<(List<GetTableResponseDTO> Tables, PagingTableDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
         {
             try
             {
                 var query = _client.From<Table>().Select("*");
                 query = ApplyFilters(query, request);
 
+                //Count for paging
                 var counting = _client.From<Table>().Select("*");
                 counting = ApplyFilters(counting, request);
                 var totalRecordsResponse = await counting.Select("id").Get();
                 var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
                 var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
 
-
+                //Limit tables in requested page
                 var skip = (request.PageNumber - 1) * request.PageSize;
                 var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
 
+                //Show tables info
                 var tablesResponse = await paginatedQuery.Get();
                 var tableTypesResponse = await _client.From<TableType>().Select("*").Get();
                 var typeNameDict = tableTypesResponse.Models.ToDictionary(tt => tt.Id, tt => tt.Name);
@@ -50,7 +54,7 @@ namespace BusinessObject.Services
                 {
                     return (
                         new List<GetTableResponseDTO>(),
-                        new DTOs.TableDTO.PaginationMetadataDTO
+                        new PagingTableDTO
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -60,7 +64,7 @@ namespace BusinessObject.Services
                     );
                 }
 
-                var paginationMetadata = new DTOs.TableDTO.PaginationMetadataDTO
+                var paginationMetadata = new PagingTableDTO
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,
@@ -72,10 +76,10 @@ namespace BusinessObject.Services
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error fetching tables: {ex.Message}");
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-        private dynamic ApplyFilters(dynamic query, GetTableRequestDTO request)
+        private dynamic ApplyFilters(dynamic query, GetTablesRequestDTO request)
         {
             if (!string.IsNullOrEmpty(request.Status))
                 query = query.Filter("status", Operator.Equals, request.Status);
@@ -243,6 +247,69 @@ namespace BusinessObject.Services
                     IsDeleted = true,
                     Message = "Table successfully deleted."
                 };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+            }
+        }
+
+        public async Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish)
+        {
+            try
+            {
+                var table = await _client.From<Table>()
+                                         .Where(t => t.Id == tableId)
+                                         .Single();
+
+                if (table == null)
+                {
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = false,
+                        Message = "Table not found."
+                    };
+                }
+
+                // Chỉ có thể `finish` hoặc `cancel` nếu bàn đang `onusing`
+                if (table.Status != "onusing")
+                {
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = false,
+                        Message = "Table is not in use, so it cannot be canceled or finished."
+                    };
+                }
+
+                if (isFinish)
+                {
+                    // Hoàn tất đơn, đổi trạng thái bàn và in hóa đơn
+                    table.Status = "available";
+                    await _client.From<Table>().Update(table);
+
+                    var billDAO = new BillDAO(_client);
+                    var billId = await billDAO.GetBillIdByTableId(tableId);
+                    var billPath = await billDAO.GenerateAndPrintBillPdf(billId);
+
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = true,
+                        Message = "Table booking has been finished and bill printed.",
+                        BillPath = billPath
+                    };
+                }
+                else
+                {
+                    //  Hủy đặt bàn
+                    table.Status = "available";
+                    await _client.From<Table>().Update(table);
+
+                    return new UpdateTableStatusResponseDTO
+                    {
+                        Success = true,
+                        Message = "Table booking has been canceled."
+                    };
+                }
             }
             catch (Exception ex)
             {

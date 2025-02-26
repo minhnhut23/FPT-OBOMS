@@ -1,0 +1,56 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class AuthController {
+    - _repo: IAuthRepository
+    + ForgotPassword([FromBody] ForgotPasswordRequestDTO requestDTO): Task<IActionResult> 
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IAuthRepository { 
+    + ForgotPassword(string email): Task
+}
+
+class AuthRepository {
+    - _dao: AuthDAO
+    + ForgotPassword(string email): Task    
+}
+
+class AuthDAO {
+    - _client: Client
+    + ForgotPassword(string email): Task
+}
+
+class ForgotPasswordRequestDTO {
+    + Email: string
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+AuthController -- ForgotPasswordRequestDTO
+AuthController -- IAuthRepository
+
+IAuthRepository <|-- AuthRepository
+AuthRepository -- AuthDAO
+
+
+AuthDAO -- ErrorHandler
+
+AuthDAO o-- Profile
+@enduml

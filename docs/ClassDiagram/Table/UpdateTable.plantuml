@@ -1,0 +1,91 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class TableController {
+    - _tableRepository: ITableRepository
+    + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<IActionResult> 
+}
+
+interface ITableRepository {
+    + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<GetTableResponseDTO> 
+}
+
+class TableRepository {
+    - _tableDao: TableDAO
+    + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<GetTableResponseDTO>
+}
+
+class TableDAO {
+    - _client: Client
+    - _mapper: IMapper
+    + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<GetTableResponseDTO>
+    + GetTableById(Guid id) : Task<GetTableResponseDTO?>
+}
+
+class UpdateTableRequestDTO {
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + Category: string
+    + Ingredient: string
+    + NutritionalInfo: string
+    + IsAvailable: bool
+}
+
+class GetTableResponseDTO {
+    + Id: Guid
+    + TableNumber: string
+    + Capacity: int
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + TableType: string
+}
+
+class Table {
+    + Id: Guid
+    + TableNumber: string
+    + Capacity: int
+    + Status: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + ShopId: Guid
+    + TypeId: Guid
+}
+
+class MappingProfile {
+  + MappingProfile()
+}
+
+class TableType {
+    + Id: Guid
+    + Name: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+TableController -- ITableRepository
+ITableRepository <|-- TableRepository
+TableRepository -- TableDAO
+TableDAO -- Table 
+TableDAO -- TableType
+TableDAO -- GetTableResponseDTO
+TableDAO -- UpdateTableRequestDTO
+TableDAO -- MappingProfile
+TableDAO -- ErrorHandler
+
+Table -- TableType
+MappingProfile -- Table : Maps
+MappingProfile -- GetTableResponseDTO : Maps
+
+@enduml

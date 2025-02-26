@@ -1,0 +1,67 @@
+@startuml 
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class AuthController {
+    - _repo: IAuthRepository
+    + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
+}
+
+class ErrorHandler {
+    + IsJson(string input): bool
+    + ProcessErrorMessage(string exceptionMessage): string
+} 
+
+interface IAuthRepository {
+    + Login(string email, string password): Task<LoginResponseDTO>
+}
+
+class AuthRepository {
+    - _dao: AuthDAO
+    + Login(string email, string password): Task<LoginResponseDTO>
+}
+
+class AuthDAO {
+    - _client: Client
+    + Login(string email, string password): Task<LoginResponseDTO>
+}
+
+class LoginRequestDTO{
+    + Email: string
+    + Password: string 
+}
+
+class LoginResponseDTO{
+    + AccessToken: string
+    + RefreshToken: string
+    + ExpiresAt: DateTime
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+
+
+AuthController -- LoginRequestDTO
+AuthController -- IAuthRepository
+
+IAuthRepository -- LoginResponseDTO
+IAuthRepository <|-- AuthRepository
+AuthRepository -- LoginResponseDTO
+AuthRepository -- AuthDAO
+
+AuthDAO -- ErrorHandler
+AuthDAO -- LoginResponseDTO
+
+AuthDAO o-- Profile
+@enduml
