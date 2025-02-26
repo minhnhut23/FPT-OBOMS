@@ -34,7 +34,7 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-application: "Application"
+application: "Web Application"
 apiGateway: "API Gateway"
 TableController: "TableController"
 TableRepository: "TableRepository"
@@ -44,33 +44,31 @@ DB: "DB" {
 }
 
 # Get all tables sequence
-User -> application.bar: "1. View all tables"
-User -> application.bar: "2. Select filters"
-application -> apiGateway.bar: "3. Forward request"
-apiGateway -> TableController.bar: "4. Forward to TableController"
-TableController -> TableRepository.bar: "5. Call GetAllTables()"
-TableRepository -> TableDAO.bar: "6. Fetch tables from DB"
+User -> application.bar: "1. User views table list \n (or apply filters)"
+application -> apiGateway.bar: "2. Forward request"
+apiGateway -> TableController.bar: "3. Forward to TableController"
+TableController -> TableRepository.bar: "4. Call GetAllTables()"
+TableRepository -> TableDAO.bar: "5. Fetch tables from DB"
 
 # Query database with filters
-TableDAO -> DB.bar: "7. Query tables with filters"
-DB.bar -> TableDAO.bar: "8. Return table list" {class:return_arrow}
+TableDAO -> DB.bar: "6. Query tables with filters"
+DB.bar -> TableDAO.bar: "7. Return table list" {class:return_arrow}
+TableDAO.bar -> TableRepository.bar: "8. Return response"{class:return_arrow}
+TableRepository.bar -> TableController.bar: "9. Return response"{class:return_arrow}
 alt: "alt" {
   class: frame
-  Incorrect credentials: "[No tables found]" {
-  # Conditional branch for incorrect credentials
-  TableDAO.bar -> TableRepository.bar: "9a. Return empty response"{class:return_arrow}
-  TableRepository.bar -> TableController.bar: "10a. Return empty response"{class:return_arrow}
-  TableController.bar -> apiGateway.bar: "11a. Send empty response"{class:return_arrow}
-  apiGateway.bar -> application.bar: "12a. Forward empty response"{class:return_arrow}
-  application.bar -> User: "13a. Display empty table list"{class:return_arrow}
-  }
   Correct credentials: "[Tables found]" {
     # Successful login branch
-    TableDAO.bar -> TableRepository.bar: "9b. Return tables with filter"{class:return_arrow}
-    TableRepository.bar -> TableController.bar: "10b. Return tables data"{class:return_arrow}
-    TableController.bar -> apiGateway.bar: "11b. Send response"{class:return_arrow}
-    apiGateway.bar -> application.bar: "12b. Forward response"{class:return_arrow}
-    application.bar -> User: "13b. Display table list"{class:return_arrow}
+    TableController.bar -> apiGateway.bar: "9.1. Send response"{class:return_arrow}
+    apiGateway.bar -> application.bar: "9.1.1. Forward response"{class:return_arrow}
+    application.bar -> User: "9.1.1.1. Display table list"{class:return_arrow}
   }
+  Incorrect credentials: "[No tables found]" {
+    # Conditional branch for incorrect credentials
+   
+    TableController.bar -> apiGateway.bar: "9.2. Send empty response"{class:return_arrow}
+    apiGateway.bar -> application.bar: "9.2.1. Forward empty response"{class:return_arrow}
+    application.bar -> User: "9.2.1.1. Display not found tables"{class:return_arrow}
+    }
 }
 

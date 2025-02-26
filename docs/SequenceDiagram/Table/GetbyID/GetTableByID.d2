@@ -42,34 +42,26 @@ TableDAO: "TableDAO"
 DB: "DB" {
   shape: cylinder
 }
+User -> application.bar: "1. Select a table"
+application -> apiGateway.bar: "2. Forward request"
+apiGateway -> TableController.bar: "3. Forward to TableController"
+TableController -> TableRepository.bar: "4. Call GetTableById()"
+TableRepository -> TableDAO.bar: "5. Fetch tables from DB"
+TableDAO -> DB.bar: "6. Query table details"
+DB.bar -> TableDAO.bar: "7. Return table details" {class:return_arrow}
+TableDAO.bar -> TableRepository.bar: "8. Return response"{class:return_arrow}
+TableRepository.bar -> TableController.bar: "9. Return response"{class:return_arrow}
 
-# Get all tables sequence
-User -> application.bar: "1. Select a table "
-application -> apiGateway.bar: "3. Forward request"
-apiGateway -> TableController.bar: "4. Forward to TableController"
-TableController -> TableRepository.bar: "5. Call GetTableById()"
-TableRepository -> TableDAO.bar: "6. Fetch tables from DB"
-
-# Query database with filters
-TableDAO -> DB.bar: "7. Query table details"
-DB.bar -> TableDAO.bar: "8. Return table details" {class:return_arrow}
-alt: "alt" {
+alt {
   class: frame
-  Incorrect credentials: "[No table found]" {
-  # Conditional branch for incorrect credentials
-  TableDAO.bar -> TableRepository.bar: "9a. Return empty response"{class:return_arrow}
-  TableRepository.bar -> TableController.bar: "10a. Return empty response"{class:return_arrow}
-  TableController.bar -> apiGateway.bar: "11a. Send 404 error notification"{class:return_arrow}
-  apiGateway.bar -> application.bar: "12a. Forward response"{class:return_arrow}
-  application.bar -> User: "13a. Display 404 error notification"{class:return_arrow}
+  "No table found": {
+    TableController.bar -> apiGateway.bar: "9.1. Send 404 error notification"{class:return_arrow}
+    apiGateway.bar -> application.bar: "9.1.1. Forward response"{class:return_arrow}
+    application.bar -> User: "9.1.1.1. Display 404 error notification"{class:return_arrow}
   }
-  Correct credentials: "[Tables found]" {
-    # Successful login branch
-    TableDAO.bar -> TableRepository.bar: "9b. Return table details"{class:return_arrow}
-    TableRepository.bar -> TableController.bar: "10b. Return table data"{class:return_arrow}
-    TableController.bar -> apiGateway.bar: "11b. Send response"{class:return_arrow}
-    apiGateway.bar -> application.bar: "12b. Forward response"{class:return_arrow}
-    application.bar -> User: "13b. Display table information"{class:return_arrow}
+  "Tables found": {
+    TableController.bar -> apiGateway.bar: "9.2. Send response"{class:return_arrow}
+    apiGateway.bar -> application.bar: "9.2.1. Forward response"{class:return_arrow}
+    application.bar -> User: "9.2.1.1. Display table information"{class:return_arrow}
   }
 }
-
