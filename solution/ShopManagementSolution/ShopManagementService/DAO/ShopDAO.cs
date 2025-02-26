@@ -1,11 +1,7 @@
 ﻿using BusinessObject.DTOs.ShopDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
-using Supabase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using ShopManagementService.Utils;
 
 namespace BusinessObject.Services
 {
@@ -35,10 +31,10 @@ namespace BusinessObject.Services
                     OpeningHours = shop.OpeningHours,
                     ClosingHours = shop.ClosingHours,
                     Rating = shop.Rating,
-                    CuisineType = shop.CuisineType,
                     Latitude = shop.Latitude,
                     Longitude = shop.Longitude,
-                    OwnerId = shop.OwnerId
+                    OwnerId = shop.OwnerId,
+                    Status = ShopStatusHelper.GetShopStatus(shop.OpeningHours, shop.ClosingHours)
                 }).ToList();
             }
             catch (Exception ex)
@@ -54,6 +50,8 @@ namespace BusinessObject.Services
                 var shopResponse = await _client.From<Shop>().Where(s => s.Id == id).Single();
                 if (shopResponse == null) return null;
 
+                TimeSpan now = DateTime.Now.TimeOfDay;
+
                 return new ShopResponseDTO
                 {
                     Id = shopResponse.Id,
@@ -64,10 +62,10 @@ namespace BusinessObject.Services
                     OpeningHours = shopResponse.OpeningHours,
                     ClosingHours = shopResponse.ClosingHours,
                     Rating = shopResponse.Rating,
-                    CuisineType = shopResponse.CuisineType,
                     Latitude = shopResponse.Latitude,
                     Longitude = shopResponse.Longitude,
-                    OwnerId = shopResponse.OwnerId
+                    OwnerId = shopResponse.OwnerId,
+                    Status = ShopStatusHelper.GetShopStatus(shopResponse.OpeningHours, shopResponse.ClosingHours)
                 };
             }
             catch (Exception ex)
@@ -90,7 +88,6 @@ namespace BusinessObject.Services
                     OpeningHours = createShop.OpeningHours,
                     ClosingHours = createShop.ClosingHours,
                     Rating = createShop.Rating,
-                    CuisineType = createShop.CuisineType,
                     Latitude = createShop.Latitude,
                     Longitude = createShop.Longitude,
                     OwnerId = createShop.OwnerId,
@@ -111,7 +108,6 @@ namespace BusinessObject.Services
                     OpeningHours = shop.OpeningHours,
                     ClosingHours = shop.ClosingHours,
                     Rating = shop.Rating,
-                    CuisineType = shop.CuisineType,
                     Latitude = shop.Latitude,
                     Longitude = shop.Longitude,
                     OwnerId = shop.OwnerId
@@ -137,7 +133,6 @@ namespace BusinessObject.Services
                 shop.OpeningHours = updateShop.OpeningHours ?? shop.OpeningHours;
                 shop.ClosingHours = updateShop.ClosingHours ?? shop.ClosingHours;
                 shop.Rating = updateShop.Rating ?? shop.Rating;
-                shop.CuisineType = updateShop.CuisineType ?? shop.CuisineType;
                 shop.Latitude = updateShop.Latitude ?? shop.Latitude;
                 shop.Longitude = updateShop.Longitude ?? shop.Longitude;
                 shop.UpdatedAt = DateTime.UtcNow;
@@ -155,7 +150,6 @@ namespace BusinessObject.Services
                     OpeningHours = shop.OpeningHours,
                     ClosingHours = shop.ClosingHours,
                     Rating = shop.Rating,
-                    CuisineType = shop.CuisineType,
                     Latitude = shop.Latitude,
                     Longitude = shop.Longitude,
                     OwnerId = shop.OwnerId

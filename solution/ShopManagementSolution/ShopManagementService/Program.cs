@@ -63,6 +63,7 @@ namespace ShopManagementService
             builder.Services.AddTransient<IBillDetailRepository, BillDetailRepository>();
             builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
             builder.Services.AddScoped<ShopDAO>();
+            builder.Services.AddTransient<IShopRepository, ShopRepositoy>();
 
             builder.Services.AddScoped<SubscriptionDAO>();
             builder.Services.AddTransient<ISubscriptionRepository, SubscriptionsRepository>();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BusinessObject.DTOs.SubscriptionDTO;
+using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Controllers;
@@ -26,5 +27,19 @@ public class SubscriptionController : Controller
             return BadRequest(new { msg = ex.Message });
         }
     }
-    
+
+    [HttpPost]
+    public async Task<IActionResult> Create(CreateSubscriptionRequestDTO request)
+    {
+        try
+        {
+            await _repo.CreateSubscription(request);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
+
 }

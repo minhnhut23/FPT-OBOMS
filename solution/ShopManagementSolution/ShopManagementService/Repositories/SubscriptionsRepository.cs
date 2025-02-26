@@ -1,4 +1,5 @@
-﻿using BusinessObject.Models;
+﻿using BusinessObject.DTOs.SubscriptionDTO;
+using BusinessObject.Models;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 
@@ -13,5 +14,7 @@ public class SubscriptionsRepository : ISubscriptionRepository
         _dao = dao;
     }
 
-    public Task<List<Subscriptions>> GetAllSubscriptions() => _dao.GetAll();
+    public Task CreateSubscription(CreateSubscriptionRequestDTO request) => _dao.Create(request);
+
+    public Task<List<SubscriptionResponseDTO>> GetAllSubscriptions() => _dao.GetAll();
 }
