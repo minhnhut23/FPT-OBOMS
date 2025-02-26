@@ -89,7 +89,9 @@ public class AuthController : Controller
         {
             return BadRequest(new { msg = ex.Message });
         }
-    }[HttpPost("changePassword")]
+    }
+    
+    [HttpPost("changePassword")]
     [Authorize]
     public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequestDTO requestDTO)
     {

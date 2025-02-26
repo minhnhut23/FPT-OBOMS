@@ -43,5 +43,4 @@ IBillRepository <|.. BillRepository
 BillRepository -- BillDAO
 BillDAO -- Bill
 
-
 @enduml

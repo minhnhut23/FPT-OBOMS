@@ -9,9 +9,9 @@ namespace ShopManagementService.IRepositories
 
         Task<GetTableResponseDTO?> GetTableById(Guid id);
         Task<bool> GetTableByNumber(string number, Guid shopId);
-        Task<GetTableResponseDTO> CreateTable(CreateTableRequestDTO createTable);
-        Task<GetTableResponseDTO> UpdateTable(Guid id, UpdateTableRequestDTO updateTable);
-        Task<DeleteTableRequestDTO> DeleteTable(Guid id);
+        Task<CUDTableResponseDTO> CreateTable(CreateTableRequestDTO createTable);
+        Task<CUDTableResponseDTO> UpdateTable(Guid id, UpdateTableRequestDTO updateTable);
+        Task<CUDTableResponseDTO> DeleteTable(Guid id);
 
         Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish);
     }

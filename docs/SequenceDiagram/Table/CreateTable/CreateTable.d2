@@ -1,0 +1,74 @@
+classes: {
+    return_arrow: {
+      style: {
+        stroke-dash: 3
+      }
+    }
+    frame: {
+      style: {
+        fill: '#EAEDF0'
+        stroke-width: 1
+      }
+    }
+}
+shape: sequence_diagram
+  User: {
+    shape: image
+    width: 50
+    height: 60
+    icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+# Setting
+  application: "Web Application"
+  apiGateway: "API Gateway"
+  TableController: "TableController"
+  TableRepository: "TableRepository"
+  TableDAO: "TableDAO"
+  Supabase: "Supabase"
+  DB: "Database" {
+    shape: cylinder
+  }
+
+#Flow
+User -> application.bar: "1. Create Table Request"
+application -> apiGateway.bar: "2. Forward request"
+apiGateway -> TableController.bar: "3. Forward to TableController"
+TableController -> TableRepository.bar: "4. Validate data"
+TableRepository -> TableDAO.bar: "5. Check if Shop ID exists"
+TableDAO -> Supabase.post: "6. Check token"
+Supabase.post -> DB.post: "7. Check user in database"
+DB.post -> TableDAO.bar: "8. Return result"{class:return_arrow}
+TableDAO -> DB.bar: "9. Validate and create table"
+DB.bar -> TableDAO.bar: "10. Return result" {class:return_arrow}
+TableDAO.bar -> TableRepository.bar: "11. Return response"{class:return_arrow}
+TableRepository.bar -> TableController.bar: "12. Return response" {class:return_arrow}
+# Conditions
+alt {
+  class: frame
+  "Table created successfully": {
+    TableController.bar -> apiGateway.bar: "12.1. Successfully created"{class:return_arrow}
+    apiGateway.bar -> application.bar: "12.1.1. Forward response"{class:return_arrow}
+    application -> User: "12.1.1.1. Show confirmation message"{class:return_arrow}
+  }
+  "Unauthorized access": {
+    TableController.bar -> apiGateway.bar: "12.2. Unauthorized request"{class:return_arrow}
+    apiGateway.bar -> application.bar: "12.2.1. Forward error"{class:return_arrow}
+    application.bar -> User: "12.2.1.1. Display access denied message"{class:return_arrow}
+  }
+  "Shop not found": {
+    TableController.bar -> apiGateway.bar: "12.3. Shop ID does not exist"{class:return_arrow}
+    apiGateway.bar -> application.bar: "12.3.1. Forward error"{class:return_arrow}
+    application.bar -> User: "12.3.1.1. Display shop not found message"{class:return_arrow}
+  }
+  "Table already exists": {
+    TableController.bar -> apiGateway.bar: "12.4. Table number already exists"{class:return_arrow}
+    apiGateway.bar -> application.bar: "12.4.1. Forward error"{class:return_arrow}
+    application.bar -> User: "12.4.1.1. Display duplicate table message"{class:return_arrow}
+  }
+  "Insert failed": {
+    TableController.bar -> apiGateway.bar: "12.5. Insert failed"{class:return_arrow}
+    apiGateway.bar -> application.bar: "12.5.1. Forward error"{class:return_arrow}
+    application.bar -> User: "12.5.1.1. Display insert failed message"{class:return_arrow}
+  }
+}
+
