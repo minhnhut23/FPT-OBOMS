@@ -45,35 +45,29 @@ DB: "DB" {
   shape: cylinder
 }
 
-# User registration sequence
-loop  { 
-  class: frame
-  User -> application.post: "1. Enter Create Subscription form"
-  application.post -> application.post.get: "2. Check empty and valid input"    
-  application.post -> User: "2.1. Show validation message" {class: return arrow}        
-}  
- 
-application -> apiGateway.post: "3. Forward Create Subscription request"
-apiGateway -> SubscriptionController.post: "4. Forward Create Subscription request"
-SubscriptionController -> SubscriptionRepository.post: "5. Forward to repository"
-SubscriptionRepository -> SubscriptionDAO.post: "6. Forward to DAO"
-SubscriptionDAO.post -> Supabase.post: "7. Validate token"
-Supabase.post-> DB.insert: "8. Insert new Subscription"
-DB.insert -> SubscriptionDAO.post: "9. Return result" {class: return arrow}
+# Get Subsrciption sequence
+User -> application.post: "1. Send request get all subscription" 
+application -> apiGateway.post: "2. Forward Get Subscription request"
+apiGateway -> SubscriptionController.post: "3. Forward Get Subscription request"
+SubscriptionController -> SubscriptionRepository.post: "4. Forward to repository"
+SubscriptionRepository -> SubscriptionDAO.post: "5. Forward to DAO"
+SubscriptionDAO.post -> Supabase.post: "6. Validate token"
+Supabase.post-> DB.insert: "7. Get Subscription"
+DB.insert -> SubscriptionDAO.post: "8. Return result" {class: return arrow}
 SubscriptionDAO.post -> SubscriptionRepository.post: "10. Forward result" {class: return arrow}
 SubscriptionRepository.post -> SubscriptionController.post: "11. Return result" {class: return arrow}
 
 
 alt: "alt" {
   class: frame
-  Registration successful: "[Create successful]" {
+  Get Subscription successful: "[Get Subscription successful]" {
     SubscriptionController.post -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
     apiGateway.post -> application.post: "11.1.1. Return success status" {class: return arrow}
-    application.post -> User: "11.1.1.1. Display create success message" {class: return arrow}
+    application.post -> User: "11.1.1.1. Display Subscription success message" {class: return arrow}
   }
-  Registration failed: "[Create failed]" { 
+  Get Subscription failed: "[GEt Subscription failed]" { 
     SubscriptionController.post -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
     apiGateway.post -> application.post: "11.2.1. Return error status" {class: return arrow}
-    application.post -> User: "11.2.1.1. Display create subscription error message" {class: return arrow}
+    application.post -> User: "11.2.1.1. Display error message" {class: return arrow}
   }
 }
