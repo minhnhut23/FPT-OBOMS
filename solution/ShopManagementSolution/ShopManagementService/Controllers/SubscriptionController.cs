@@ -18,7 +18,7 @@ public class SubscriptionController : Controller
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        try        
+        try
         {
             return Ok(await _repo.GetAllSubscriptions());
         }
@@ -42,4 +42,29 @@ public class SubscriptionController : Controller
         }
     }
 
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(Guid id)
+    {
+        try
+        {
+            return Ok(await _repo.GetById(id));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
+
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(Guid id, UpdateSubscriptionRequestDTO request)
+    {
+        try
+        {
+            return Ok(await _repo.GetById(id));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+    }
 }

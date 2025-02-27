@@ -17,4 +17,8 @@ public class SubscriptionsRepository : ISubscriptionRepository
     public Task CreateSubscription(CreateSubscriptionRequestDTO request) => _dao.Create(request);
 
     public Task<List<SubscriptionResponseDTO>> GetAllSubscriptions() => _dao.GetAll();
+
+    public Task<SubscriptionResponseDTO> GetById(Guid requestId) => _dao.GetById(requestId);
+
+    public Task<SubscriptionResponseDTO> Update(Guid requestId, UpdateSubscriptionRequestDTO request) => _dao.Update(requestId, request);
 }
