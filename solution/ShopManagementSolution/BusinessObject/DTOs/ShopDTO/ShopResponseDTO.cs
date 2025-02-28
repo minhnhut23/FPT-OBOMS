@@ -20,5 +20,6 @@ namespace BusinessObject.DTOs.ShopDTO
         public decimal? Longitude { get; set; }
         public Guid OwnerId { get; set; }
         public string? Status { get; set; }
+        public string SubscriptionName { get; set; } = null!;
     }
 }

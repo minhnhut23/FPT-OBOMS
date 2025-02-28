@@ -3,6 +3,7 @@ using Supabase.Postgrest.Models;
 
 namespace BusinessObject.Models;
 
+[Table("shop_subscriptions")]
 public class ShopSubscriptions : BaseModel
 {
     [PrimaryKey("id")]
@@ -23,6 +24,6 @@ public class ShopSubscriptions : BaseModel
     [Column("shop_id")]
     public Guid ShopId { get; set; }
 
-    [Column("supcription_id")]
+    [Column("subscription_id")]
     public Guid SubscriptionId { get; set; }
 }

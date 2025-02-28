@@ -60,7 +60,7 @@ public class SubscriptionController : Controller
     {
         try
         {
-            return Ok(await _repo.GetById(id));
+            return Ok(await _repo.Update(id, request));
         }
         catch (Exception ex)
         {

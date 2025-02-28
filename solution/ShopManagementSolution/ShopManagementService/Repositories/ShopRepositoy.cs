@@ -1,4 +1,5 @@
 ﻿using BusinessObject.DTOs.ShopDTO;
+using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Services;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
@@ -14,11 +15,11 @@ public class ShopRepositoy : IShopRepository
         _dao = dao;
     }
 
-    public Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop) => _dao.CreateShop(createShop);
+    public Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop, string token) => _dao.CreateShop(createShop, token);
 
     public Task<DeleteShopResponseDTO> DeleteShop(Guid id) => _dao.DeleteShop(id);
 
-    public Task<List<ShopResponseDTO>> GetAllShops() => _dao.GetAllShops();
+    public Task<(List<ShopResponseDTO> Shops, PagingTableDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request) => _dao.GetAllShops(request);
 
     public Task<ShopResponseDTO?> GetShopById(Guid id) => _dao.GetShopById(id);
 

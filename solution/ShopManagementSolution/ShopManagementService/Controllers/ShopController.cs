@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using ShopManagementService.IRepositories;
+using BusinessObject.DTOs.TableDTO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BusinessObject.Controllers
 {
@@ -20,11 +22,11 @@ namespace BusinessObject.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllShops()
+        public async Task<IActionResult> GetAllShops([FromQuery] GetShopRequestDTO request)
         {
             try
             {
-                var shops = await _repo.GetAllShops();
+                var shops = await _repo.GetAllShops(request);
                 return Ok(shops);
             }
             catch (Exception ex)
@@ -53,6 +55,7 @@ namespace BusinessObject.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateShop([FromBody] CreateShopRequestDTO createShop)
         {
             try
@@ -61,8 +64,10 @@ namespace BusinessObject.Controllers
                 {
                     return BadRequest("Invalid input data.");
                 }
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-                var createdShop = await _repo.CreateShop(createShop);
+
+                var createdShop = await _repo.CreateShop(createShop, token);
                 return CreatedAtAction(nameof(GetShopById), new { id = createdShop.Id }, createdShop);
             }
             catch (Exception ex)
