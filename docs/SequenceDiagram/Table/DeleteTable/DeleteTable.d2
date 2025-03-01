@@ -29,40 +29,47 @@ DB: "Database" {
   shape: cylinder
 }
 
+# User Authentication Loop
+loop:"loop [Empty or invalid input]" { 
+  class: frame
+  User -> application.bar: "1. Submit table deletion request"
+  application.bar -> application.get: "2. Check empty and valid input"     
+  application.bar -> User: "2.1. Show validation message" {class: return_arrow}           
+}   
+
 # Flow
-User -> application.bar: "1. Delete Table Request"
-application -> apiGateway.bar: "2. Forward request"
-apiGateway -> TableController.bar: "3. Forward to TableController"
-TableController -> TableRepository.bar: "4. Validate data"
-TableRepository -> TableDAO.bar: "5. Check if Table ID exists"
-TableDAO -> Supabase.post: "6. Check token"
-Supabase.post -> DB.post: "7. Check user in database"
-DB.post -> TableDAO.bar: "8. Return result" {class:return_arrow}
-TableDAO -> DB.bar: "9. Delete table"
-DB.bar -> TableDAO.bar: "10. Return delete result" {class:return_arrow}
-TableDAO.bar -> TableRepository.bar: "11. Return response" {class:return_arrow}
-TableRepository.bar -> TableController.bar: "12. Return response" {class:return_arrow}
+application.bar -> apiGateway.bar: "3. Forward request"
+apiGateway -> TableController.bar: "4. Forward to TableController"
+TableController -> TableRepository.bar: "5. Forward delete request"
+TableRepository -> TableDAO.bar: "6. Call delete function"
+TableDAO -> Supabase.post: "7. Check token"
+Supabase.post -> DB.post: "8. Check user in database"
+DB.post -> TableDAO.bar: "9. Return result" {class:return_arrow}
+TableDAO -> DB.bar: "10. Delete table"
+DB.bar -> TableDAO.bar: "11. Return delete result" {class:return_arrow}
+TableDAO.bar -> TableRepository.bar: "12. Return response" {class:return_arrow}
+TableRepository.bar -> TableController.bar: "13. Return response" {class:return_arrow}
 # Conditions
 alt {
   class: frame
   "Table deleted successfully": {
-    TableController.bar -> apiGateway.bar: "12.1. Successfully deleted" {class:return_arrow}
-    apiGateway.bar -> application.bar: "12.1.1. Forward response" {class:return_arrow}
-    application -> User: "12.1.1.1. Show confirmation message" {class:return_arrow}
+    TableController.bar -> apiGateway.bar: "13.1. Successfully deleted" {class:return_arrow}
+    apiGateway.bar -> application.bar: "13.1.1. Forward response" {class:return_arrow}
+    application -> User: "13.1.1.1. Show confirmation message" {class:return_arrow}
   }
   "Unauthorized access": {
-    TableController.bar -> apiGateway.bar: "12.2. Unauthorized request" {class:return_arrow}
-    apiGateway.bar -> application.bar: "12.2.1. Forward error" {class:return_arrow}
-    application.bar -> User: "12.2.1.1. Display access denied message" {class:return_arrow}
+    TableController.bar -> apiGateway.bar: "13.2. Unauthorized request" {class:return_arrow}
+    apiGateway.bar -> application.bar: "13.2.1. Forward error" {class:return_arrow}
+    application.bar -> User: "13.2.1.1. Display unauthorized message" {class:return_arrow}
   }
   "Table not found": {
-    TableController.bar -> apiGateway.bar: "12.3. Table ID does not exist" {class:return_arrow}
-    apiGateway.bar -> application.bar: "12.3.1. Forward error" {class:return_arrow}
-    application.bar -> User: "12.3.1.1. Display table not found message" {class:return_arrow}
+    TableController.bar -> apiGateway.bar: "13.3. Table ID does not exist" {class:return_arrow}
+    apiGateway.bar -> application.bar: "13.3.1. Forward error" {class:return_arrow}
+    application.bar -> User: "13.3.1.1. Display not found message" {class:return_arrow}
   }
   "Table has active Bills": {
-    TableController.bar -> apiGateway.bar: "12.4. Cannot delete table with active bills" {class:return_arrow}
-    apiGateway.bar -> application.bar: "12.4.1. Forward error" {class:return_arrow}
-    application.bar -> User: "12.4.1.1. Display 'Cannot delete table with active bills' message" {class:return_arrow}
+    TableController.bar -> apiGateway.bar: "13.4. Cannot delete table with active bills" {class:return_arrow}
+    apiGateway.bar -> application.bar: "13.4.1. Forward error" {class:return_arrow}
+    application.bar -> User: "13.4.1.1. Display error message" {class:return_arrow}
   }
 }
