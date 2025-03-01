@@ -16,13 +16,17 @@ namespace BusinessObject.Models
         public string Name { get; set; }
 
         [Column("description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
+
+        [Column("price_by_hour")]
+        [Range(0, double.MaxValue, ErrorMessage = "Price must be a positive value.")]
+        public decimal? PriceByHour { get; set; }
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
         [Column("updated_at")]
-        public DateTime UpdatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 
 }

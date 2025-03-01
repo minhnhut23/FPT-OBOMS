@@ -2,10 +2,6 @@
 using BusinessObject.Models;
 using BusinessObject.Utils;
 using Supabase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BusinessObject.Services
 {
@@ -18,30 +14,7 @@ namespace BusinessObject.Services
             _client = client;
         }
 
-        public async Task<List<BillDetailResponseDTO>> GetAllBillDetails()
-        {
-            try
-            {
-                var response = await _client.From<BillDetail>().Get();
-                var billDetails = response.Models;
-
-                return billDetails.Select(bd => new BillDetailResponseDTO
-                {
-                    Id = bd.Id,
-                    MenuItemId = bd.MenuItemId,
-                    Quantity = bd.Quantity,
-                    Price = bd.Price,
-                    CreatedAt = bd.CreatedAt,
-                    UpdatedAt = bd.UpdatedAt
-                }).ToList();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-            }
-        }
-
-        public async Task<BillDetailResponseDTO?> GetBillDetailById(Guid id)
+        public async Task<BillDetailResponseDTO?> GetBillDetailByID(Guid id)
         {
             try
             {
@@ -98,7 +71,6 @@ namespace BusinessObject.Services
             }
         }
 
-
         public async Task<BillDetailResponseDTO> UpdateBillDetail(Guid id, UpdateBillDetailRequestDTO updateBillDetail)
         {
             try
@@ -134,7 +106,7 @@ namespace BusinessObject.Services
         {
             try
             {
-                var billDetail = await GetBillDetailById(id);
+                var billDetail = await GetBillDetailByID(id);
                 if (billDetail == null) return new DeleteBillDetailResponseDTO { IsDeleted = false, Message = "Bill detail not found." };
 
                 await _client.From<BillDetail>().Where(x => x.Id == id).Delete();

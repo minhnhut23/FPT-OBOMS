@@ -1,0 +1,75 @@
+label.style.font-color: black
+
+classes: {
+  forward arrow: {
+    style: {
+      font-color: black
+      bold: true
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+      bold: true
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+      bold: true
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+WebAplication: Web Aplication
+apiGateway: API Gateway
+ProductController: ProductController
+ProductRepository: ProductRepository
+ProductDAO: ProductDAO
+
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> WebAplication.get: 1. User view product\n(or apply filters) {class: forward arrow}
+WebAplication.get -> apiGateway.get: 2. Forward Request {class: forward arrow}
+apiGateway.get -> ProductController.get: 3. Forward to\n Controller {class: forward arrow}
+ProductController.get -> ProductRepository.get: 4. Call\n GetAllProduct() {class: forward arrow}
+ProductRepository.get -> ProductDAO.get: 5. Fetch product\n from DB {class: forward arrow}
+ProductDAO.get -> DB.get: 6. Query\n product by ID {class: forward arrow}
+DB.get -> ProductDAO.get: 7. Return\n result {class: return arrow}
+ProductDAO.get -> ProductRepository.get: 9. Forward\n result {class: return arrow}
+ProductRepository.get -> ProductController.get: 10. Return\n product {class: return arrow}
+
+alt: "alt" {
+    If product found: "[Product found]" {
+      class: frame  
+      ProductController.get -> apiGateway.get: 10.1. Send\n response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 10.1.1. Forward\n response {class: return arrow}
+      WebAplication.get -> User: 10.1.1.1. Display\n product found {class: return arrow}
+    }
+    If product not found: "[Product not found]" {
+      class: frame
+      ProductController.get -> apiGateway.get: 10.2. Send\n empty response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 10.2.1. Forward\n empty response {class: return arrow}
+      WebAplication.get -> User: 10.2.1.1. Display\n product not found {class: return arrow}
+    }
+}

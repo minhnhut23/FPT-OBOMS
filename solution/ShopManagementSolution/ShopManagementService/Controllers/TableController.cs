@@ -26,6 +26,11 @@ namespace ShopManagementService.Controllers
             {
                 var (tables, paginationMetadata) = await _tableRepository.GetAllTables(request);
 
+                if (tables.Count == 0)
+                {
+                    return NotFound(new { Message = "No tables found matching the criteria." });
+                }
+
                 var response = new
                 {
                     Data = tables,
@@ -51,7 +56,7 @@ namespace ShopManagementService.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
+                return BadRequest(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
 
@@ -61,28 +66,21 @@ namespace ShopManagementService.Controllers
             try
             {
                 if (createTable == null)
-                {
-                    return BadRequest("Invalid data provided.");
-                }
-
-                if (!await _tableRepository.GetTableByNumber(createTable.TableNumber, createTable.ShopId))
-                {
-                    return Conflict("Table number already exists for this shop.");
-                }
+                    return BadRequest(new { Message = "Invalid data provided." });
 
                 if (createTable.Capacity <= 0)
-                {
-                    return BadRequest("Capacity must be a positive number.");
-                }
+                    return BadRequest(new { Message = "Capacity must be a positive number." });
 
                 var createdTable = await _tableRepository.CreateTable(createTable);
-                return Ok($"Created successfully!");
+                if (!createdTable.Success) return BadRequest(createdTable.Message);
+                return Ok(createdTable);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
+                return StatusCode(500, new { Message = ErrorHandler.ProcessErrorMessage(ex.Message) });
             }
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateTable(Guid id, [FromBody] UpdateTableRequestDTO updateTable)
@@ -91,43 +89,55 @@ namespace ShopManagementService.Controllers
             {
                 if (updateTable == null)
                 {
-                    return BadRequest("Invalid data.");
-                }
-
-                if (await _tableRepository.GetTableById(id) == null)
-                {
-                    return NotFound("Table not found.");
+                    return BadRequest(new CUDTableResponseDTO
+                    {
+                        Success = false,
+                        Message = "Invalid data."
+                    });
                 }
 
                 if (updateTable.Capacity <= 0)
                 {
-                    return BadRequest("Capacity must be a positive number.");
+                    return BadRequest(new CUDTableResponseDTO
+                    {
+                        Success = false,
+                        Message = "Capacity must be a positive number."
+                    });
                 }
 
-                var updatedTable = await _tableRepository.UpdateTable(id, updateTable);
-                return Ok(updatedTable);
+                var response = await _tableRepository.UpdateTable(id, updateTable);
+                return response.Success ? Ok(response) : BadRequest(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
+                return StatusCode(500, new CUDTableResponseDTO
+                {
+                    Success = false,
+                    Message = ErrorHandler.ProcessErrorMessage(ex.Message)
+                });
             }
         }
+
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTable(Guid id)
         {
             try
             {
-                var deleted = await _tableRepository.DeleteTable(id);
-                if (!deleted.IsDeleted) return BadRequest(deleted.Message);
-                return Ok(deleted.Message);
+                var response = await _tableRepository.DeleteTable(id);
+                return response.Success ? Ok(response) : NotFound(response);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, ErrorHandler.ProcessErrorMessage(ex.Message));
+                return StatusCode(500, new CUDTableResponseDTO
+                {
+                    Success = false,
+                    Message = ErrorHandler.ProcessErrorMessage(ex.Message)
+                });
             }
         }
 
+/*
         [HttpPatch("{id}/status")]
         public async Task<IActionResult> UpdateTableStatus(Guid id, [FromQuery] bool isFinish)
         {
@@ -136,6 +146,6 @@ namespace ShopManagementService.Controllers
                 return NotFound(result.Message);
 
             return Ok(result);
-        }
+        }*/
     }
 }

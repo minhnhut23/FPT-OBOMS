@@ -10,8 +10,6 @@ classes: {
   return arrow: {
     style: {
       stroke-dash: 3
-      stroke: black
-      font-color: black
     }
   }
 
@@ -36,50 +34,44 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-application: "chat application"
-apiGateway: "apiGateway"
-AuthController: "authController"
-AuthRepository: "authRepository"
-AuthDAO: "authDAO"
-Supabase: "supabase"
+application: "Web application"
+apiGateway: "ApiGateway"
+AuthController: "AuthController"
+AuthRepository: "AuthRepository"
+AuthDAO: "AuthDAO"
+Supabase: "Supabase"
 DB: "DB" {
   shape: cylinder
 }
 
 # Change password sequence
-User -> application.get: "1. Navigate to change password page"
-User -> application.post: "2. Enter current password, new password, and submit"
+loop  { 
+  class: frame
+  User -> application.post: "1. Enter and submit change password form"
+  application.post -> application.post.get: "2. Check empty and valid input"
+  application.post -> User: "2.1. Show validation message" {class: return arrow}           
+}  
 application -> apiGateway.post: "3. Forward change password request"
 apiGateway -> AuthController.post: "4. Handle change password request"
 AuthController -> AuthRepository.post: "5. Forward to repository"
 AuthRepository -> AuthDAO.post: "6. Forward to DAO"
-AuthDAO -> Supabase: "7. Validate current password"
-Supabase -> Supabase.check: "8. Check current password"
-Supabase-> AuthDAO: "9. Current password valid"
+AuthDAO.post -> Supabase.post: "7. Validate user and password"
+Supabase.post -> DB.post: "8. Update user password"
+DB.post -> AuthDAO.post: "9. Return result" {class: return arrow} 
+AuthDAO.post -> AuthRepository.post: "10. Forward result" {class: return arrow} 
+AuthRepository.post -> AuthController.post: "11. Return result" {class: return arrow} 
+
 
 alt: "alt" {
   class: frame
   Current password valid: "[Current password valid]" {
-    AuthDAO -> AuthDAO.check: "10b. Validate new password"
-    AuthDAO -> Supabase: "11b. Hash the new password"
-    Supabase -> Supabase.hash: "12b. Hash the new password"
-    Supabase -> DB.update: "13b. Update user password"
-
-    # Check update success in the database
-    Supabase.DB -> Supabase.response: "14b. Return success status"
-    Supabase -> AuthDAO.response: "15b. Forward success status"
-    AuthDAO -> AuthRepository.response: "16b. Forward success status"
-    AuthRepository -> AuthController.response: "17b. Return success status"
-    AuthController -> apiGateway.response: "18b. Send success status to frontend"
-    apiGateway -> application.response: "19b. Return success status"
-    application -> User: "20b. Display password change success message"
+    AuthController.post -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow} 
+    apiGateway.post -> application.post: "11.1.1. Return success status" {class: return arrow} 
+    application.post -> User: "11.1.1. Display password change success message" {class: return arrow} 
   }
   Current password invalid: "[Current password invalid]" {
-    Supabase -> AuthDAO.response: "10a. Invalid current password"
-    AuthDAO -> AuthRepository.response: "11a. Forward error"
-    AuthRepository -> AuthController.response: "12a. Return error"
-    AuthController -> apiGateway.response: "13a. Send error to frontend"
-    apiGateway -> application.response: "14a. Return error"
-    application -> User: "15a. Display error message"
+    AuthController.post -> apiGateway.post: "11.2. Send error to frontend" {class: return arrow} 
+    apiGateway.post -> application.post: "11.2.1. Return error" {class: return arrow} 
+    application.post -> User: "11.2.1.1. Display error message" {class: return arrow} 
   }
 }

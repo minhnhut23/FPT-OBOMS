@@ -4,21 +4,25 @@ skinparam classAttributeIconSize 0
 
 class BillDetailController {
     - _billDetailRepository: IBillDetailRepository 
-    + CreateBillDetail(request: CreateBillDetailRequestDTO): BillDetailResponseDTO
+
+    + CreateBillDetail([FromBody] CreateBillDetailRequestDTO createBillDetail): Task<IActionResult> 
 }
 
-interface IBillDetailRepository {
-    +CreateBillDetail(request: CreateBillDetailRequestDTO): Task<BillDetailResponseDTO>
+interface IBillDetailRepository<<interface>>  {
+    + CreateBillDetail(CreateBillDetailRequestDTO createBillDetail): Task<BillDetailResponseDTO> 
 }
 
 class BillDetailRepository {
     - _billDetailDAO : BillDetailDAO
-    +CreateBillDetail(request: CreateBillDetailRequestDTO): Task<BillDetailResponseDTO>
+
+    + CreateBillDetail(CreateBillDetailRequestDTO createBillDetail): Task<BillDetailResponseDTO> 
+
 }
 
 class BillDetailDAO {
-    - _client: Supabase.Client
-    +CreateBillDetail(request: CreateBillDetailRequestDTO): Task<BillDetailResponseDTO>
+    - _client: Client
+    + CreateBillDetail(CreateBillDetailRequestDTO createBillDetail): Task<BillDetailResponseDTO> 
+
 }
 
 class BillDetail {
@@ -31,39 +35,10 @@ class BillDetail {
     +UpdatedAt: DateTime
 }
 
-class BillDetailResponseDTO {
-    +Id: Guid
-    +MenuItemId: Guid
-    +BillId: Guid
-    +Quantity: int
-    +Price: decimal
-    +CreatedAt: DateTime
-    +UpdatedAt: DateTime
-}
-
-class CreateBillDetailRequestDTO {
-    +MenuItemId: Guid
-    +BillId: Guid
-    +Quantity: int
-    +Price: decimal
-}
-
-class ErrorHandler {
-    +IsJson(input: string): bool
-    +ProcessErrorMessage(exceptionMessage: string): string
-}
-
-class SupabaseClient {
-    +Query(): object
-}
 
 BillDetailController -- IBillDetailRepository
 IBillDetailRepository <|.. BillDetailRepository
 BillDetailRepository -- BillDetailDAO
 BillDetailDAO -- BillDetail
-BillDetailResponseDTO -- BillDetailDAO
-BillDetailDAO -- ErrorHandler
-BillDetailDAO -- SupabaseClient
-CreateBillDetailRequestDTO -- BillDetailDAO
 
 @enduml

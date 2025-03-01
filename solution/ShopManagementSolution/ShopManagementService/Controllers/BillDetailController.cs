@@ -18,13 +18,14 @@ namespace BusinessObject.Controllers
             _billDetailRepository = billDetailRepository;
         }
 
+       
         // GET: api/billdetail/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetBillDetailById(Guid id)
         {
             try
             {
-                var billDetail = await _billDetailRepository.GetBillDetailById(id);
+                var billDetail = await _billDetailRepository.GetBillDetailByID(id);
                 if (billDetail == null)
                 {
                     return NotFound("Bill detail not found.");

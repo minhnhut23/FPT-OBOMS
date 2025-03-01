@@ -34,62 +34,46 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-application: chat application
-apiGateway: apiGateway
-AuthController: authController
-AuthRepository: authRepository
-AuthDAO: authDAO
+application: "Web application"
+apiGateway: "ApiGateway"
+AuthController: "AuthController"
+AuthRepository: "AuthRepository"
+AuthDAO: "AuthDAO"
+Supabase: "Supabase"
 
-DB: "DB" {
-  shape: cylinder
-}
-
-User: {
-  shape: image
-  width: 50
-  height: 60
-  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
-}
-
-application: "chat application"
-apiGateway: "apiGateway"
-AuthController: "authController"
-AuthRepository: "authRepository"
-AuthDAO: "authDAO"
-Supabase: "supabase"
 DB: "DB" {
   shape: cylinder
 }
 
 # Recover password sequence
-User -> application.post: "1. Navigate to reset password page"
-User -> application.post: "2. Enter reset token and new password, then submit"
+loop  { 
+  class: frame
+  User -> application.post: "1. Enter OTP and New Password"
+  application.post -> application.post.get: "2. Check empty and valid input"    
+  application.post -> User: "2.1. Show validation message" {class: return arrow}      
+}  
+
 application -> apiGateway.post: "3. Forward reset password request"
 apiGateway -> AuthController.post: "4. Handle reset password request"
 AuthController -> AuthRepository.post: "5. Forward to repository"
 AuthRepository -> AuthDAO.post: "6. Forward to DAO"
-AuthDAO -> AuthDAO.check: "7. Validate new password"
-AuthDAO -> Supabase: "8. Validate reset token and hash new password"
-Supabase -> Supabase.check: "9. Validate reset token"
-Supabase -> Supabase.hash: "10. Hash the new password"
-Supabase -> DB.update: "11. Update user password"
+AuthDAO.post -> Supabase.post: "7. Validate OTP and new password"
+Supabase.post -> DB.post: "8. Update Password"
+DB.post -> AuthDAO.post: "9. Return success status" {class: return arrow}
+AuthDAO.post -> AuthRepository.post: "10. Forward success status" {class: return arrow}
+AuthRepository.post -> AuthController.post: "11. Return success status" {class: return arrow}
+
 
 alt: "alt" {
   class: frame
   Reset successful: "[Reset successful]" {
-    Supabase -> AuthDAO.post: "13b. Return success status" {class: return arrow}
-    AuthDAO -> AuthRepository.post: "14b. Forward success status" {class: return arrow}
-    AuthRepository -> AuthController.post: "15b. Return success status" {class: return arrow}
-    AuthController -> apiGateway.post: "16b. Send success status to frontend" {class: return arrow}
-    apiGateway -> application.post: "17b. Return success status" {class: return arrow}
-    application -> User: "18b. Display password reset success message" {class: return arrow}
+    AuthController -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
+    apiGateway -> application.post: "11.1.1. Return success status" {class: return arrow}
+    application -> User: "11.1.1.1. Display password reset success message" {class: return arrow}
   }
   Reset failed: "[Reset failed]" {
-    Supabase -> AuthDAO.post: "13a. Return error status" {class: return arrow}
-    AuthDAO -> AuthRepository.post: "14a. Forward error status" {class: return arrow}
-    AuthRepository -> AuthController.post: "15a. Return error status" {class: return arrow}
-    AuthController -> apiGateway.post: "16a. Send error status to frontend" {class: return arrow}
-    apiGateway -> application.post: "17a. Return error status" {class: return arrow}
-    application -> User: "18a. Display error message"
+    AuthController -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "11.2.1. Return error status" {class: return arrow}
+    application.post -> User: "11.2.1.1. Display error message"
   }
 }
