@@ -1,5 +1,7 @@
-﻿using Supabase.Postgrest.Attributes;
+﻿using BusinessObject.Enums;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
+using System.Text.Json.Serialization;
 
 namespace BusinessObject.Models;
 

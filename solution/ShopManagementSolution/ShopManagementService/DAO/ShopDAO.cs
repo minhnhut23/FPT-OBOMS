@@ -220,12 +220,31 @@ namespace BusinessObject.Services
             }
         }
 
-        public async Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop)
+        public async Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token)
         {
             try
             {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+                var accountId = Guid.Parse(claims["sub"]);
+
+                var profile = await _client
+                    .From<BusinessObject.Models.Profile>()
+                    .Where(x => x.AccountId == accountId)
+                    .Single();
+
                 var shop = await _client.From<Shop>().Where(s => s.Id == id).Single();
-                if (shop == null) throw new Exception("Shop not found.");
+
+                if (shop == null)
+                {
+                    throw new Exception("Shop not found!");
+                }
+
+                if (shop.OwnerId != profile!.Id)
+                {
+                    throw new Exception("You are not shop's owner!");
+                }
 
                 shop.Name = updateShop.Name ?? shop.Name;
                 shop.Description = updateShop.Description ?? shop.Description;

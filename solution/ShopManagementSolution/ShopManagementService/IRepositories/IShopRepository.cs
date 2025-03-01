@@ -8,6 +8,6 @@ public interface IShopRepository
     Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request);
     Task<ShopResponseDTO?> GetShopById(Guid id);
     Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop, string token);
-    Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop);
+    Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token);
     Task<DeleteShopResponseDTO> DeleteShop(Guid id);
 }
