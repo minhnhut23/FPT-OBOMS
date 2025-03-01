@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using ShopManagementService.IRepositories;
 using BusinessObject.DTOs.TableDTO;
 using Microsoft.AspNetCore.Authorization;
+using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
+using ShopManagementService.Utils.Security;
+using BusinessObject.Enums;
 
 namespace BusinessObject.Controllers
 {
@@ -55,7 +58,7 @@ namespace BusinessObject.Controllers
         }
 
         [HttpPost]
-        [Authorize]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> CreateShop([FromBody] CreateShopRequestDTO createShop)
         {
             try

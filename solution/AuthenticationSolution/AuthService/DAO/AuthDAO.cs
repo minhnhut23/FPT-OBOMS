@@ -1,5 +1,6 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
+using BusinessObject.Enums;
 using BusinessObject.Models;
 using Microsoft.AspNetCore.Identity.Data;
 using Supabase.Gotrue;
@@ -86,12 +87,6 @@ public class AuthDAO
             if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
             {
                 throw new Exception("Invalid Birthday!");
-            }
-
-            var validRoles = new HashSet<string> { "Customer", "Owner", "Admin" };
-            if (!validRoles.Contains(request.Role))
-            {
-                throw new Exception("Invalid Role");
             }
 
             var profile = new Profile
