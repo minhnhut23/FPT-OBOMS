@@ -1,0 +1,67 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+' Controller exposing the UpdateProduct endpoint
+class ProductController {
+    - _repo: IProductRepository
+    + UpdateProduct(Guid id, [FromBody] UpdateProductRequestDTO request): Task<IActionResult>
+}
+
+' Repository interface declaring the UpdateProduct method
+interface IProductRepository {
+    + UpdateProduct(UpdateProductRequestDTO request, Guid id, string token): Task
+}
+
+' Repository implementation that delegates to the DAO
+class ProductRepository {
+    - _dao: ProductDAO
+    + UpdateProduct(UpdateProductRequestDTO request, Guid id, string token): Task
+}
+
+' Data Access Object handling the update operation
+class ProductDAO {
+    - _client: Client
+    + UpdateProduct(UpdateProductRequestDTO request, Guid id, string token): Task
+}
+
+' Data Transfer Object carrying updated product details
+class UpdateProductRequestDTO {
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + Category: string
+    + IsAvailable: bool
+    + Ingredient: string
+    + NutritionalIfo: string
+}
+
+' Domain model representing a product record
+class MenuItem {
+    + Id: Guid
+    + ShopId: Guid
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + Category: string
+    + IsAvailable: bool
+    + Ingredient: string
+    + NutritionalIfo: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+' Utility class for error handling
+class ErrorHandler {
+    + ProcessErrorMessage(string exceptionMessage): string
+}
+
+' Relationships
+ProductController -- IProductRepository
+IProductRepository <|-- ProductRepository
+ProductRepository -- ProductDAO
+ProductController -- UpdateProductRequestDTO
+ProductDAO -- MenuItem
+ProductDAO -- ErrorHandler
+
+@enduml
