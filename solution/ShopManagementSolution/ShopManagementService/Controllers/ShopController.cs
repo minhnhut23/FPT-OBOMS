@@ -80,6 +80,7 @@ namespace BusinessObject.Controllers
         }
 
         [HttpPut("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> UpdateShop(Guid id, [FromBody] UpdateShopRequestDTO updateShop)
         {
             try
@@ -89,7 +90,10 @@ namespace BusinessObject.Controllers
                     return BadRequest("Invalid input data.");
                 }
 
-                var updatedShop = await _repo.UpdateShop(id, updateShop);
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+
+                var updatedShop = await _repo.UpdateShop(id, updateShop, token);
                 if (updatedShop == null)
                 {
                     return NotFound("Shop not found.");

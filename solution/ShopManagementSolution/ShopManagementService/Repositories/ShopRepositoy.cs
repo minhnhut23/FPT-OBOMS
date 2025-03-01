@@ -23,5 +23,5 @@ public class ShopRepositoy : IShopRepository
 
     public Task<ShopResponseDTO?> GetShopById(Guid id) => _dao.GetShopById(id);
 
-    public Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop) => _dao.UpdateShop(id, updateShop);
+    public Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token) => _dao.UpdateShop(id, updateShop, token);
 }
