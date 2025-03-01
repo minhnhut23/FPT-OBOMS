@@ -17,8 +17,8 @@ namespace BusinessObject.Services
         {
             _client = client;
         }
-
-        public async Task<(List<ShopResponseDTO> Shops, PagingTableDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request)
+        
+        public async Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request)
         {
             try
             {
@@ -52,7 +52,7 @@ namespace BusinessObject.Services
                 {
                     return (
                         new List<ShopResponseDTO>(),
-                        new PagingTableDTO
+                        new TablePaginationDTO
                         {
                             TotalResults = totalRecords,
                             TotalPages = totalPages,
@@ -62,7 +62,7 @@ namespace BusinessObject.Services
                     );
                 }
 
-                var paginationMetadata = new PagingTableDTO
+                var paginationMetadata = new TablePaginationDTO
                 {
                     TotalResults = totalRecords,
                     TotalPages = totalPages,

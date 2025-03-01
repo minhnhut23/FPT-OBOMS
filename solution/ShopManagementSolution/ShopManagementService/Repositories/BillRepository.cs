@@ -30,7 +30,9 @@ namespace ShopManagementService.Repositories
         public Task<string> GenerateAndPrintBillPdf(Guid billId)
             => _billDao.GenerateAndPrintBillPdf(billId);
 
-        public Task<Guid> GetBillIdByTableId(Guid tableId)
-             => _billDao.GetBillIdByTableId(tableId);
+        public Task<BillWithDetailsResponseDTO> GetBillByTableID(Guid tableId)
+             => _billDao.GetBillByTableID(tableId);
+
+       
     }
 }

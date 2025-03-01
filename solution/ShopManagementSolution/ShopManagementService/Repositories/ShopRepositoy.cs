@@ -19,7 +19,7 @@ public class ShopRepositoy : IShopRepository
 
     public Task<DeleteShopResponseDTO> DeleteShop(Guid id) => _dao.DeleteShop(id);
 
-    public Task<(List<ShopResponseDTO> Shops, PagingTableDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request) => _dao.GetAllShops(request);
+    public Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request) => _dao.GetAllShops(request);
 
     public Task<ShopResponseDTO?> GetShopById(Guid id) => _dao.GetShopById(id);
 
