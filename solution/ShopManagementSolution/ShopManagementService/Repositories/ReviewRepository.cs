@@ -14,5 +14,7 @@ public class ReviewRepository : IReviewRepository
         _dao = dao;
     }
 
+    public Task<ReviewResponseDTO> Create(CreateReviewRequestDTO request, string token) => _dao.Create(request, token);
+
     public Task<(List<ReviewResponseDTO> Reviews, TablePaginationDTO PaginationMetadata)> GetAll(GetReviewDTO request) => _dao.GetAll(request);
 }

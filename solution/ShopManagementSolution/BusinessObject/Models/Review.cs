@@ -11,6 +11,8 @@ public class Review : BaseModel
 
     [Column("customer_id")]
     public Guid CustomerId { get; set; }
+    [Column("shop_id")]
+    public Guid ShopId { get; set; }
 
     [Column("rating")]
     public int Rating { get; set; }

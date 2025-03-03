@@ -4,6 +4,8 @@ using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
 using Supabase;
+using System.IdentityModel.Tokens.Jwt;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 using static Supabase.Postgrest.Constants;
 
 namespace ShopManagementService.DAO;
@@ -75,6 +77,76 @@ public class ReviewDAO
             };
 
             return (reviews, paginationMetadata);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
+    }
+
+    public async Task<ReviewResponseDTO> Create(CreateReviewRequestDTO request, string token)
+    {
+        try
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            var accountId = Guid.Parse(claims["sub"]);
+
+            var profile = await _client
+                .From<Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
+            var shop = await _client.From<Shop>().Where(s => s.Id == request.ShopId).Single();
+
+            if (shop == null)
+            {
+                throw new Exception("Shop not found!");
+            }
+
+            var bills = await _client
+                .From<Bill>()
+                .Where(b => b.ShopId == request.ShopId && b.CustomerId == profile!.Id)
+                .Get();
+
+            if (bills == null)
+            {
+                throw new Exception("You have not used the shop's services yet.");
+            }
+
+            var review = await _client
+                .From<Review>()
+                .Where(r => r.CustomerId == profile.Id && r.ShopId == request.ShopId)
+                .Get();
+
+            if (review != null)
+            {
+                throw new Exception("You already review this shop");
+
+            }
+
+            var reviewResponse = new Review
+            {
+                Comment = request.Comment,
+                CustomerId = profile!.Id,
+                Rating = request.Rating,
+                ShopId = request.ShopId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            await _client.From<Review>().Insert(reviewResponse);
+
+            return new ReviewResponseDTO
+            {
+                Id = reviewResponse.Id,
+                Comment = reviewResponse.Comment,
+                CustomerId = reviewResponse.CustomerId,
+                Rating = reviewResponse.Rating,
+                CreatedAt = reviewResponse.CreatedAt,
+            };
+
         }
         catch (Exception ex)
         {
