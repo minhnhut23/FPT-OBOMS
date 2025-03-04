@@ -9,6 +9,7 @@ import { lazy, Suspense } from 'react';
 import { LoadingSpinner } from './components/LoadingSpinner';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
+const Login = lazy(() => import('./pages/auth/Login'));
 
 export default function App() {
   return (
@@ -16,13 +17,22 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <Routes>
-            <Route 
-              path="/" 
+            <Route
+              path="/"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <LandingPage />
                 </Suspense>
-              } 
+              }
+            />
+
+            <Route
+              path="/login"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Login />
+                </Suspense>
+              }
             />
           </Routes>
         </ThemeProvider>

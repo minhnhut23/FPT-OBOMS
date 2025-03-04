@@ -23,7 +23,7 @@ NavLink.propTypes = {
 
 export default function LandingNavbar() {
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="fixed w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800"
@@ -46,14 +46,16 @@ export default function LandingNavbar() {
           </div>
 
           {/* Auth Buttons and Theme Toggle */}
-          <div className="flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden md:block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Log In
-            </motion.button>
+          <div to="/login" className="flex items-center space-x-4">
+            <Link to="/login">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="hidden md:block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                Log In
+              </motion.button>
+            </Link>
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -67,4 +69,4 @@ export default function LandingNavbar() {
       </div>
     </motion.nav>
   );
-} 
+}
