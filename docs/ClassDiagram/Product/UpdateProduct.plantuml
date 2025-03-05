@@ -3,6 +3,8 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+class APIGateway {
+}
 ' Controller exposing the UpdateProduct endpoint
 class ProductController {
     - _repo: IProductRepository
@@ -26,16 +28,6 @@ class ProductDAO {
     + UpdateProduct(UpdateProductRequestDTO request, Guid id, string token): Task
 }
 
-' Data Transfer Object carrying updated product details
-class UpdateProductRequestDTO {
-    + Name: string
-    + Price: decimal
-    + Description: string
-    + Category: string
-    + IsAvailable: bool
-    + Ingredient: string
-    + NutritionalIfo: string
-}
 
 ' Domain model representing a product record
 class MenuItem {
@@ -52,17 +44,11 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
-' Utility class for error handling
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
 
 ' Relationships
+APIGateway -- ProductController
 ProductController -- IProductRepository
 IProductRepository <|-- ProductRepository
 ProductRepository -- ProductDAO
-ProductController -- UpdateProductRequestDTO
 ProductDAO -- MenuItem
-ProductDAO -- ErrorHandler
-
 @enduml
