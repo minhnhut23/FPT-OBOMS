@@ -1,0 +1,108 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+ReviewController: ReviewController
+ReviewRepository: ReviewRepository
+ReviewDAO: ReviewDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User submits a review
+loop  { 
+  class: frame
+  User -> application.post: "1. Enter Create Review form"
+  application.post -> application.post.get: "2. Validate input (rating, text, media)"
+  application.post -> User: "2.1. Show validation message" {class: return arrow}  
+}  
+ 
+application -> apiGateway.post: "3. Forward Create Review request"
+apiGateway -> ReviewController.post: "4. Forward Create Review request"
+ReviewController -> ReviewRepository.post: "5. Forward to repository"
+ReviewRepository -> ReviewDAO.post: "6. Forward to DAO"
+
+# Validate if user can review
+ReviewDAO.post -> Supabase.post: "7. Check if user has a valid booking"
+Supabase.post -> DB.query: "8. Validate booking record"
+DB.query -> Supabase.post: "9. Return validation result" {class: return arrow}
+Supabase.post -> ReviewDAO.post: "10. Return validation result" {class: return arrow}
+
+alt: "alt" {
+  If user is not eligible: "[User cannot review]" {
+    class: frame
+    ReviewController.post -> apiGateway.post: "10.1. Send error status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "10.1.1. Return error status" {class: return arrow}
+    application.post -> User: "10.1.1.1. Display review restriction message" {class: return arrow}
+  }
+}
+
+# Store media if provided
+alt: "alt" {
+  If media exists: "[Upload media]" {
+    class: frame
+    ReviewDAO.post -> Cloudinary.post: "11. Upload media"
+    Cloudinary.post -> ReviewDAO.post: "12. Return media URL" {class: return arrow}
+  }
+}
+
+# Save review
+ReviewDAO.post -> DB.insert: "13. Insert review record"
+DB.insert -> ReviewDAO.post: "14. Return result" {class: return arrow}
+ReviewDAO.post -> ReviewRepository.post: "15. Forward result" {class: return arrow}
+ReviewRepository.post -> ReviewController.post: "16. Return result" {class: return arrow}
+
+alt: "alt" {
+  If review created successfully: "[Review created]" {
+    class: frame
+    ReviewController.post -> apiGateway.post: "16.1. Send success status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "16.1.1. Return success status" {class: return arrow}
+    application.post -> User: "16.1.1.1. Display review success message" {class: return arrow}
+  }
+  If review creation failed: "[Review failed]" { 
+    class: frame
+    ReviewController.post -> apiGateway.post: "16.2. Send error status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "16.2.1. Return error status" {class: return arrow}
+    application.post -> User: "16.2.1.1. Display review error message" {class: return arrow}
+  }
+}
+
+# Notify owner
+ReviewController.post -> NotificationService.post: "17. Send notification to owner"
+NotificationService.post -> Owner: "18. Notify new review received" {class: return arrow}
