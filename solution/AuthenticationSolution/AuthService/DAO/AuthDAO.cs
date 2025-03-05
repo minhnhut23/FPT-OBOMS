@@ -5,6 +5,7 @@ using BusinessObject.Models;
 using Microsoft.AspNetCore.Identity.Data;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -38,7 +39,58 @@ public class AuthDAO
                 RefreshToken = session.RefreshToken!,
                 ExpiresAt = expiresAt
             };
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
+    }
 
+    public async Task<LoginResponseDTO> RefreshToken(string refreshToken)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(refreshToken))
+            {
+                throw new ArgumentException("Refresh token cannot be null or empty.");
+            }
+
+            using var client = new HttpClient();
+
+            var requestBody = new Dictionary<string, string>
+            {
+                { "refresh_token", refreshToken }
+            };
+
+            var requestContent = new FormUrlEncodedContent(requestBody);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "https://cnbwnwbtafbarsgmcabf.supabase.co/auth/v1/token")
+            {
+                Content = requestContent
+            };
+
+            request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            request.Headers.Add("apikey", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNuYndud2J0YWZiYXJzZ21jYWJmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0MDM3NjEsImV4cCI6MjA0Njk3OTc2MX0.mNGsOKRoaTQdB7fG8OJiddqslin08Yvx3uR13hDFNAA");
+
+            // Debug log
+            Console.WriteLine(await requestContent.ReadAsStringAsync()); ;
+
+            var response = await client.SendAsync(request);
+            var responseBody = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Failed to refresh token: {ErrorHandler.ProcessErrorMessage(responseBody)})");
+            }
+
+            var jsonResponse = JsonSerializer.Deserialize<RefreshTokenResponseDTO>(responseBody);
+
+            return new LoginResponseDTO
+            {
+                AccessToken = jsonResponse!.AccessToken,
+                RefreshToken = jsonResponse.RefreshToken,
+                ExpiresAt = DateTime.UtcNow.AddSeconds(jsonResponse.ExpiresIn)
+            };
         }
         catch (Exception ex)
         {
@@ -147,9 +199,9 @@ public class AuthDAO
         try
         {
 
-            if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword)) 
-            { 
-                throw new ArgumentException("Password fields cannot be null or empty."); 
+            if (string.IsNullOrWhiteSpace(request.NewPassword) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
+            {
+                throw new ArgumentException("Password fields cannot be null or empty.");
             }
 
             if (request.NewPassword != request.ConfirmPassword)

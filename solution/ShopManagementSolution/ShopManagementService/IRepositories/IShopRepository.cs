@@ -10,4 +10,6 @@ public interface IShopRepository
     Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop, string token);
     Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token);
     Task<DeleteShopResponseDTO> DeleteShop(Guid id);
+    Task<List<GetTotalShopStatisticResponseDTO>> GetDailyRevenue(GetTotalShopStatisticByMonthRequestDTO request, string token);
+
 }

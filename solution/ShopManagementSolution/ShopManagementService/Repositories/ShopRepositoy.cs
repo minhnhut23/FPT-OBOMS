@@ -21,6 +21,8 @@ public class ShopRepositoy : IShopRepository
 
     public Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request) => _dao.GetAllShops(request);
 
+    public Task<List<GetTotalShopStatisticResponseDTO>> GetDailyRevenue(GetTotalShopStatisticByMonthRequestDTO request, string token) => _dao.GetDailyRevenue(request, token);
+
     public Task<ShopResponseDTO?> GetShopById(Guid id) => _dao.GetShopById(id);
 
     public Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token) => _dao.UpdateShop(id, updateShop, token);

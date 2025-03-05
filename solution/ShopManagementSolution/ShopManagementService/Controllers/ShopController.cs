@@ -125,5 +125,22 @@ namespace BusinessObject.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("revenue")]
+        public async Task<IActionResult> DailyRevenueByMonth(GetTotalShopStatisticByMonthRequestDTO request)
+        {
+            try
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                var result = await _repo.GetDailyRevenue(request, token);
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

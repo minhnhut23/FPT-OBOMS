@@ -4,16 +4,18 @@ namespace AuthService.IRepositories;
 
 public interface IAuthRepository
 {
-    public Task<LoginResponseDTO> Login(string email, string password);
+    Task<LoginResponseDTO> Login(string email, string password);
 
-    public Task<GetUserResponeDTO> Register(RegisterRequestDTO request);
+    Task<GetUserResponeDTO> Register(RegisterRequestDTO request);
 
-    public Task Logout();
+    Task Logout();
 
-    public Task ChangePassword(ChangePasswordRequestDTO request, string token);
+    Task ChangePassword(ChangePasswordRequestDTO request, string token);
 
-    public Task ResetPassword(RecoverPasswordRequestDTO request);
+    Task ResetPassword(RecoverPasswordRequestDTO request);
 
-    public Task ForgotPassword(string email);
+    Task ForgotPassword(string email);
+
+    Task<LoginResponseDTO> RefreshToken(string refreshToken);
 
 }

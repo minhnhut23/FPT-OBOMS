@@ -1,4 +1,5 @@
-﻿using AuthService.IRepositories;
+﻿using AuthService.DAO;
+using AuthService.IRepositories;
 using BusinessObject.DTO;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -104,6 +105,20 @@ public class AuthController : Controller
         catch (Exception ex)
         {
             return BadRequest(new { msg = ex.Message });
+        }
+    }
+
+    [HttpPost("refresh-token")]
+    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequestDTO request)
+    {
+        try
+        {
+            var refreshResponse = await _repo.RefreshToken(request.RefreshToken);
+            return Ok(refreshResponse);
+        }
+        catch (Exception ex)
+        {
+            return Unauthorized(new { msg = ex.Message });
         }
     }
 
