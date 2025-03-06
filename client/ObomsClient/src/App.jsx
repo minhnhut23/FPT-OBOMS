@@ -10,6 +10,7 @@ import { LoadingSpinner } from './components/LoadingSpinner';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Login = lazy(() => import('./pages/auth/Login'));
+const Register = lazy(() => import('./pages/auth/Register'));
 
 export default function App() {
   return (
@@ -31,6 +32,15 @@ export default function App() {
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <Login />
+                </Suspense>
+              }
+            />
+
+            <Route
+              path="/register"
+              element={
+                <Suspense fallback={<LoadingSpinner />}>
+                  <Register />
                 </Suspense>
               }
             />

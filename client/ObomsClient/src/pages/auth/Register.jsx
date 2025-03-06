@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'; // Import icons
+import { EyeIcon, EyeSlashIcon, ArrowLeftIcon, CalendarIcon } from '@heroicons/react/24/outline'; // Import icons
 import { Link } from 'react-router-dom';
 
-export default function Login() {
+export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
+  const [exitAnimation, setExitAnimation] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center px-4">
@@ -16,19 +17,20 @@ export default function Login() {
                   rounded-full filter blur-3xl"
         />
         <div
-          className="absolute -top-[10%] -right-[17%] w-72 sm:w-96 h-72 sm:h-96 
+          className="absolute -top-[10%] -right-[20%] w-72 sm:w-96 h-72 sm:h-96 
                   bg-blue-500/30 dark:bg-blue-500/30 
                   rounded-full filter blur-3xl"
         />
       </div>
 
-      {/* Login Form */}
+      {/* Register Form */}
       <motion.div
         className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg relative z-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
+        {/* Title with Rollback Icon */}
         <div className="flex items-center justify-between mb-4">
           <Link to="/">
             <motion.button
@@ -40,31 +42,35 @@ export default function Login() {
               <ArrowLeftIcon className="w-6 h-6 cursor-pointer" />
             </motion.button>
           </Link>
-
-          <div className="text-3xl font-bold text-center flex-1">Login</div>
-
+          <div className="text-3xl font-bold text-center flex-1">Register</div>
           {/* Empty span to balance layout */}
           <span className="w-6"></span>
         </div>
 
-        <div className="mt-6">
-          {/* Email Input */}
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
+        <div className="mt-4">
+          <input
+            type="text"
+            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your full name"
+          />
+
+          <input
+            type="date"
+            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400  dark:[color-scheme:dark]"
+          />
+
           <input
             type="email"
-            className="w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-5" // Increased margin-bottom
+            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your email"
           />
 
-          {/* Password Input with Eye Icon Inside */}
-          <label className="block text-gray-700 dark:text-gray-300 mb-2">Password</label>
-          <div className="relative w-full">
+          <div className="relative w-full mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
               className="w-full p-3 pr-10 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your password"
             />
-
             {/* Show/Hide Password Button */}
             <button
               type="button"
@@ -79,38 +85,23 @@ export default function Login() {
             </button>
           </div>
 
-          {/* Remember Me & Forgot Password Section */}
-          <div className="mt-5 flex justify-between items-center">
-            {/* Remember Me Checkbox */}
-            <label className="flex items-center text-gray-600 dark:text-gray-300 text-sm">
-              <input
-                type="checkbox"
-                className="w-3 h-3 text-blue-500 bg-gray-200 border-gray-300 rounded focus:ring focus:ring-blue-500"
-              />
-              <span className="ml-2">Remember me</span>
-            </label>
-
-            {/* Forgot Password Link */}
-            <a href="#" className="text-blue-500 hover:underline text-sm">
-              Forgot password?
-            </a>
-          </div>
+          <input
+            type={showPassword ? 'text' : 'password'}
+            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Confirm your password"
+          />
         </div>
 
-        {/* Login Button */}
-        <button className="w-full mt-5 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition duration-200">
-          Login
+        <button className="w-full mt-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition duration-200">
+          Register
         </button>
 
-        {/* Sign Up Section */}
-        <Link to="/register">
-          <div className="mt-4 text-center">
-            <span className="text-gray-600 dark:text-gray-300 text-sm">Don't have an account?</span>
-            <a href="#" className="text-blue-500 hover:underline text-sm font-medium ms-1">
-              Sign up
-            </a>
-          </div>
-        </Link>
+        <div className="mt-4 text-center">
+          <span className="text-gray-600 dark:text-gray-300 text-sm">Already have an account?</span>
+          <Link to="/login">
+            <span className="text-blue-500 hover:underline text-sm font-medium ms-1">Sign in</span>
+          </Link>
+        </div>
       </motion.div>
     </div>
   );

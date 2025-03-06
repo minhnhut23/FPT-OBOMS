@@ -46,7 +46,7 @@ export default function LandingNavbar() {
           </div>
 
           {/* Auth Buttons and Theme Toggle */}
-          <div to="/login" className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4">
             <Link to="/login">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -56,13 +56,15 @@ export default function LandingNavbar() {
                 Log In
               </motion.button>
             </Link>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              Sign In
-            </motion.button>
+            <Link to="/register">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Sign In
+              </motion.button>
+            </Link>
             <ThemeToggle className="ml-2" />
           </div>
         </div>
