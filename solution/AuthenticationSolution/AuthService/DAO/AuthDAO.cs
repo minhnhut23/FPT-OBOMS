@@ -1,11 +1,8 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
-using BusinessObject.Enums;
 using BusinessObject.Models;
-using Microsoft.AspNetCore.Identity.Data;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
