@@ -59,21 +59,22 @@
   AuthDAO -> Supabase.post: "8. Validate user credentials"
 
   Supabase.post -> DB.post: "9. Check user in database"
-  DB.post -> AuthDAO.post: "10. Forward result" {class: return arrow}
-  AuthDAO.post -> AuthRepository.post: "11. Forward result" {class: return arrow}
-  AuthRepository.post -> AuthController.post: "12. Forward result" {class: return arrow}
+  DB.post -> Supabase.post: "10. Return result"{class: return arrow}
+  Supabase.post -> AuthDAO.post: "11. Forward result" {class: return arrow}
+  AuthDAO.post -> AuthRepository.post: "12. Forward result" {class: return arrow}
+  AuthRepository.post -> AuthController.post: "13. Forward result" {class: return arrow}
 
   alt {  
     class: frame  
     Incorrect credentials: "[Incorrect credentials]" {  
-      AuthController.post -> apiGateway.post: "12.1. Send error to frontend" {class: return arrow}  
-      apiGateway.post -> application.post: "12.1.1. Return error" {class: return arrow}  
-      application.post -> User: "12.1.2.. Display error message" {class: return arrow}  
+      AuthController.post -> apiGateway.post: "13.1. Send error to frontend" {class: return arrow}  
+      apiGateway.post -> application.post: "13.1.1. Return error" {class: return arrow}  
+      application.post -> User: "13.1.2. Display error message" {class: return arrow}  
     }  
 
     Correct credentials: "[Correct credentials]" {  
-      AuthController.post -> apiGateway.post: "12.2 Send token to frontend" {class: return arrow}  
-      apiGateway.post -> application.post: "12.2.1. Return token" {class: return arrow}  
-      application.post -> User: "12.2.2. Store token and login success" {class: return arrow}  
+      AuthController.post -> apiGateway.post: "13.2 Send token to frontend" {class: return arrow}  
+      apiGateway.post -> application.post: "13.2.1. Return token" {class: return arrow}  
+      application.post -> User: "13.2.2. Store token and login success" {class: return arrow}  
     }  
   }

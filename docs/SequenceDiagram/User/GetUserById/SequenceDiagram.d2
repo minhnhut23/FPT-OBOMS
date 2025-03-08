@@ -45,23 +45,24 @@ DB: "DB" {
 }
 
 # Get user by ID sequence
-User -> application.post: "2. Request user information by ID"
-application -> apiGateway.post: "3. Forward getUserById request"
-apiGateway -> UserController.post: "4. Handle getUserById request"
-UserController -> UserRepository.post: "5. Forward to repository"
-UserRepository -> UserDAO.post: "6. Forward to DAO"
-UserDAO -> Supabase: "7. Validate Token"
-Supabase -> DB: "8. Get User"
-DB -> UserDAO: "9. Return Result"
-UserDAO -> UserRepository.post: "10. Forward user information" {class: return arrow}
+User -> application.post: "1. Request user information by ID"
+application -> apiGateway.post: "2. Forward getUserById request"
+apiGateway -> UserController.post: "3. Handle getUserById request"
+UserController -> UserRepository.post: "4. Forward to repository"
+UserRepository -> UserDAO.post: "5. Forward to DAO"
+UserDAO.post -> Supabase.post: "6. Validate Token"
+Supabase.post -> DB.post: "7. Get User"
+DB.post -> Supabase.post: "8. Return Result"
+Supabase.post -> UserDAO.post: "9. Return Result"
+UserDAO.post -> UserRepository.post: "10. Forward user information" {class: return arrow}
 UserRepository.post -> UserController.post: "11. Return user information" {class: return arrow}
 
 alt: "alt" {
   class: frame
   User exists: "[User exists]" {
     UserController.post -> apiGateway.post: "11.1. Send user information to frontend" {class: return arrow}
-    apiGateway -> application.post: "11.1.1. Return user information" {class: return arrow}
-    application -> User: "11.1.1.1. Display user information" {class: return arrow}
+    apiGateway.post -> application.post: "11.1.1. Return user information" {class: return arrow}
+    application.post -> User: "11.1.2. Display user information" {class: return arrow}
   }
   User does not exist: "[User does not exist]" {
     UserController.post -> apiGateway.post: "11.2. Send error to frontend" {class: return arrow}
