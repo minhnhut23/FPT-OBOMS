@@ -7,21 +7,21 @@ class APIGateway {
 }
 
 class AuthController {
-    - _repo: IAuthRepository
+    - _repo: IAuthRepositories
     + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
 }
 
-interface IAuthRepository<<interface>> {
+interface IAuthRepositories<<interface>> {
     + Login(string email, string password): Task<LoginResponseDTO>
 }
 
-class AuthRepository {
+class AuthRepositories {
     - _dao: AuthDAO
     + Login(string email, string password): Task<LoginResponseDTO>
 }
 
 class AuthDAO {
-    - _client: Client
+    - _client.From<Profile> : ISupabaseTable<Profile>
     + Login(string email, string password): Task<LoginResponseDTO>
 }
 
@@ -39,11 +39,11 @@ class Profile {
 
 APIGateway -- AuthController
 
-AuthController -- IAuthRepository
+AuthController -- IAuthRepositories
 
-IAuthRepository <|-- AuthRepository
+IAuthRepositories <|-- AuthRepositories
 
-AuthRepository -- AuthDAO
+AuthRepositories "1" -- "1..*" AuthDAO
 
-AuthDAO -- Profile
+AuthDAO "1"--"0..*" Profile
 @enduml

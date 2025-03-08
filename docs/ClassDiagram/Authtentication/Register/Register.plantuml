@@ -7,21 +7,21 @@ class APIGateway {
 }
 
 class AuthController {
-    - _repo: IAuthRepository
+    - _repo: IAuthRepositories
     + Register([FromBody] RegisterRequestDTO request): Task<IActionResult> 
 }
 
-interface IAuthRepository<<interface>> {
+interface IAuthRepositories<<interface>> {
     + Register(RegisterRequestDTO request): Task
 }
 
-class AuthRepository {
+class AuthRepositories {
     - _dao: AuthDAO
     + Register(RegisterRequestDTO request): Task
 }
 
 class AuthDAO {
-    - _client: Client
+    - _client.From<Profile> : ISupabaseTable<Profile>t
     + Register(RegisterRequestDTO request): Task
 }
 
@@ -39,11 +39,11 @@ class Profile {
 
 APIGateway -- AuthController
 
-AuthController -- IAuthRepository
+AuthController -- IAuthRepositories
 
-IAuthRepository <|-- AuthRepository
+IAuthRepositories <|-- AuthRepositories
 
-AuthRepository -- AuthDAO
+AuthRepositories "1" -- "1..*" AuthDAO
 
-AuthDAO -- Profile
+AuthDAO  "1" -- "0..*"  Profile
 @enduml

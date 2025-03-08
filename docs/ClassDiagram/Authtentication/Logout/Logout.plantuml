@@ -7,15 +7,15 @@ class APIGateway {
 }
 
 class AuthController {
-    - _repo: IAuthRepository
+    - _repo: IAuthRepositories
     + Logout(): Task<IActionResult> 
 }
 
-interface IAuthRepository<<interface>> { 
+interface IAuthRepositories<<interface>> { 
     + Logout(): Task<IActionResult>
 }
 
-class AuthRepository {
+class AuthRepositories {
     - _dao: AuthDAO
     + Logout(): Task    
 }
@@ -27,11 +27,10 @@ class AuthDAO {
 
 APIGateway -- AuthController
 
-AuthController -- IAuthRepository
+AuthController -- IAuthRepositories
 
-IAuthRepository <|-- AuthRepository
+IAuthRepositories <|-- AuthRepositories
 
-AuthRepository -- AuthDAO
-
+AuthRepositories "1" -- "1..*" AuthDAO
 
 @enduml

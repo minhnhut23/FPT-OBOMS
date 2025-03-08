@@ -7,21 +7,21 @@ class APIGateway {
 }
 
 class UserController{
-    - _repo: IUserRepository
+    - _repo: IUserRepositories
     + GetProfile(): Task<IActionResult>
 }
 
-interface IUserRepository<<interface>> {
+interface IUserRepositories<<interface>> {
     + GetCurrentUser(string token): Task<GetUserResponeDTO>
 }
 
-class UserRepository {
+class UserRepositories {
     - _dao: UserDAO
     + GetCurrentUser(string token): Task<GetUserResponeDTO>
 }
 
 class UserDAO {
-    - _client: Client
+    - _client.From<Profile>: ISupabaseTable<Profile>
     + GetCurrentUser(string token): Task<GetUserResponeDTO>
 }
 
@@ -38,11 +38,11 @@ class Profile {
 }
 
 APIGateway -- UserController
-UserController -- IUserRepository 
-IUserRepository <|-- UserRepository
+UserController -- IUserRepositories 
+IUserRepositories <|-- UserRepositories
 
-UserRepository -- UserDAO
+UserRepositories "1"--"1..*" UserDAO
 
-UserDAO -- Profile
+UserDAO "1"--"0..*" Profile
 
 @enduml

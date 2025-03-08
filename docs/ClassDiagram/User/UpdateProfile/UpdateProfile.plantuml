@@ -7,15 +7,15 @@ class APIGateway {
 }
 
 class UserController{
-    - _repo: IUserRepository
+    - _repo: IUserRepositories
     + UpdateProfile([FromBody] UpdateProfileRequestDTO request): Task<IActionResult>
 }
 
-interface IUserRepository<<interface>> {
+interface IUserRepositories<<interface>> {
     + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
-class UserRepository {
+class UserRepositories {
     - _dao: UserDAO
     + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }

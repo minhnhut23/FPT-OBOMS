@@ -7,21 +7,21 @@ class APIGateway {
 }
 
 class UserController{
-    - _repo: IUserRepository
+    - _repo: IUserRepositories
     + CreateProfile([FromBody] CreateProfileRequestDTO request): Task<IActionResult>
 }
 
-interface IUserRepository<<interface>> {
+interface IUserRepositories<<interface>> {
     + CreateUser(CreateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
-class UserRepository {
+class UserRepositories {
     - _dao: UserDAO
     + CreateUser(CreateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
 class UserDAO {
-    - _client: Client
+    - _client.From<Profile>: ISupabaseTable<Profile>
     + CreateUser(CreateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
 }
 
@@ -38,9 +38,9 @@ class Profile {
 }
 
 APIGateway -- UserController
-UserController -- IUserRepository 
-IUserRepository <|-- UserRepository
-UserRepository -- UserDAO
-UserDAO -- Profile
+UserController -- IUserRepositories 
+IUserRepositories <|-- UserRepositories
+UserRepositories "1"--"1..*" UserDAO
+UserDAO "1"--"0..*" Profile
 
 @enduml

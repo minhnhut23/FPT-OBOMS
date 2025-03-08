@@ -7,15 +7,15 @@ class APIGateway {
 }
 
 class UserController{
-    - _repo: IUserRepository
+    - _repo: IUserRepositories
     + GetUserById([FromQuery] Guid id): Task<IActionResult>
 }
 
-interface IUserRepository<<interface>> {
+interface IUserRepositories<<interface>> {
     + GetUserById(Guid profileId): Task<GetUserResponeDTO>
 }
 
-class UserRepository {
+class UserRepositories {
     - _dao: UserDAO
     + GetUserById(Guid profileId): Task<GetUserResponeDTO>
 }
@@ -38,10 +38,10 @@ class Profile {
 }
 
 APIGateway -- UserController
-UserController -- IUserRepository 
-IUserRepository <|-- UserRepository
+UserController -- IUserRepositories 
+IUserRepositories <|-- UserRepositories
 
-UserRepository -- UserDAO
-UserDAO -- Profile
+UserRepositories "1"--"1..*" UserDAO
+UserDAO "1"--"0..*" Profile
 
 @enduml
