@@ -38,10 +38,9 @@ class Profile {
 }
 
 APIGateway -- UserController
-UserController -- IUserRepository 
-IUserRepository <|-- UserRepository
-UserRepository -- UserDAO
-
-UserDAO -- Profile
+UserController -- IUserRepositories 
+IUserRepositories <|-- UserRepositories
+UserRepositories "1"--"1..*" UserDAO
+UserDAO "1"--"0..*" Profile
 
 @enduml
