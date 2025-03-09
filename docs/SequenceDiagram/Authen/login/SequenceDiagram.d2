@@ -49,7 +49,7 @@
   loop  { 
       class: frame
       User -> application.post: "1. Enter credentials and submit login form"
-      application.post -> application.post.get: "2. Check empty and valid input"     
+      application.post -> application.post.get: "2. Check empty or \n invalid input"
       application.post -> User: "3. Show validation message" {class: return arrow}           
   }  
   application.post -> apiGateway.post: "4. Forward login request"  
