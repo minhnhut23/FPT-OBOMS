@@ -1,79 +1,80 @@
-label.style.font-color: black
-label.style.font-size: 55
+  label.style.font-color: black
+  label.style.font-size: 55
 
-classes: {
-  text-black: {
-    style: {
-      font-color: black
+  classes: {
+    text-black: {
+      style: {
+        font-color: black
+      }
+    }
+
+    return arrow: {
+      style: {
+        stroke-dash: 3
+      }
+    }
+
+    frame: {
+      style: {
+        fill: '#EAEDF0'
+        stroke-width: 1
+      }
+    }
+
+    label right: {
+      style.font-color: black
     }
   }
 
-  return arrow: {
-    style: {
-      stroke-dash: 3
-    }
+  shape: sequence_diagram
+
+  User: {
+    shape: image
+    width: 50
+    height: 60
+    icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
   }
 
-  frame: {
-    style: {
-      fill: '#EAEDF0'
-      stroke-width: 1
-    }
+  application: Web application
+  apiGateway: ApiGateway
+  AuthController: AuthController
+  AuthRepository: AuthRepository
+  AuthDAO: AuthDAO
+  Supabase: "Supabase"
+
+  DB: "DB" {
+    shape: cylinder
   }
 
-  label right: {
-    style.font-color: black
-  }
-}
-
-shape: sequence_diagram
-
-User: {
-  shape: image
-  width: 50
-  height: 60
-  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
-}
-
-application: Web application
-apiGateway: ApiGateway
-AuthController: AuthController
-AuthRepository: AuthRepository
-AuthDAO: AuthDAO
-Supabase: "Supabase"
-
-DB: "DB" {
-  shape: cylinder
-}
-
-loop  { 
-    class: frame
-    User -> application.post: "1. Enter credentials and submit login form"
-    application.post -> application.post.get: "2. Check empty and valid input"     
-    application.post -> User: "2.1. Show validation message" {class: return arrow}           
-}  
-application.post -> apiGateway.post: "3. Forward login request"  
-apiGateway -> AuthController.post: "4. Authenticate user"
-AuthController.post -> AuthRepository.post: "5. Forward to repository"
-AuthRepository.post -> AuthDAO.post: "6. Forward to DAO"
-AuthDAO -> Supabase.post: "7. Validate user credentials"
-
-Supabase.post -> DB.post: "8. Check user in database"
-DB.post -> AuthDAO.post: "9. Forward result" {class: return arrow}
-AuthDAO.post -> AuthRepository.post: "10. Forward result" {class: return arrow}
-AuthRepository.post -> AuthController.post: "11. Forward result" {class: return arrow}
-
-alt {  
-  class: frame  
-  Incorrect credentials: "[Incorrect credentials]" {  
-    AuthController.post -> apiGateway.post: "11.1. Send error to frontend" {class: return arrow}  
-    apiGateway.post -> application.post: "11.1.1. Return error" {class: return arrow}  
-    application.post -> User: "11.1.1.1. Display error message" {class: return arrow}  
+  loop  { 
+      class: frame
+      User -> application.post: "1. Enter credentials and submit login form"
+      application.post -> application.post.get: "2. Check empty or \n invalid input"
+      application.post -> User: "3. Show validation message" {class: return arrow}           
   }  
+  application.post -> apiGateway.post: "4. Forward login request"  
+  apiGateway -> AuthController.post: "5. Authenticate user"
+  AuthController.post -> AuthRepository.post: "6. Forward to repository"
+  AuthRepository.post -> AuthDAO.post: "7. Forward to DAO"
+  AuthDAO -> Supabase.post: "8. Validate user credentials"
 
-  Correct credentials: "[Correct credentials]" {  
-    AuthController.post -> apiGateway.post: "11.2 Send token to frontend" {class: return arrow}  
-    apiGateway.post -> application.post: "11.2.1. Return token" {class: return arrow}  
-    application.post -> User: "11.2.1.1. Store token and login success" {class: return arrow}  
-  }  
-}
+  Supabase.post -> DB.post: "9. Check user in database"
+  DB.post -> Supabase.post: "10. Return result"{class: return arrow}
+  Supabase.post -> AuthDAO.post: "11. Forward result" {class: return arrow}
+  AuthDAO.post -> AuthRepository.post: "12. Forward result" {class: return arrow}
+  AuthRepository.post -> AuthController.post: "13. Forward result" {class: return arrow}
+
+  alt {  
+    class: frame  
+    Incorrect credentials: "[Incorrect credentials]" {  
+      AuthController.post -> apiGateway.post: "13.1. Send error to frontend" {class: return arrow}  
+      apiGateway.post -> application.post: "13.1.1. Return error" {class: return arrow}  
+      application.post -> User: "13.1.2. Display error message" {class: return arrow}  
+    }  
+
+    Correct credentials: "[Correct credentials]" {  
+      AuthController.post -> apiGateway.post: "13.2 Send token to frontend" {class: return arrow}  
+      apiGateway.post -> application.post: "13.2.1. Return token" {class: return arrow}  
+      application.post -> User: "13.2.2. Store token and login success" {class: return arrow}  
+    }  
+  }

@@ -21,7 +21,7 @@ class AuthRepository {
 }
 
 class AuthDAO {
-    - _client: Client
+    - _client.From<Profile> : ISupabaseTable<Profile>
     + Login(string email, string password): Task<LoginResponseDTO>
 }
 
