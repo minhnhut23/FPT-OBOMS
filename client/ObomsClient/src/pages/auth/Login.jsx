@@ -9,17 +9,24 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center px-4">
       {/* Background Effects */}
-      <div className="absolute inset-0 w-full h-full">
-        <div
-          className="absolute top-1/4 -left-[20%] w-72 sm:w-96 h-72 sm:h-96 
-                  bg-purple-500/30 dark:bg-purple-500/30 
-                  rounded-full filter blur-3xl"
-        />
-        <div
-          className="absolute -top-[10%] -right-[17%] w-72 sm:w-96 h-72 sm:h-96 
-                  bg-blue-500/30 dark:bg-blue-500/30 
-                  rounded-full filter blur-3xl"
-        />
+      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 dark:from-black dark:via-black dark:to-black">
+        {/* Background Effects */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 dark:from-blue-500 dark:via-blue-500 dark:to-blue-900 animate-gradient" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 dark:opacity-20" />
+        </div>
+
+        {/*  Centered Orbs Wrapper */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 flex justify-center items-center">
+          {/* Orb moving from Left to Right */}
+          <div className="absolute w-80 h-80 bg-blue-400/30 dark:bg-purple-800/50 rounded-full filter blur-3xl left-to-right" />
+
+          {/* Orb moving from Right to Left */}
+          <div className="absolute w-80 h-80 bg-violet-400/30 dark:bg-indigo-800/50 rounded-full filter blur-3xl right-to-left" />
+        </div>
+
+        {/* Mesh gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/0 dark:from-[#0F172A] dark:via-transparent dark:to-transparent opacity-60" />
       </div>
 
       {/* Login Form */}
@@ -107,7 +114,7 @@ export default function Login() {
           <div className="mt-4 text-center">
             <span className="text-gray-600 dark:text-gray-300 text-sm">Don't have an account?</span>
             <a href="#" className="text-blue-500 hover:underline text-sm font-medium ms-1">
-              Sign up
+              Create yours!
             </a>
           </div>
         </Link>

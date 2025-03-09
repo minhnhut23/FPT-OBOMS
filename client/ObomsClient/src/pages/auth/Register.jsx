@@ -9,18 +9,24 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center px-4">
-      {/* Background Effects */}
-      <div className="absolute inset-0 w-full h-full">
-        <div
-          className="absolute top-1/4 -left-[20%] w-72 sm:w-96 h-72 sm:h-96 
-                  bg-purple-500/30 dark:bg-purple-500/30 
-                  rounded-full filter blur-3xl"
-        />
-        <div
-          className="absolute -top-[10%] -right-[20%] w-72 sm:w-96 h-72 sm:h-96 
-                  bg-blue-500/30 dark:bg-blue-500/30 
-                  rounded-full filter blur-3xl"
-        />
+      <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 dark:from-black dark:via-black dark:to-black">
+        {/* Background Effects */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 dark:from-blue-500 dark:via-blue-500 dark:to-blue-900 animate-gradient" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 dark:opacity-20" />
+        </div>
+
+        {/*  Centered Orbs Wrapper */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 flex justify-center items-center">
+          {/* Orb moving from Left to Right */}
+          <div className="absolute w-80 h-80 bg-blue-400/30 dark:bg-purple-800/50 rounded-full filter blur-3xl left-to-right" />
+
+          {/* Orb moving from Right to Left */}
+          <div className="absolute w-80 h-80 bg-violet-400/30 dark:bg-indigo-800/50 rounded-full filter blur-3xl right-to-left" />
+        </div>
+
+        {/* Mesh gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/50 to-white/0 dark:from-[#0F172A] dark:via-transparent dark:to-transparent opacity-60" />
       </div>
 
       {/* Register Form */}
@@ -42,30 +48,30 @@ export default function Register() {
               <ArrowLeftIcon className="w-6 h-6 cursor-pointer" />
             </motion.button>
           </Link>
-          <div className="text-3xl font-bold text-center flex-1">Register</div>
+          <div className="text-3xl font-bold text-center flex-1">Sign up</div>
           {/* Empty span to balance layout */}
           <span className="w-6"></span>
         </div>
 
-        <div className="mt-4">
+        <div className="mt-6">
           <input
             type="text"
-            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6" // Increased margin-bottom
             placeholder="Enter your full name"
           />
 
           <input
             type="date"
-            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400  dark:[color-scheme:dark]"
+            className="w-full mb-6 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400 bg-gray-100 dark:bg-gray-700 dark:[color-scheme:dark] custom-datepicker"
           />
 
           <input
             type="email"
-            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mb-6 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Enter your email"
           />
 
-          <div className="relative w-full mb-4">
+          <div className="relative w-full mb-6">
             <input
               type={showPassword ? 'text' : 'password'}
               className="w-full p-3 pr-10 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -78,16 +84,16 @@ export default function Register() {
               className="absolute inset-y-0 right-3 flex items-center"
             >
               {showPassword ? (
-                <EyeSlashIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                <EyeSlashIcon className="w-6 h-6 text-gray-400 dark:text-gray-400" />
               ) : (
-                <EyeIcon className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                <EyeIcon className="w-6 h-6 text-gray-400 dark:text-gray-400" />
               )}
             </button>
           </div>
 
           <input
             type={showPassword ? 'text' : 'password'}
-            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full mb-6 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             placeholder="Confirm your password"
           />
         </div>
@@ -99,7 +105,7 @@ export default function Register() {
         <div className="mt-4 text-center">
           <span className="text-gray-600 dark:text-gray-300 text-sm">Already have an account?</span>
           <Link to="/login">
-            <span className="text-blue-500 hover:underline text-sm font-medium ms-1">Sign in</span>
+            <span className="text-blue-500 hover:underline text-sm font-medium ms-1">Log in</span>
           </Link>
         </div>
       </motion.div>
