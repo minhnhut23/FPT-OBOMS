@@ -53,7 +53,8 @@ SubscriptionController -> SubscriptionRepository.post: "4. Forward to repository
 SubscriptionRepository -> SubscriptionDAO.post: "5. Forward to DAO"
 SubscriptionDAO.post -> Supabase.post: "6. Validate token"
 Supabase.post-> DB.insert: "7. Get Subscription"
-DB.insert -> SubscriptionDAO.post: "8. Return result" {class: return arrow}
+DB.insert -> Supabase.post: "8. Return result" {class: return arrow}
+Supabase.post -> SubscriptionDAO.post: "9. Return result" {class: return arrow}
 SubscriptionDAO.post -> SubscriptionRepository.post: "10. Forward result" {class: return arrow}
 SubscriptionRepository.post -> SubscriptionController.post: "11. Return result" {class: return arrow}
 
@@ -63,11 +64,11 @@ alt: "alt" {
   Get Subscription successful: "[Get Subscription successful]" {
     SubscriptionController.post -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
     apiGateway.post -> application.post: "11.1.1. Return success status" {class: return arrow}
-    application.post -> User: "11.1.1.1. Display create success message" {class: return arrow}
+    application.post -> User: "11.1.2. Display create success message" {class: return arrow}
   }
   Get Subscription failed: "[Subscription id not found]" { 
     SubscriptionController.post -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
     apiGateway.post -> application.post: "11.2.1. Return error status" {class: return arrow}
-    application.post -> User: "11.2.1.1. Display error message" {class: return arrow}
+    application.post -> User: "11.2.2. Display error message" {class: return arrow}
   }
 }

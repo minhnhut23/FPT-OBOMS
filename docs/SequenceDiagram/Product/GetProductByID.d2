@@ -1,31 +1,23 @@
-label.style.font-color: black
+label: "Sequence Diagram for UpdateUser"
 
 classes: {
-  forward arrow: {
+  text-black: {
     style: {
       font-color: black
-      bold: true
     }
   }
-
-  return arrow: {
+  return_arrow: {
     style: {
       stroke-dash: 3
-      stroke: black
-      font-color: black
-      bold: true
     }
   }
-
   frame: {
     style: {
       fill: '#EAEDF0'
       stroke-width: 1
-      bold: true
     }
   }
-
-  label right: {
+  label_right: {
     style.font-color: black
   }
 }
@@ -39,37 +31,39 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-WebAplication: Web Aplication
-apiGateway: API Gateway
-ProductController: ProductController
-ProductRepository: ProductRepository
-ProductDAO: ProductDAO
-
+application: "Web application"
+apiGateway: "ApiGateway"
+UserController: "UserController"
+UserRepository: "UserRepository"
+UserDAO: "UserDAO"
+Supabase: "Supabase"
 DB: "DB" {
   shape: cylinder
 }
 
-User -> WebAplication.get: 1. User view product\n(or apply filters) {class: forward arrow}
-WebAplication.get -> apiGateway.get: 2. Forward Request {class: forward arrow}
-apiGateway.get -> ProductController.get: 3. Forward to\n Controller {class: forward arrow}
-ProductController.get -> ProductRepository.get: 4. Call\n GetAllProduct() {class: forward arrow}
-ProductRepository.get -> ProductDAO.get: 5. Fetch product\n from DB {class: forward arrow}
-ProductDAO.get -> DB.get: 6. Query\n product by ID {class: forward arrow}
-DB.get -> ProductDAO.get: 7. Return\n result {class: return arrow}
-ProductDAO.get -> ProductRepository.get: 9. Forward\n result {class: return arrow}
-ProductRepository.get -> ProductController.get: 10. Return\n product {class: return arrow}
+User -> application.get: "1. Get product request"
+application.get -> apiGateway.get: "2. Request get product"
+apiGateway.get -> UserController.get: "3. Forward request"
+UserController -> UserRepository.get: "4. Forward request to repository"
+UserRepository -> UserDAO.get: "5. Forward request to DAO"
+
+UserDAO.get -> Supabase.get: "6. Validate token"
+Supabase.get -> DB.get: "7. Get product"
+DB.get -> Supabase.get: "8. Return result"
+Supabase.get -> UserDAO.get: "9. Return result"
+UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
+UserRepository.get-> UserController.get: "11. Forward result" {class: return arrow}
 
 alt: "alt" {
-    If product found: "[Product found]" {
-      class: frame  
-      ProductController.get -> apiGateway.get: 10.1. Send\n response {class: return arrow}
-      apiGateway.get -> WebAplication.get: 10.1.1. Forward\n response {class: return arrow}
-      WebAplication.get -> User: 10.1.1.1. Display\n product found {class: return arrow}
-    }
-    If product not found: "[Product not found]" {
-      class: frame
-      ProductController.get -> apiGateway.get: 10.2. Send\n empty response {class: return arrow}
-      apiGateway.get -> WebAplication.get: 10.2.1. Forward\n empty response {class: return arrow}
-      WebAplication.get -> User: 10.2.1.1. Display\n product not found {class: return arrow}
-    }
+  class: frame
+  Product found: "[Get Product]" {
+    UserController.get -> apiGateway.get: "11.1. Send product detail" {class: return arrow}
+    apiGateway.get -> application.get: "11.1.1. Send product detail" {class: return arrow}
+    application.get -> User: "11.1.2. Display product detail" {class: return arrow}
+  }
+  Product not found: "[Product found]" {
+    UserController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
+    application.get -> User: "11.2.2. Display error message" {class: return arrow}
+  }
 }
