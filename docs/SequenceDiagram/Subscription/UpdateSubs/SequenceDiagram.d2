@@ -59,7 +59,7 @@ SubscriptionController -> SubscriptionRepository.post: "6. Forward to repository
 SubscriptionRepository -> SubscriptionDAO.post: "7. Forward to DAO"
 SubscriptionDAO.post -> Supabase.post: "8. Validate token"
 Supabase.post-> DB.insert: "9. Update Subscription By Id"
-DB.insert -> Supabase.post: "19. Return result" {class: return arrow}
+DB.insert -> Supabase.post: "10. Return result" {class: return arrow}
 Supabase.post -> SubscriptionDAO.post: "11. Return result" {class: return arrow}
 SubscriptionDAO.post -> SubscriptionRepository.post: "12. Forward result" {class: return arrow}
 SubscriptionRepository.post -> SubscriptionController.post: "13. Return result" {class: return arrow}
