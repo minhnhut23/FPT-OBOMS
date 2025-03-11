@@ -8,21 +8,21 @@ class APIGateway {
 
 class SubscriptionController{
     - _repo: ISubscriptionRepositories
-    + Update(Guid id, UpdateSubscriptionRequestDTO request): Task<IActionResult>
+    + GetById(Guid id): Task<IActionResult>
 }
 
 interface ISubscriptionRepositories<<interface>> {
-    + CreateSubscription(CreateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+    + GetById(Guid requestId): Task<SubscriptionResponseDTO>
 }
 
 class SubscriptionRepositories {
     - _dao: SubscriptionDAO
-    + Update(Guid requestId, UpdateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+    + GetById(Guid requestId): Task<SubscriptionResponseDTO>
 }
 
 class SubscriptionDAO {
     - _client.From<Subscriptions> : ISupabaseTable<Subscriptions>
-    Update(Guid requestId, UpdateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+    + GetById(Guid requestId): Task<SubscriptionResponseDTO>
 }
 
 class Subscriptions {

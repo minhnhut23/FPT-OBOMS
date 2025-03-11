@@ -16,12 +16,12 @@ interface ISubscriptionRepositories<<interface>> {
 }
 
 class SubscriptionRepositories {
-    - _dao: UserDAO
+    - _dao: SubscriptionDAO
     + CreateSubscription(CreateSubscriptionRequestDTO request, string token): Task
 }
 
 class SubscriptionDAO {
-    - _client: Client
+    - _client.From<Subscriptions> : ISupabaseTable<Subscriptions>
     + Create(CreateSubscriptionRequestDTO request, string token): Task
 }
 
