@@ -1,6 +1,7 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+
 skinparam linetype ortho
 
 class APIGateway {
@@ -29,6 +30,7 @@ class TableType {
     + Id: Guid
     + Name: string
     + Description: string
+
     + PriceByHour: decimal
     + CreatedAt: DateTime
     + UpdatedAt: DateTime
@@ -49,6 +51,7 @@ APIGateway -- TableTypeController
 TableTypeController -- ITableTypeRepository
 ITableTypeRepository <|-- TableTypeRepository
 TableTypeRepository -- TableTypeDAO
+
 TableTypeDAO -- TableType
 TableTypeDAO -- Table
 @enduml

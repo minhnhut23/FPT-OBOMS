@@ -7,6 +7,7 @@ class APIGateway {
 
 class BillDetailController {
     - _billDetailRepository: IBillDetailRepository 
+
     + GetBillDetailByID(Guid id): Task<IActionResult> 
 }
 
@@ -16,6 +17,7 @@ interface IBillDetailRepository<<interface>>  {
 
 class BillDetailRepository {
     - _billDetailDAO : BillDetailDAO
+
     + GetBillDetailByID(Guid id): Task<BillDetailResponseDTO> 
 
 }
@@ -36,6 +38,7 @@ class BillDetail {
 }
 
 APIGateway -- BillDetailController
+
 BillDetailController -- IBillDetailRepository
 IBillDetailRepository <|.. BillDetailRepository
 BillDetailRepository -- BillDetailDAO

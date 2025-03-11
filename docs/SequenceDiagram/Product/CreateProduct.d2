@@ -1,0 +1,95 @@
+label.style.font-color: black
+
+classes: {
+  forward arrow: {
+    style: {
+      font-color: black
+      bold: true
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+      bold: true
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+      bold: true
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+label: "Sequence Diagram for User Login and Product Creation"
+
+WebAplication: Web Aplication
+apiGateway: API Gateway
+ProductController: :ProductController
+ProductRepository: :ProductRepository
+ProductDAO: :ProductDAO
+
+Supabase: "Supabase" {
+  shape: cylinder
+}
+
+DB: "DB" {
+  shape: cylinder
+}
+
+loop {
+  class: frame
+  User -> WebAplication.post: "1. Enter credentials and submit login form" {class: forward arrow}
+  WebAplication.post -> WebAplication.post.get: "2. Check empty and valid input" {class: forward arrow}
+  WebAplication.post -> User: "2.1. Show validation message" {class: return arrow}
+}
+
+User -> WebAplication.get: 3. User click\n "Delete Product" {class: forward arrow}
+WebAplication.get -> apiGateway.get: 4. Request create\n new product {class: forward arrow}
+apiGateway.get -> ProductController.get: 5. Create Product {class: forward arrow}
+ProductController.get -> ProductRepository.get: 6. Forward to\n Repository {class: forward arrow}
+ProductRepository.get -> ProductDAO.get: 7. Forward\n to DAO {class: forward arrow}
+ProductDAO.get -> Supabase.get: 8. Create\n new product {class: forward arrow}
+Supabase.get -> DB.get: 9. Check user\n in database {class: forward arrow}
+ProductDAO.get <- DB.get: 10. Return result {class: return arrow}
+ProductDAO.get -> ProductRepository.get: 11. Forward result {class: return arrow}
+ProductRepository.get -> ProductController.get: 12. Return result {class: return arrow}
+
+alt: "alt" {
+  If id not exist: "[Create product successfully]" {
+    class: frame
+      ProductController.get -> apiGateway.get: 12.1. Send\n Response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 12.1.1. Forward\n response {class: return arrow}
+      WebAplication.get -> User: 12.1.1.1. Display\n create product succeed {class: return arrow}
+  }
+  If id exist: "[ID owner not valid]" {
+    class: frame
+      ProductController.get -> apiGateway.get: 12.2. Send\n Response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 12.2.1. Forward\n response {class: return arrow}
+      WebAplication.get -> User: 12.2.1.1. Display\n account not valid {class: return arrow}
+  }
+  If product exist: "[Product already exist]" {
+    class: frame
+      ProductController.get -> apiGateway.get: 12.3. Send\n Response {class: return arrow}
+      apiGateway.get -> WebAplication.get: 12.3.1. Forward\n response {class: return arrow}
+      WebAplication.get -> User: 12.3.1.1. Display\n product already exist {class: return arrow}
+  }
+}

@@ -1,0 +1,80 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+AuthController: AuthController
+AuthRepository: AuthRepository
+AuthDAO: AuthDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User registration sequence
+loop  { 
+  class: frame
+  User -> application.post: "1. Enter credentials and submit register form"
+  application.post -> application.post.get: "2. Check empty and valid input"    
+  application.post -> User: "2.1. Show validation message" {class: return arrow}      
+    
+}  
+ 
+application -> apiGateway.post: "3. Forward registration request"
+apiGateway -> AuthController.post: "4. Create new account"
+AuthController -> AuthRepository.post: "5. Forward to repository"
+AuthRepository -> AuthDAO.post: "6. Forward to DAO"
+AuthDAO.post -> Supabase.post: "7. Validate user and password"
+Supabase.post-> DB.insert: "8. Insert new account record"
+DB.insert -> AuthDAO.post: "9. Return result" {class: return arrow}
+AuthDAO -> AuthRepository.post: "10. Forward result" {class: return arrow}
+AuthRepository -> AuthController.post: "11. Return result" {class: return arrow}
+
+
+alt: "alt" {
+  class: frame
+  Registration successful: "[Registration successful]" {
+    AuthController -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
+    apiGateway -> application.post: "11.1.1. Return success status" {class: return arrow}
+    application -> User: "11.1.1.1. Display registration success message" {class: return arrow}
+  }
+  Registration failed: "[Registration failed]" { 
+    AuthController -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
+    apiGateway -> application.post: "11.2.1. Return error status" {class: return arrow}
+    application -> User: "11.2.1.1. Display registration error message" {class: return arrow}
+  }
+}
