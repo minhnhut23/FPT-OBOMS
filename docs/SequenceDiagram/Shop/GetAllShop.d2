@@ -1,0 +1,76 @@
+label.style.font-color: black
+
+classes: {
+  forward arrow: {
+    style: {
+      font-color: black
+      bold: true
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+      stroke: black
+      font-color: black
+      bold: true
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+      bold: true
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+WebAplication: Web Aplication
+apiGateway: API Gateway
+ShopController: ShopController
+ShopRepository: ShopRepository
+ShopDAO: ShopDAO
+
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> WebAplication.get: 1. User view shop list\n(or apply filters) {class: forward arrow}
+WebAplication.get -> apiGateway.get: 2. Forward\n Request {class: forward arrow}
+apiGateway.get -> ShopController.get: 3. Forward to\n Controller {class: forward arrow}
+ShopController.get -> ShopRepository.get: 4. Call\n GetAllShop() {class: forward arrow}
+ShopRepository.get -> ShopDAO.get: 5. Fetch shop\n from DB {class: forward arrow}
+
+ShopDAO.get -> DB.get: 6. Query shops\n with filters {class: forward arrow}
+DB.get -> ShopDAO.get: 7. Return\n shop list {class: return arrow}
+ShopDAO.get -> ShopRepository.get: 9. Forward result {class: return arrow}
+ShopRepository.get -> ShopController.get: 10. Return result {class: return arrow}
+
+alt: "alt" {
+  If shop found: "[Shop found]" {
+    class: frame  
+    ShopController.get -> apiGateway.get: 10.1. Send\n response {class: return arrow}
+    apiGateway.get -> WebAplication.get: 10.1.1. Forward\n response {class: return arrow}
+    WebAplication.get -> User: 10.1.1.1. Display\n shop list {class: return arrow}
+  }
+  If shop not found: "[Shop not found]" {
+    class: frame
+    ShopController.get -> apiGateway.get: 10.2. Send\n empty response {class: return arrow}
+    apiGateway.get -> WebAplication.get: 10.2.1. Forward\n empty response {class: return arrow}
+    WebAplication.get -> User: 10.2.1.1. Display\n empty response {class: return arrow}
+  }
+}

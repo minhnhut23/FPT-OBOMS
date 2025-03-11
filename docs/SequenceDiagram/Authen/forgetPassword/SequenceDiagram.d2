@@ -10,8 +10,6 @@ classes: {
   return arrow: {
     style: {
       stroke-dash: 3
-      stroke: black
-      font-color: black
     }
   }
 
@@ -36,53 +34,46 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-application: "chat application"
-apiGateway: "apiGateway"
-AuthController: "authController"
-AuthRepository: "authRepository"
-AuthDAO: "authDAO"
-Supabase: "supabase"
+application: "Web application"
+apiGateway: "ApiGateway"
+AuthController: "AuthController"
+AuthRepository: "AuthRepositories"
+AuthDAO: "AuthDAO"
+Supabase: "Supabase"
 DB: "DB" {
   shape: cylinder
 }
-EmailService: "emailService"
 
 # Forgot password sequence
 loop  { 
   class: frame
-  User -> application.post: "1. Enter and submit change password form"
-  application.post -> application.post.get: "2. Check empty and valid input"
-  application.post -> User: "2.1. Show validation message" {class: return arrow}       
+  User -> application.post: "1. Enter and submit email"
+  application.post -> application.post.get: "2. Check empty or \n invalid input"
+  application.post -> User: "3. Show validation message" {class: return arrow}       
 }  
 
-application -> apiGateway.post: "3. Forward forgot password request"
-apiGateway -> AuthController.post: "4. Handle forgot password request"
-AuthController -> AuthRepository.post: "5. Forward to repository"
-AuthRepository -> AuthDAO.post: "6. Forward to DAO"
-AuthDAO -> Supabase.post: "7. Validate email"
-Supabase -> DB.query: "8. Check email in database"
-DB -> Supabase.response: "9. Return email status"
+application.post -> apiGateway.post: "4. Forward forgot password request"
+apiGateway.post -> AuthController.post: "5. Handle forgot password request"
+AuthController.post -> AuthRepository.post: "6. Forward to repository"
+AuthRepository.post -> AuthDAO.post: "7. Forward to DAO"
+AuthDAO.post -> Supabase.post: "8. Validate email"
+Supabase.post -> DB.post: "9. Check email in database"
+DB.post -> Supabase.post: "10. Return result" {class: return arrow}
+Supabase.post -> AuthDAO.post: "11. Forward reset token" {class: return arrow}
+AuthDAO.post -> AuthRepository.post: "12. Forward reset token" {class: return arrow}
+AuthRepository.post -> AuthController.post: "13. Return reset token" {class: return arrow}
+
 
 alt: "alt" {
   class: frame
   Email exists: "[Email exists]" {
-    Supabase -> Supabase.generate: "10b. Generate reset token"
-    Supabase -> Supabase.response: "11b. Return reset token"
-    Supabase -> EmailService.send: "12b. Send reset link to email"
-    EmailService -> Supabase.response: "13b. Email sent confirmation"
-    Supabase -> AuthDAO.response: "14b. Forward reset token"
-    AuthDAO -> AuthRepository.response: "15b. Forward reset token"
-    AuthRepository -> AuthController.response: "16b. Return reset token"
-    AuthController -> apiGateway.response: "17b. Send reset token to frontend"
-    apiGateway -> application.response: "18b. Return reset token"
-    application -> User: "19b. Display reset token and instructions"
+    AuthController.post -> apiGateway.post: "17b. Send reset token to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "18b. Return reset token" {class: return arrow}
+    application.post -> User: "19b. Display reset token and instructions" {class: return arrow}
   }
   Email not found: "[Email not found]" {
-    Supabase -> AuthDAO.response: "10a. Email not found"
-    AuthDAO -> AuthRepository.response: "11a. Forward error"
-    AuthRepository -> AuthController.response: "12a. Return error"
-    AuthController -> apiGateway.response: "13a. Send error to frontend"
-    apiGateway -> application.response: "14a. Return error"
-    application -> User: "15a. Display error message"
+    AuthController.post -> apiGateway.post: "13a. Send error to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "14a. Return error" {class: return arrow}
+    application.post -> User: "15a. Display error message" {class: return arrow}
   }
 }

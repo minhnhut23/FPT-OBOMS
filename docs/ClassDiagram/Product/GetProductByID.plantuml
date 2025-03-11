@@ -1,7 +1,10 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
+class APIGateway {
+}
 ' Controller for product operations
 class ProductController {
     - _repo: IProductRepository
@@ -40,16 +43,11 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
-' Utility class to handle errors
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
 ' Relationships among classes
+APIGateway -- ProductController
 ProductController -- IProductRepository
 IProductRepository <|-- ProductRepository
 ProductRepository -- ProductDAO
 ProductDAO -- MenuItem
-ProductDAO -- ErrorHandler
 
 @enduml

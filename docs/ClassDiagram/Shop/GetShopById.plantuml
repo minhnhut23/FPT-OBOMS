@@ -2,12 +2,16 @@
 hide circle
 skinparam classAttributeIconSize 0
 
+class APIGateway {
+}
+
+
 class ShopController {
     - _shopRepository: IShopRepository
     + GetShopById(Guid id) : Task<IActionResult> 
 }
 
-interface IShopRepository {
+interface IShopRepository<<interface>> {
     + GetShopById(Guid id) : Task<GetShopResponseDTO?> 
 }
 
@@ -22,15 +26,6 @@ class ShopDAO {
     + GetShopById(Guid id): Task<GetShopResponseDTO?> 
 }
 
-class GetShopResponseDTO {
-    + Id: Guid
-    + Name: string
-    + Address: string
-    + OwnerId: Guid
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-}
-
 class Shop {
     + Id: Guid
     + Name: string
@@ -40,24 +35,9 @@ class Shop {
     + UpdatedAt: DateTime
 }
 
-class MappingProfile {
-  + MappingProfile()
-}
-
-class ErrorHandler {
-    + IsJson(string input): bool
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
+APIGateway -- ShopController
 ShopController -- IShopRepository
 IShopRepository <|-- ShopRepository
 ShopRepository -- ShopDAO
 ShopDAO -- Shop
-ShopDAO -- GetShopResponseDTO
-ShopDAO -- MappingProfile
-ShopDAO -- ErrorHandler
-
-MappingProfile -- Shop : Maps
-MappingProfile -- GetShopResponseDTO : Maps
-
 @enduml

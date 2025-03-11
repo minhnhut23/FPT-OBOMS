@@ -1,0 +1,69 @@
+label: "Sequence Diagram for UpdateUser"
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+  return_arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+  label_right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+Admin: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "Web application"
+apiGateway: "ApiGateway"
+DiscountController: "DiscountController"
+DiscountRepositories: "DiscountRepositories"
+DiscountDAO: "DiscountDAO"
+Supabase: "Supabase"
+DB: "DB" {
+  shape: cylinder
+}
+
+Admin -> application.get: "1. Delete discount"
+application.get -> apiGateway.get: "4. Request delete discount"
+apiGateway.get -> DiscountController.get: "5. Forward request"
+DiscountController.get -> DiscountRepositories.get: "6. Forward request to repository"
+DiscountRepositories.get -> DiscountDAO.get: "7. Forward request to DAO"
+
+DiscountDAO.get -> Supabase.get: "8. Validate token"
+Supabase.get -> DB.get: "9. Delete discount"
+DB.get -> Supabase.get: "10. Return result"
+Supabase.get -> DiscountDAO.get: "11. Return result"
+DiscountDAO.get -> DiscountRepositories.get: "12. Return result" {class: return arrow}
+DiscountRepositories.get-> DiscountController.get: "13. Forward result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Delete Discount Successfully: "[Delete discount successfully]" {
+    DiscountController.get -> apiGateway.get: "13.1. Send success status to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "13.1.1. Return discount" {class: return arrow}
+    application.get -> Admin: "13.1.2. Display success status" {class: return arrow}
+  }
+  Discount Not Found: "[Discount not found]" {
+    DiscountController.get -> apiGateway.get: "13.2. Send error to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "13.2.1. Return error" {class: return arrow}
+    application.get -> Admin: "13.2.2. Display error message" {class: return arrow}
+  }
+}

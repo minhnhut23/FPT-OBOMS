@@ -3,12 +3,15 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
+class APIGateway {
+}
+
 class ShopController {
     - _shopRepository: IShopRepository
     + CreateShop(CreateShopRequestDTO createShop): Task<IActionResult>
 }
 
-interface IShopRepository {
+interface IShopRepository<<interface>> {
     + CreateShop(CreateShopRequestDTO createShop): Task<GetShopResponseDTO>
 }
 
@@ -23,23 +26,9 @@ class ShopDAO {
     + CreateShop(CreateShopRequestDTO createShop): Task<GetShopResponseDTO>
     + GetShopById(Guid shopId): Task<Shop>
     + IsShopNameExists(string name): Task<bool>
+
 }
 
-class CreateShopRequestDTO {
-    + Name: string
-    + Address: string
-    + Description: string
-    + OwnerId: Guid
-}
-
-class GetShopResponseDTO {
-    + Id: Guid
-    + Name: string
-    + Address: string
-    + Description: string
-    + CreatedAt: DateTime
-    + UpdatedAt: DateTime
-}
 
 class Shop {
     + Id: Guid
@@ -51,24 +40,9 @@ class Shop {
     + OwnerId: Guid
 }
 
-class MappingProfile {
-    + MappingProfile()
-}
-
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
+APIGateway -- ShopController
 ShopController -- IShopRepository
 IShopRepository <|-- ShopRepository
 ShopRepository -- ShopDAO
 ShopDAO -- Shop
-ShopDAO -- GetShopResponseDTO
-ShopDAO -- CreateShopRequestDTO
-ShopDAO -- ErrorHandler
-ShopDAO -- MappingProfile
-
-MappingProfile -- Shop : Maps
-MappingProfile -- GetShopResponseDTO : Maps
-
 @enduml

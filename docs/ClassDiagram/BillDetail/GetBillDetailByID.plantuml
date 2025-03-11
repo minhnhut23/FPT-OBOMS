@@ -1,0 +1,47 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class APIGateway {
+}
+
+class BillDetailController {
+    - _billDetailRepository: IBillDetailRepository 
+
+    + GetBillDetailByID(Guid id): Task<IActionResult> 
+}
+
+interface IBillDetailRepository<<interface>>  {
+    + GetBillDetailByID(Guid id): Task<BillDetailResponseDTO> 
+}
+
+class BillDetailRepository {
+    - _billDetailDAO : BillDetailDAO
+
+    + GetBillDetailByID(Guid id): Task<BillDetailResponseDTO> 
+
+}
+
+class BillDetailDAO {
+    - _client: Client
+    + GetBillDetailByID(Guid id): Task<BillDetailResponseDTO> 
+}
+
+class BillDetail {
+    +Id: Guid
+    +MenuItemId: Guid
+    +BillId: Guid
+    +Quantity: int
+    +Price: decimal
+    +CreatedAt: DateTime
+    +UpdatedAt: DateTime
+}
+
+APIGateway -- BillDetailController
+
+BillDetailController -- IBillDetailRepository
+IBillDetailRepository <|.. BillDetailRepository
+BillDetailRepository -- BillDetailDAO
+BillDetailDAO -- BillDetail
+
+@enduml

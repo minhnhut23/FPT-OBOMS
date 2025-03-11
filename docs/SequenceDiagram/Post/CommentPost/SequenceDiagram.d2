@@ -1,0 +1,78 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+PostController: PostController
+PostRepository: PostRepository
+CommentDAO: CommentDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User comments on a post
+loop  { 
+  class: frame
+  User -> application.post: "1. Enter comment on a post"
+  application.post -> application.post.get: "2. Validate input"
+  application.post -> User: "2.1. Show validation message if invalid" {class: return arrow}        
+}  
+ 
+application -> apiGateway.post: "3. Forward Comment request"
+apiGateway -> PostController.post: "4. Forward Comment request"
+PostController -> PostRepository.post: "5. Forward to repository"
+PostRepository -> CommentDAO.post: "6. Forward to DAO"
+CommentDAO.post -> Supabase.post: "7. Validate user and post"
+Supabase.post-> DB.insert: "8. Insert new comment"
+DB.insert -> CommentDAO.post: "9. Return result" {class: return arrow}
+CommentDAO.post -> PostRepository.post: "10. Forward result" {class: return arrow}
+PostRepository.post -> PostController.post: "11. Return result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Comment successful: "[Comment added successfully]" {
+    PostController.post -> apiGateway.post: "11.1. Send success status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "11.1.1. Return success status" {class: return arrow}
+    application.post -> User: "11.1.1.1. Display comment success message" {class: return arrow}
+  }
+  Comment failed: "[Comment failed]" { 
+    PostController.post -> apiGateway.post: "11.2. Send error status to frontend" {class: return arrow}
+    apiGateway.post -> application.post: "11.2.1. Return error status" {class: return arrow}
+    application.post -> User: "11.2.1.1. Display comment error message" {class: return arrow}
+  }
+}

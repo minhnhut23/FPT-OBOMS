@@ -1,0 +1,49 @@
+@startuml 
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class APIGateway {
+}
+
+class AuthController {
+    - _repo: IAuthRepositories
+    + Login([FromBody] LoginRequestDTO request): Task<IActionResult> 
+}
+
+interface IAuthRepositories<<interface>> {
+    + Login(string email, string password): Task<LoginResponseDTO>
+}
+
+class AuthRepositories {
+    - _dao: AuthDAO
+    + Login(string email, string password): Task<LoginResponseDTO>
+}
+
+class AuthDAO {
+    - _client.From<Profile> : ISupabaseTable<Profile>
+    + Login(string email, string password): Task<LoginResponseDTO>
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+APIGateway -- AuthController
+
+AuthController -- IAuthRepositories
+
+IAuthRepositories <|-- AuthRepositories
+
+AuthRepositories "1" -- "1..*" AuthDAO
+
+AuthDAO "1"--"0..*" Profile
+@enduml

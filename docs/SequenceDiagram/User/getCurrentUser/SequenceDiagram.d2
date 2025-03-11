@@ -43,16 +43,17 @@ DB: "DB" {
 }
 
 # Get current user with token
-User -> application.get: "1. Retrieve current user with token"
+User -> application.get: "1. Get current user request"
 application -> apiGateway.get: "2. Forward get current user request"
-apiGateway -> UserController.get: "3. Forward request with token"
+apiGateway -> UserController.get: "3. Forward request"
 UserController -> UserRepository.get: "4. Forward token to repository"
 UserRepository -> UserDAO.get: "5. Forward token to DAO"
 
 # Validate token and retrieve user
 UserDAO.get -> Supabase.get: "6. Validate token"
-Supabase.get -> DB.get: "8. Retrieve user profile"
-DB.get -> UserDAO.get: "9. Return result"
+Supabase.get -> DB.get: "7. Retrieve user profile"
+DB.get -> Supabase.get: "8. Return result"
+Supabase.get -> UserDAO.get: "9. Return result"
 UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
 UserRepository .get-> UserController.get: "11. Forward result" {class: return arrow}
 
@@ -61,11 +62,11 @@ alt: "alt" {
   User profile found: "[User profile found]" {
     UserController.get -> apiGateway.get: "11.1. Send user profile to frontend" {class: return arrow}
     apiGateway.get -> application.get: "11.1.1. Return user profile" {class: return arrow}
-    application.get -> User: "11.1.1.1. Display user profile" {class: return arrow}
+    application.get -> User: "11.1.2. Display user profile" {class: return arrow}
   }
   User profile not found: "[User profile not found]" {
     UserController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
     apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
-    application.get -> User: "11.2.1.1. Display error message" {class: return arrow}
+    application.get -> User: "11.2.2. Display error message" {class: return arrow}
   }
 }

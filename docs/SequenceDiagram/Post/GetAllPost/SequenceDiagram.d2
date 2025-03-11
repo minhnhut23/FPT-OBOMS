@@ -1,0 +1,74 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+PostController: PostController
+PostRepository: PostRepository
+PostDAO: PostDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User fetching all posts
+User -> application.get: "1. User requests to view all posts"
+application.get -> apiGateway.get: "2. Forward GetAllPosts request"
+apiGateway.get -> PostController.get: "3. Forward request to Controller"
+PostController.get -> PostRepository.get: "4. Call GetAllPosts()"
+PostRepository.get -> PostDAO.get: "5. Fetch posts from DB"
+
+PostDAO.get -> DB.get: "6. Query posts with filters"
+DB.get -> PostDAO.get: "7. Return post list" {class: return arrow}
+PostDAO.get -> PostRepository.get: "8. Forward result" {class: return arrow}
+PostRepository.get -> PostController.get: "9. Return result" {class: return arrow}
+
+alt: "alt" {
+  If posts found: "[Posts available]" {
+    class: frame  
+    PostController.get -> apiGateway.get: "9.1. Send response" {class: return arrow}
+    apiGateway.get -> application.get: "9.1.1. Forward response" {class: return arrow}
+    application.get -> User: "9.1.1.1. Display posts list" {class: return arrow}
+  }
+  If no posts found: "[No posts available]" {
+    class: frame
+    PostController.get -> apiGateway.get: "9.2. Send empty response" {class: return arrow}
+    apiGateway.get -> application.get: "9.2.1. Forward empty response" {class: return arrow}
+    application.get -> User: "9.2.1.1. Display no posts message" {class: return arrow}
+  }
+}
+

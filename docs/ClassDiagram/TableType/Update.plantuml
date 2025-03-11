@@ -2,6 +2,9 @@
 hide circle
 skinparam classAttributeIconSize 0
 
+class APIGateway {
+}
+
 class TableTypeController {
     - _tableTypeRepository: ITableTypeRepository
     + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<IActionResult>
@@ -29,7 +32,7 @@ class TableType {
     + UpdatedAt: DateTime
 }
 
-
+APIGateway -- TableTypeController
 TableTypeController -- ITableTypeRepository
 ITableTypeRepository <|-- TableTypeRepository
 TableTypeRepository -- TableTypeDAO

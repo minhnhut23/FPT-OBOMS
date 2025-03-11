@@ -1,0 +1,36 @@
+@startuml 
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class APIGateway {
+}
+
+class AuthController {
+    - _repo: IAuthRepositories
+    + Logout(): Task<IActionResult> 
+}
+
+interface IAuthRepositories<<interface>> { 
+    + Logout(): Task<IActionResult>
+}
+
+class AuthRepositories {
+    - _dao: AuthDAO
+    + Logout(): Task    
+}
+
+class AuthDAO {
+    - _client: Client
+    + Logout(): Task
+}
+
+APIGateway -- AuthController
+
+AuthController -- IAuthRepositories
+
+IAuthRepositories <|-- AuthRepositories
+
+AuthRepositories "1" -- "1..*" AuthDAO
+
+@enduml
