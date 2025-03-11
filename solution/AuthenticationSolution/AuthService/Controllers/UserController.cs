@@ -34,23 +34,6 @@ public class UserController : Controller
 
     }
 
-    [HttpGet("createProfile")]
-    [Authorize]
-    public async Task<IActionResult> CreateProfile([FromBody] CreateProfileRequestDTO request)
-    {
-        try
-        {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var reponse = await _repo.CreateUser(request, token);
-            return Ok(reponse);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { msg = ex.Message });
-        }
-
-    }
-
     [HttpGet("getUserById")]
     [Authorize]
     public async Task<IActionResult> GetUserById([FromQuery] Guid id)

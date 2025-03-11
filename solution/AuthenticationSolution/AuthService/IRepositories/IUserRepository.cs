@@ -10,7 +10,4 @@ public interface IUserRepository
 
     public Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token);
 
-    public Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token);
-
-
 }

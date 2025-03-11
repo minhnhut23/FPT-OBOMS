@@ -4,6 +4,12 @@ using BusinessObject.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
+using ShopManagementService.IRepositories;
+using BusinessObject.DTOs.TableDTO;
+using Microsoft.AspNetCore.Authorization;
+using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
+using ShopManagementService.Utils.Security;
+using BusinessObject.Enums;
 
 namespace BusinessObject.Controllers
 {
@@ -11,19 +17,19 @@ namespace BusinessObject.Controllers
     [ApiController]
     public class ShopController : ControllerBase
     {
-        private readonly ShopDAO _shopDao;
+        private readonly IShopRepository _repo;
 
-        public ShopController(ShopDAO shopDao)
+        public ShopController(IShopRepository repo)
         {
-            _shopDao = shopDao;
+            _repo = repo;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllShops()
+        public async Task<IActionResult> GetAllShops([FromQuery] GetShopRequestDTO request)
         {
             try
             {
-                var shops = await _shopDao.GetAllShops();
+                var shops = await _repo.GetAllShops(request);
                 return Ok(shops);
             }
             catch (Exception ex)
@@ -37,7 +43,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var shop = await _shopDao.GetShopById(id);
+                var shop = await _repo.GetShopById(id);
                 if (shop == null)
                 {
                     return NotFound("Shop not found.");
@@ -52,6 +58,7 @@ namespace BusinessObject.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> CreateShop([FromBody] CreateShopRequestDTO createShop)
         {
             try
@@ -60,8 +67,10 @@ namespace BusinessObject.Controllers
                 {
                     return BadRequest("Invalid input data.");
                 }
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
 
-                var createdShop = await _shopDao.CreateShop(createShop);
+
+                var createdShop = await _repo.CreateShop(createShop, token);
                 return CreatedAtAction(nameof(GetShopById), new { id = createdShop.Id }, createdShop);
             }
             catch (Exception ex)
@@ -71,6 +80,7 @@ namespace BusinessObject.Controllers
         }
 
         [HttpPut("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> UpdateShop(Guid id, [FromBody] UpdateShopRequestDTO updateShop)
         {
             try
@@ -80,7 +90,10 @@ namespace BusinessObject.Controllers
                     return BadRequest("Invalid input data.");
                 }
 
-                var updatedShop = await _shopDao.UpdateShop(id, updateShop);
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+
+                var updatedShop = await _repo.UpdateShop(id, updateShop, token);
                 if (updatedShop == null)
                 {
                     return NotFound("Shop not found.");
@@ -99,7 +112,7 @@ namespace BusinessObject.Controllers
         {
             try
             {
-                var result = await _shopDao.DeleteShop(id);
+                var result = await _repo.DeleteShop(id);
                 if (!result.IsDeleted)
                 {
                     return NotFound(result.Message);

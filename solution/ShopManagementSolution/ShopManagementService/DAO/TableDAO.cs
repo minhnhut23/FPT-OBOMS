@@ -20,7 +20,7 @@ namespace BusinessObject.Services
         }
 
 
-        public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTableRequestDTO request)
+        public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
 
         {
             try
@@ -327,8 +327,8 @@ namespace BusinessObject.Services
                     await _client.From<Table>().Update(table);
 
                     var billDAO = new BillDAO(_client);
-                    var billId = await billDAO.GetBillIdByTableId(tableId);
-                    var billPath = await billDAO.GenerateAndPrintBillPdf(billId);
+                    var billId = await billDAO.GetBillByTableID(tableId);
+                    var billPath = await billDAO.GenerateAndPrintBillPdf(billId.Id);
 
                     return new UpdateTableStatusResponseDTO
                     {
