@@ -1,7 +1,10 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
+class APIGateway {
+}
 ' Controllers
 class ProductController {
     - _repo: IProductRepository
@@ -41,61 +44,13 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
-' Request Data Transfer Object
-class GetProductRequestDTO {
-    + Name: string
-    + MinPrice: decimal?
-    + MaxPrice: decimal?
-    + Category: string
-    + IsAvailable: bool?
-    + PageNumber: int
-    + PageSize: int
-}
-
-' Response Data Transfer Object
-class GetProductResponseDTO {
-    + Id: Guid
-    + Name: string
-    + Price: decimal
-    + Description: string
-    + Category: string
-    + IsAvailable: bool
-}
-
-' Pagination Data Transfer Object
-class ProductPaginationDTO {
-    + TotalResults: int
-    + TotalPages: int
-    + CurrentPage: int
-    + PageSize: int
-}
-
-' Utility classes
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
-class MappingProfile {
-    + Map<MenuItem, GetProductResponseDTO>()
-}
 
 ' Relationships
+APIGateway -- ProductController
 ProductController -- IProductRepository
-ProductController -- GetProductRequestDTO
 
 IProductRepository <|-- ProductRepository
-IProductRepository -- GetProductResponseDTO
-IProductRepository -- ProductPaginationDTO
-
 ProductRepository -- ProductDAO
-
-
-ProductDAO -- ErrorHandler
-ProductDAO -- GetProductResponseDTO
-ProductDAO -- ProductPaginationDTO
 ProductDAO -- MenuItem
-
-MappingProfile -- MenuItem
-MappingProfile -- GetProductResponseDTO
 
 @enduml

@@ -1,42 +1,30 @@
 @startuml
 hide circle
 skinparam classAttributeIconSize 0
+skinparam linetype ortho
 
-' Controller exposing the CreateProduct endpoint
+class APIGateway {
+}
+
 class ProductController {
     - _repo: IProductRepository
     + CreateProduct([FromBody] CreateProductRequestDTO request): Task<IActionResult>
 }
 
-' Repository interface declaring CreateProduct
-interface IProductRepository {
+interface IProductRepository<<interface>> {
     + CreateProduct(CreateProductRequestDTO request, string token): Task
 }
 
-' Repository implementation that delegates to the DAO
 class ProductRepository {
     - _dao: ProductDAO
     + CreateProduct(CreateProductRequestDTO request, string token): Task
 }
 
-' Data Access Object handling the database interaction
 class ProductDAO {
     - _client: Client
     + CreateProduct(CreateProductRequestDTO request, string token): Task
 }
 
-' Data Transfer Object carrying product details for creation
-class CreateProductRequestDTO {
-    + Name: string
-    + Price: decimal
-    + Description: string
-    + Category: string
-    + Ingredient: string
-    + NutritionalIfo: string
-    + ShopId: Guid
-}
-
-' Domain model representing a product in the system
 class MenuItem {
     + Id: Guid
     + ShopId: Guid
@@ -51,18 +39,10 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
-' Utility class for error handling
-class ErrorHandler {
-    + ProcessErrorMessage(string exceptionMessage): string
-}
-
-' Relationships
-ProductController -- IProductRepository
-ProductController -- CreateProductRequestDTO
+APIGateway -- ProductController
+ProductController -- IProductRepository 
 IProductRepository <|-- ProductRepository
 ProductRepository -- ProductDAO
-
-ProductDAO -- ErrorHandler
 ProductDAO -- MenuItem
 
 @enduml
