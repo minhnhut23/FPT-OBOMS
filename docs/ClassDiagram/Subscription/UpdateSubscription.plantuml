@@ -12,17 +12,17 @@ class SubscriptionController{
 }
 
 interface ISubscriptionRepositories<<interface>> {
-    + CreateSubscription(CreateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+    + CreateSubscription(CreateSubscriptionRequestDTO request): Task<SubscriptionResponseDTO>
 }
 
 class SubscriptionRepositories {
     - _dao: SubscriptionDAO
-    + Update(Guid requestId, UpdateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+    + Update(Guid requestId, UpdateSubscriptionRequestDTO request): Task<SubscriptionResponseDTO>
 }
 
 class SubscriptionDAO {
     - _client.From<Subscriptions> : ISupabaseTable<Subscriptions>
-    Update(Guid requestId, UpdateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+    Update(Guid requestId, UpdateSubscriptionRequestDTO request): Task<SubscriptionResponseDTO>
 }
 
 class Subscriptions {
