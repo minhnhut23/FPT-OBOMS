@@ -1,0 +1,44 @@
+@startuml createSubscription
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class APIGateway {
+}
+
+class SubscriptionController{
+    - _repo: ISubscriptionRepositories
+    + Update(Guid id, UpdateSubscriptionRequestDTO request): Task<IActionResult>
+}
+
+interface ISubscriptionRepositories<<interface>> {
+    + CreateSubscription(CreateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+}
+
+class SubscriptionRepositories {
+    - _dao: UserDAO
+    + Update(Guid requestId, UpdateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+}
+
+class SubscriptionDAO {
+    - _client: Client
+    Update(Guid requestId, UpdateSubscriptionRequestDTO request, string token): Task<SubscriptionResponseDTO>
+}
+
+class Subscriptions {
+    + Id: Guid
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + NumberOfMonths: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+APIGateway -- SubscriptionController
+SubscriptionController -- ISubscriptionRepositories
+ISubscriptionRepositories <|-- SubscriptionRepositories
+SubscriptionRepositories "1"--"1..*" SubscriptionDAO
+SubscriptionDAO "1"--"0..*" Subscriptions
+
+@enduml
