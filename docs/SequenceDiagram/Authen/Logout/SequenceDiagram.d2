@@ -1,0 +1,64 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+Router: Router
+AuthController: AuthController
+AuthRepository: AuthRepository
+AuthDAO: AuthDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> application.post: "1. Send logout request"
+application -> apiGateway.post: "4. Send logout request"
+apiGateway.post -> Router.post: "5. Send logout request"
+Router.post -> AuthController.post: "6. Forward to controller"
+AuthController -> AuthRepository.post: "7. Forward to repository"
+AuthRepository -> AuthDAO.post: "8. Forward to DAO"
+AuthDAO.post -> Supabase.post: "9. Validate token"
+Supabase.post-> DB.insert: "10. Remove session"
+DB.insert -> Supabase.post: "11. Return result"
+Supabase.post -> AuthDAO.post: "12. Return result" {class: return arrow}
+AuthDAO.post -> AuthRepository.post: "13. Forward result" {class: return arrow}
+AuthRepository.post -> AuthController.post: "14. Return result" {class: return arrow}
+AuthController.post -> Router.post: "15. Send success status to frontend" {class: return arrow}
+Router.post -> apiGateway.post: "16. Return success status" {class: return arrow}    
+apiGateway.post -> application.post: "17. Return success status" {class: return arrow}
+application.post -> User: "18. Return to Login Page" {class: return arrow}

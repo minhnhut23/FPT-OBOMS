@@ -36,6 +36,7 @@ User: {
 
 application: Web application
 apiGateway: ApiGateway
+Router: Router
 AuthController: AuthController
 AuthRepository: AuthRepository
 AuthDAO: AuthDAO
@@ -55,27 +56,30 @@ loop  {
 }  
  
 application -> apiGateway.post: "4. Forward registration request"
-apiGateway -> AuthController.post: "5. Create new account"
-AuthController -> AuthRepository.post: "6. Forward to repository"
-AuthRepository -> AuthDAO.post: "7. Forward to DAO"
-AuthDAO.post -> Supabase.post: "8. Validate user and password"
-Supabase.post-> DB.insert: "9. Insert new account record"
-DB.insert -> Supabase.post: "10. Return result"
-Supabase.post -> AuthDAO.post: "11. Return result" {class: return arrow}
-AuthDAO.post -> AuthRepository.post: "12. Forward result" {class: return arrow}
-AuthRepository.post -> AuthController.post: "13. Return result" {class: return arrow}
+apiGateway.post -> Router.post: "5. Send create account request"
+Router.post -> AuthController.post: "6. Forward to controller"
+AuthController -> AuthRepository.post: "7. Forward to repository"
+AuthRepository -> AuthDAO.post: "8. Forward to DAO"
+AuthDAO.post -> Supabase.post: "9. Validate user and password"
+Supabase.post-> DB.insert: "10. Insert new account record"
+DB.insert -> Supabase.post: "11. Return result"
+Supabase.post -> AuthDAO.post: "12. Return result" {class: return arrow}
+AuthDAO.post -> AuthRepository.post: "13. Forward result" {class: return arrow}
+AuthRepository.post -> AuthController.post: "14. Return result" {class: return arrow}
 
 
 alt: "alt" {
   class: frame
   Registration successful: "[Registration successful]" {
-    AuthController.post -> apiGateway.post: "13.1. Send success status to frontend" {class: return arrow}
-    apiGateway.post -> application.post: "13.1.1. Return success status" {class: return arrow}
-    application.post -> User: "13.1.2. Display registration success message" {class: return arrow}
+    AuthController.post -> Router.post: "14.1. Send success status to frontend" {class: return arrow}
+    Router.post -> apiGateway.post: "14.1.1. Return success status" {class: return arrow}    
+    apiGateway.post -> application.post: "14.1.2. Return success status" {class: return arrow}
+    application.post -> User: "14.1.3. Display registration success message" {class: return arrow}
   }
   Registration failed: "[Registration failed]" { 
-    AuthController.post -> apiGateway.post: "13.2. Send error status to frontend" {class: return arrow}
-    apiGateway.post -> application.post: "13.2.1. Return error status" {class: return arrow}
-    application.post -> User: "13.2.2. Display registration error message" {class: return arrow}
+    AuthController.post -> apiGateway.post: "14.2. Send error status to frontend" {class: return arrow}
+    Router.post -> apiGateway.post: "14.2.1. Return error status" {class: return arrow}    
+    apiGateway.post -> application.post: "14.2.2. Return error status" {class: return arrow}
+    application.post -> User: "14.2.3. Display registration error message" {class: return arrow}
   }
 }
