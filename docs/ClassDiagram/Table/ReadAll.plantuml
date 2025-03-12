@@ -6,19 +6,20 @@ skinparam linetype ortho
 class APIGateway {
 }
 class TableController {
-    - _tableRepository: ITableRepository
+    - _tableRepositories: ITableRepositories
     + GetAllTables ([FromQuery] GetTableRequestDTO request): Task<IActionResult>
 }
-interface ITableRepository<<interface>>  {
+interface ITableRepositories<<interface>>  {
     + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, TablePaginationDTO)> 
 }
 
-class TableRepository {
+class TableRepositories {
     - _tableDao: TableDAO
     + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, TablePaginationDTO)>
 }
 class TableDAO {
-    - _client: Supabase.Client
+    - _client.From<Table> : ISupabaseTable<Table>
+    - _client.From<TableType> : ISupabaseTable<TableType>
     + GetAllTables(GetTableRequestDTO request): Task<(List<GetTableResponseDTO>, TablePaginationDTO)>
     + ApplyFilters(dynamic query, GetTableRequestDTO request): dynamic
 }
@@ -43,10 +44,10 @@ class TableType {
     + UpdatedAt: DateTime
 }
 APIGateway -- TableController
-TableController -- ITableRepository
-ITableRepository <|-- TableRepository
-TableRepository -- TableDAO
-TableDAO -- Table
-TableDAO -- TableType
+TableController -- ITableRepositories
+ITableRepositories <|-- TableRepositories
+TableRepositories "1"--"1..*" TableDAO
+TableDAO "1"--"0..*" Table
+TableDAO "1"--"0..*" TableType
 
 @enduml

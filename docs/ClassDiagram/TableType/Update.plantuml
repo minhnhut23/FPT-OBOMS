@@ -6,21 +6,21 @@ class APIGateway {
 }
 
 class TableTypeController {
-    - _tableTypeRepository: ITableTypeRepository
+    - _tableTypeRepositories: ITableTypeRepositories
     + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<IActionResult>
 }
 
-interface ITableTypeRepository<<interface>>  {
+interface ITableTypeRepositories<<interface>>  {
     + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<GetTableTypeResponseDTO>
 }
 
-class TableTypeRepository {
+class TableTypeRepositories {
     - _tableTypeDao: TableTypeDAO
     + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<GetTableTypeResponseDTO>
 }
 
 class TableTypeDAO {
-    - _client: Client
+    - _client.From<TableType> : ISupabaseTable<TableType>    
     + UpdateTableType(Guid id, AddEditTypeRequestDTO updateTableType): Task<GetTableTypeResponseDTO>
 }
 
@@ -33,9 +33,9 @@ class TableType {
 }
 
 APIGateway -- TableTypeController
-TableTypeController -- ITableTypeRepository
-ITableTypeRepository <|-- TableTypeRepository
-TableTypeRepository -- TableTypeDAO
+TableTypeController -- ITableTypeRepositories
+ITableTypeRepositories <|-- TableTypeRepositories
+TableTypeRepositories "1"--"1..*" TableTypeDAO
 
-TableTypeDAO -- TableType
+TableTypeDAO "1"--"0..*" TableType
 @enduml

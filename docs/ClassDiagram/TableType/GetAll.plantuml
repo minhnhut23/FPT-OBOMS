@@ -6,21 +6,21 @@ class APIGateway {
 }
 
 class TableTypeController {
-    - _tableTypeRepository: ITableTypeRepository
+    - _tableTypeRepositories: ITableTypeRepositories
     + GetAllTableTypes(): Task<IActionResult>
 }
 
-interface ITableTypeRepository<<interface>>  {
+interface ITableTypeRepositories<<interface>>  {
     + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
 }
 
-class TableTypeRepository {
+class TableTypeRepositories {
     - _tableTypeDao: TableTypeDAO
     + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
 }
 
 class TableTypeDAO {
-    - _client: Client
+    - _client.From<TableType> : ISupabaseTable<TableType>    
     + GetAllTableTypes(): Task<List<GetTableTypeResponseDTO>>
 }
 
@@ -34,9 +34,9 @@ class TableType {
 }
 
 APIGateway -- TableTypeController
-TableTypeController -- ITableTypeRepository
-ITableTypeRepository <|-- TableTypeRepository
-TableTypeRepository -- TableTypeDAO
-TableTypeDAO -- TableType
+TableTypeController -- ITableTypeRepositories
+ITableTypeRepositories <|-- TableTypeRepositories
+TableTypeRepositories "1"--"1..*" TableTypeDAO
+TableTypeDAO "1"--"0..*" TableType
 
 @enduml

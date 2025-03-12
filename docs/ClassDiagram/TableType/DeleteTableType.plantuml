@@ -8,21 +8,22 @@ class APIGateway {
 }
 
 class TableTypeController {
-    - _tableTypeRepository: ITableTypeRepository
+    - _tableTypeRepositories: ITableTypeRepositories
     + DeleteTableType(Guid id): Task<IActionResult> 
 }
 
-interface ITableTypeRepository<<interface>> {
+interface ITableTypeRepositories<<interface>> {
     + DeleteTableType(Guid id): Task<IActionResult> 
    }
 
-class TableTypeRepository {
+class TableTypeRepositories {
     - _tableTypeDao: TableTypeDAO
     + DeleteTableType(Guid id): Task<IActionResult> 
 }
 
 class TableTypeDAO {
-    - _client: Client
+    - _client.From<Table> : ISupabaseTable<Table>
+    - _client.From<TableType> : ISupabaseTable<TableType>
     + DeleteTableType(Guid id): Task<IActionResult>
     + GetTableTypeById(Guid id): Task<GetTableTypeResponseDTO> 
 }
@@ -48,10 +49,10 @@ class Table {
 }
 
 APIGateway -- TableTypeController
-TableTypeController -- ITableTypeRepository
-ITableTypeRepository <|-- TableTypeRepository
-TableTypeRepository -- TableTypeDAO
+TableTypeController -- ITableTypeRepositories
+ITableTypeRepositories <|-- TableTypeRepositories
+TableTypeRepositories "1"--"1..*" TableTypeDAO
 
-TableTypeDAO -- TableType
-TableTypeDAO -- Table
+TableTypeDAO "1"--"0..*" TableType
+TableTypeDAO "1"--"0..*" Table
 @enduml

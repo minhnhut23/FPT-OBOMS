@@ -8,21 +8,21 @@ skinparam linetype ortho
 class APIGateway {
 }
 class TableController {
-    - _tableRepository: ITableRepository
+    - _tableRepositories: ITableRepositories
     +  GetTableById(Guid id) : Task<IActionResult> 
 }
 
-interface ITableRepository<<interface>>  {
+interface ITableRepositories<<interface>>  {
     + GetTableById(Guid id) : Task<GetTableResponseDTO?> 
 }
 
-class TableRepository {
+class TableRepositories {
     - _tableDao: TableDAO
     + GetTableById(Guid id): Task<GetTableResponseDTO?>
 }
 class TableDAO {
-    - _client: Client
-    - _mapper: IMapper
+    - _client.From<Table> : ISupabaseTable<Table>
+    - _client.From<TableType> : ISupabaseTable<TableType>
     + GetTableById(Guid id):Task<GetTableResponseDTO?> 
     + IsTypeExists(Guid typeId): Task<bool> 
 }
@@ -48,11 +48,11 @@ class TableType {
 }
 
 APIGateway -- TableController
-TableController -- ITableRepository
-ITableRepository <|-- TableRepository
-TableRepository -- TableDAO
-TableDAO -- Table
-TableDAO -- TableType
+TableController -- ITableRepositories
+ITableRepositories <|-- TableRepositories
+TableRepositories "1"--"1..*" TableDAO
+TableDAO "1"--"0..*" Table
+TableDAO "1"--"0..*" TableType
 
 
 @enduml
