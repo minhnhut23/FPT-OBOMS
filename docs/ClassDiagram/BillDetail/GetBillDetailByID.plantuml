@@ -16,6 +16,7 @@ interface IBillDetailRepositories<<interface>>  {
 
 class BillDetailRepositories {
     - _billDetailDAO : BillDetailDAO
+
     + GetBillDetailByID(Guid id): Task<BillDetailResponseDTO> 
 
 }

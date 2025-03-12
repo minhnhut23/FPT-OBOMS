@@ -1,0 +1,77 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return_arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label_right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "Application"
+apiGateway: "API Gateway"
+TableController: "TableController"
+TableRepository: "TableRepository"
+TableDAO: "TableDAO"
+DB: "DB" {
+  shape: cylinder
+}
+
+# User Authentication Loop
+loop: "loop [Empty or invalid input]" { 
+  class: frame
+  User -> application.bar: "1. Request table details"
+  application.bar -> application.get: "2. Validate input"
+  application.bar -> User: "2.1. Show validation message" {class: return_arrow}
+}
+
+# Flow
+application -> apiGateway.bar: "3. Forward request"
+apiGateway -> TableController.bar: "4. Forward to controller"
+TableController -> TableRepository.bar: "5. Forward request"
+TableRepository -> TableDAO.bar: "6. Fetch tables from DB"
+TableDAO -> DB.bar: "7. Query table details"
+DB.bar -> TableDAO.bar: "8. Return table details" {class:return_arrow}
+TableDAO.bar -> TableRepository.bar: "9. Return response" {class:return_arrow}
+TableRepository.bar -> TableController.bar: "10. Return response" {class:return_arrow}
+
+# Conditions
+alt {
+  class: frame
+  "No table found": {
+    TableController.bar -> apiGateway.bar: "10.1. Send 404 error notification" {class:return_arrow}
+    apiGateway.bar -> application.bar: "10.1.1. Forward response" {class:return_arrow}
+    application.bar -> User: "10.1.1.1. Display 404 error notification" {class:return_arrow}
+  }
+  "Tables found": {
+    TableController.bar -> apiGateway.bar: "10.2. Send response" {class:return_arrow}
+    apiGateway.bar -> application.bar: "10.2.1. Forward response" {class:return_arrow}
+    application.bar -> User: "10.2.1.1. Display table information" {class:return_arrow}
+  }
+}

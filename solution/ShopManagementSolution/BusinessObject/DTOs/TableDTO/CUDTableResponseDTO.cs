@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTOs.TableDTO
 {
-    public class DeleteTableRequestDTO
+    public class CUDTableResponseDTO
     {
-        public bool IsDeleted { get; set; }
+        public bool Success { get; set; }
         public string Message { get; set; }
+        public GetTableResponseDTO? Data { get; set; }
     }
 }

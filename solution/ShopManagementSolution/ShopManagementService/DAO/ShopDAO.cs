@@ -1,11 +1,11 @@
 ﻿using BusinessObject.DTOs.ShopDTO;
+using BusinessObject.DTOs.TableDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
-using Supabase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
+using ShopManagementService.Utils;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace BusinessObject.Services
 {
@@ -17,15 +17,22 @@ namespace BusinessObject.Services
         {
             _client = client;
         }
-
-        public async Task<List<ShopResponseDTO>> GetAllShops()
+        
+        public async Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request)
         {
             try
             {
-                var shopResponse = await _client.From<Shop>().Get();
-                var shops = shopResponse.Models;
+                var query = _client.From<Shop>().Select("*");
 
-                return shops.Select(shop => new ShopResponseDTO
+                var totalRecordsResponse = await _client.From<Shop>().Select("id").Get();
+                var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
+                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+
+                var skip = (request.PageNumber - 1) * request.PageSize;
+                var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
+
+                var shopResponse = await paginatedQuery.Get();
+                var shops = shopResponse.Models.Select(shop => new ShopResponseDTO
                 {
                     Id = shop.Id,
                     Name = shop.Name,
@@ -35,11 +42,35 @@ namespace BusinessObject.Services
                     OpeningHours = shop.OpeningHours,
                     ClosingHours = shop.ClosingHours,
                     Rating = shop.Rating,
-                    CuisineType = shop.CuisineType,
                     Latitude = shop.Latitude,
                     Longitude = shop.Longitude,
-                    OwnerId = shop.OwnerId
+                    OwnerId = shop.OwnerId,
+                    Status = ShopStatusHelper.GetShopStatus(shop.OpeningHours, shop.ClosingHours)
                 }).ToList();
+
+                if (totalRecords == 0 || request.PageNumber > totalPages)
+                {
+                    return (
+                        new List<ShopResponseDTO>(),
+                        new TablePaginationDTO
+                        {
+                            TotalResults = totalRecords,
+                            TotalPages = totalPages,
+                            CurrentPage = request.PageNumber,
+                            PageSize = request.PageSize
+                        }
+                    );
+                }
+
+                var paginationMetadata = new TablePaginationDTO
+                {
+                    TotalResults = totalRecords,
+                    TotalPages = totalPages,
+                    CurrentPage = request.PageNumber,
+                    PageSize = request.PageSize
+                };
+
+                return (shops, paginationMetadata);
             }
             catch (Exception ex)
             {
@@ -54,6 +85,8 @@ namespace BusinessObject.Services
                 var shopResponse = await _client.From<Shop>().Where(s => s.Id == id).Single();
                 if (shopResponse == null) return null;
 
+                TimeSpan now = DateTime.Now.TimeOfDay;
+
                 return new ShopResponseDTO
                 {
                     Id = shopResponse.Id,
@@ -64,10 +97,10 @@ namespace BusinessObject.Services
                     OpeningHours = shopResponse.OpeningHours,
                     ClosingHours = shopResponse.ClosingHours,
                     Rating = shopResponse.Rating,
-                    CuisineType = shopResponse.CuisineType,
                     Latitude = shopResponse.Latitude,
                     Longitude = shopResponse.Longitude,
-                    OwnerId = shopResponse.OwnerId
+                    OwnerId = shopResponse.OwnerId,
+                    Status = ShopStatusHelper.GetShopStatus(shopResponse.OpeningHours, shopResponse.ClosingHours)
                 };
             }
             catch (Exception ex)
@@ -76,30 +109,94 @@ namespace BusinessObject.Services
             }
         }
 
-        public async Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop)
+        public async Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop, string token)
         {
             try
             {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+                var accountId = Guid.Parse(claims["sub"]);
+
+                var profile = await _client
+                    .From<Profile>()
+                    .Where(x => x.AccountId == accountId)
+                    .Single();
+
+                if (profile!.Role != "Owner")
+                {
+                    throw new Exception("You are not an owner!");
+                }
+
                 var shop = new Shop
                 {
-                    Id = Guid.NewGuid(),
                     Name = createShop.Name,
                     Description = createShop.Description,
                     Address = createShop.Address,
                     PhoneNumber = createShop.PhoneNumber,
-                    OpeningHours = createShop.OpeningHours,
-                    ClosingHours = createShop.ClosingHours,
-                    Rating = createShop.Rating,
-                    CuisineType = createShop.CuisineType,
+                    OpeningHours = TimeSpan.Parse(createShop.OpeningHours),
+                    ClosingHours = TimeSpan.Parse(createShop.ClosingHours),
                     Latitude = createShop.Latitude,
                     Longitude = createShop.Longitude,
-                    OwnerId = createShop.OwnerId,
+                    OwnerId = profile.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow,
+                };
+
+                try
+                {
+                    var response = await _client
+                        .From<Shop>()
+                        .Insert(shop);                  
+
+                    var insertedShops = JsonConvert.DeserializeObject<List<Shop>>(response.Content.ToString());
+
+                    if (insertedShops == null || insertedShops.Count == 0)
+                        throw new Exception("Error inserting shop into Supabase.");
+
+                    shop.Id = insertedShops[0].Id; 
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
+                var subs = await _client
+                    .From<Subscriptions>()
+                    .Where(x => x.Id == createShop.SubscriptionId)
+                    .Single();
+
+                if (subs == null)
+                {
+                    throw new Exception("Subscription not found.");
+                }
+
+                if (shop == null || shop.Id == Guid.Empty)
+                {
+                    throw new Exception("Shop creation failed or ShopId is missing.");
+                }
+
+                var subShop = new ShopSubscriptions
+                {
+                    SubscriptionId = subs.Id,
+                    ShopId = shop.Id, 
+                    StartedAt = DateTime.UtcNow,
+                    EndedAt = DateTime.UtcNow.AddMonths(subs.NumberOfMonths),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                var response = await _client.From<Shop>().Insert(shop);
-                if (response == null) throw new Exception("Error creating shop.");
+                Console.WriteLine($"Creating ShopSubscription: ShopId={subShop.ShopId}, SubscriptionId={subShop.SubscriptionId}");
+
+                var res = await _client
+                    .From<ShopSubscriptions>()
+                    .Insert(subShop);
+
+                var insertedSubShop = res.Content?.FirstOrDefault();
+                if (insertedSubShop == null)
+                {
+                    throw new Exception("Failed to insert ShopSubscription.");
+                }
 
                 return new ShopResponseDTO
                 {
@@ -111,10 +208,10 @@ namespace BusinessObject.Services
                     OpeningHours = shop.OpeningHours,
                     ClosingHours = shop.ClosingHours,
                     Rating = shop.Rating,
-                    CuisineType = shop.CuisineType,
                     Latitude = shop.Latitude,
                     Longitude = shop.Longitude,
-                    OwnerId = shop.OwnerId
+                    OwnerId = shop.OwnerId,
+                    SubscriptionName = subs.Name,
                 };
             }
             catch (Exception ex)
@@ -123,12 +220,31 @@ namespace BusinessObject.Services
             }
         }
 
-        public async Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop)
+        public async Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token)
         {
             try
             {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+                var accountId = Guid.Parse(claims["sub"]);
+
+                var profile = await _client
+                    .From<BusinessObject.Models.Profile>()
+                    .Where(x => x.AccountId == accountId)
+                    .Single();
+
                 var shop = await _client.From<Shop>().Where(s => s.Id == id).Single();
-                if (shop == null) throw new Exception("Shop not found.");
+
+                if (shop == null)
+                {
+                    throw new Exception("Shop not found!");
+                }
+
+                if (shop.OwnerId != profile!.Id)
+                {
+                    throw new Exception("You are not shop's owner!");
+                }
 
                 shop.Name = updateShop.Name ?? shop.Name;
                 shop.Description = updateShop.Description ?? shop.Description;
@@ -137,7 +253,6 @@ namespace BusinessObject.Services
                 shop.OpeningHours = updateShop.OpeningHours ?? shop.OpeningHours;
                 shop.ClosingHours = updateShop.ClosingHours ?? shop.ClosingHours;
                 shop.Rating = updateShop.Rating ?? shop.Rating;
-                shop.CuisineType = updateShop.CuisineType ?? shop.CuisineType;
                 shop.Latitude = updateShop.Latitude ?? shop.Latitude;
                 shop.Longitude = updateShop.Longitude ?? shop.Longitude;
                 shop.UpdatedAt = DateTime.UtcNow;
@@ -155,7 +270,6 @@ namespace BusinessObject.Services
                     OpeningHours = shop.OpeningHours,
                     ClosingHours = shop.ClosingHours,
                     Rating = shop.Rating,
-                    CuisineType = shop.CuisineType,
                     Latitude = shop.Latitude,
                     Longitude = shop.Longitude,
                     OwnerId = shop.OwnerId

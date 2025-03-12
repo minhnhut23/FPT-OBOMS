@@ -22,16 +22,13 @@ namespace BusinessObject.Models
         public string PhoneNumber { get; set; }
 
         [Column("opening_hours")]
-        public string OpeningHours { get; set; }
+        public TimeSpan OpeningHours { get; set; }
 
         [Column("closing_hours")]
-        public string ClosingHours { get; set; }
+        public TimeSpan ClosingHours { get; set; }
 
         [Column("rating")]
         public decimal? Rating { get; set; }
-
-        [Column("cuisine_type")]
-        public string CuisineType { get; set; }
 
         [Column("latitude")]
         public decimal? Latitude { get; set; }

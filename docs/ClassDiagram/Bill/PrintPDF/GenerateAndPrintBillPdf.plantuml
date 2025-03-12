@@ -46,5 +46,4 @@ IBillRepositories <|.. BillRepositories
 BillRepositories "1" -- "1..*" BillDAO
 BillDAO "1" -- "0..*" Bill
 
-
 @enduml
