@@ -25,6 +25,9 @@ public class AuthDAO
     {
         try
         {
+            await _client.Auth.SignOut();
+            await Task.Delay(500);
+
             var session = await _client.Auth.SignInWithPassword(email, password);
 
             var handler = new JwtSecurityTokenHandler();

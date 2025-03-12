@@ -49,7 +49,7 @@ public class UserDAO
                     ProfilePicture = profile.ProfilePicture!
                 };
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -57,10 +57,10 @@ public class UserDAO
         }
 
     }
-     public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
+    public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
     {
         try
-        {          
+        {
             var profile = await _client
                 .From<Profile>()
                 .Where(x => x.Id == profileId)
@@ -68,19 +68,19 @@ public class UserDAO
 
             if (profile == null)
             {
-               throw new Exception("Profile not found!");
+                throw new Exception("Profile not found!");
             }
             else
             {
                 return new GetUserResponeDTO
-                {                   
+                {
                     FullName = profile.FullName,
                     Bio = profile.Bio!,
                     DateOfBirth = profile.DateOfBirth,
                     ProfilePicture = profile.ProfilePicture!
                 };
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -88,7 +88,7 @@ public class UserDAO
         }
 
     }
-    
+
     public async Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token)
     {
         try
@@ -98,62 +98,79 @@ public class UserDAO
 
             var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
 
-            var accountId = Guid.Parse(claims["sub"]);
+            var accountId = Guid.Parse(claims["sub"].Trim());
 
             var profile = await _client
                 .From<Profile>()
                 .Where(x => x.AccountId == accountId)
                 .Single();
-            
+
             if (profile == null)
             {
-               throw new Exception("Profile not found!");
+                throw new Exception("Profile not found! ==== " + accountId);
             }
-            else
+
+            if (request.ProfilePicture != null)
             {
+                var file = request.ProfilePicture;
+                var fileName = $"{Guid.NewGuid()}_{file.FileName}";
 
-                if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+                var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+                if (!Directory.Exists(uploadDir))
                 {
-                    throw new Exception("Invalid Birthday!");
+                    Directory.CreateDirectory(uploadDir);
                 }
 
-                profile.ProfilePicture = request.ProfilePicture;
-                profile.FullName = request.FullName;
-                profile.Bio = request.Bio; 
-                profile.DateOfBirth = request.DateOfBirth;
-                profile.UpdatedAt = DateTime.UtcNow;
-                await profile.Update<Profile>();
+                var localPath = Path.Combine(uploadDir, fileName);
 
-                if (request.Email != null && request.Email != claims["email"])
+                using (var stream = new FileStream(localPath, FileMode.Create, FileAccess.Write, FileShare.None))
                 {
-                    var attrs = new UserAttributes { Email = request.Email };
-                    await _client.Auth.Update(attrs);
-
-                    return new GetUserResponeDTO
-                    {
-                        Email = request.Email,
-                        FullName = profile.FullName,
-                        Bio = profile.Bio!,
-                        DateOfBirth = profile.DateOfBirth,
-                        ProfilePicture = profile.ProfilePicture!
-                    };
+                    await file.CopyToAsync(stream);
                 }
 
-                return new GetUserResponeDTO
+                if (!string.IsNullOrEmpty(profile.ProfilePicture))
                 {
-                    Email = claims["email"],
-                    FullName = profile.FullName,
-                    Bio = profile.Bio!,
-                    DateOfBirth = profile.DateOfBirth,
-                    ProfilePicture = profile.ProfilePicture!
-                };
+                    var oldFileName = profile.ProfilePicture.Split('/').Last();
+                    await _client.Storage.From("avatars").Remove(new List<string> { oldFileName });
+                }
+
+                await _client.Storage.From("avatars").Upload(localPath, fileName, new Supabase.Storage.FileOptions { Upsert = true });
+
+                profile.ProfilePicture = _client.Storage.From("avatars").GetPublicUrl(fileName);
+
+                if (File.Exists(localPath))
+                {
+                    File.Delete(localPath);
+                }
             }
-            
+
+            profile.FullName = request.FullName ?? profile.FullName;
+            profile.Bio = request.Bio ?? profile.Bio;
+            profile.DateOfBirth = request.DateOfBirth != default ? request.DateOfBirth : profile.DateOfBirth;
+            profile.UpdatedAt = DateTime.UtcNow;
+
+            await profile.Update<Profile>();
+
+            if (request.Email != null && request.Email != claims["email"])
+            {
+                var attrs = new UserAttributes { Email = request.Email };
+                await _client.Auth.Update(attrs);
+            }
+
+            return new GetUserResponeDTO
+            {
+                Email = claims["email"],
+                FullName = profile.FullName!,
+                Bio = profile.Bio!,
+                DateOfBirth = profile.DateOfBirth,
+                ProfilePicture = profile.ProfilePicture!
+            };
         }
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
 
-    }    
+    }
 }
