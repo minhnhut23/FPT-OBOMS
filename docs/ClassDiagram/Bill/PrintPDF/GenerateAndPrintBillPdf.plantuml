@@ -6,21 +6,21 @@ class APIGateway {
 }
 
 class BillController {
-    - _billRepository: IBillRepository
+    - _billRepositoriesBillRepositories: IBillRepositories
     + GenerateAndPrintBillPdf(Guid id): Task<IActionResult>
 }
 
-interface IBillRepository<<interface>> {
+interface IBillRepositories<<interface>> {
     + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
 }
 
-class BillRepository {
+class BillRepositories {
     - _billDao: BillDAO
     + GenerateAndPrintBillPdf(Guid id): Task<GenerateBillPdfResponseDTO>
 }
 
 class BillDAO {
-    - _client: Client
+    - _client.From<Bill> : ISupabaseTable<Bill>
     + IsFileLocked(string filePath) : bool
     + OpenAndPrintPdf(string filePath): void
     + GetBillById(Guid id) : Task<BillWithDetailsResponseDTO?> 
@@ -41,10 +41,10 @@ class Bill {
 }
 
 APIGateway -- BillController
-BillController -- IBillRepository
-IBillRepository <|.. BillRepository
-BillRepository -- BillDAO
-BillDAO -- Bill
+BillController -- IBillRepositories
+IBillRepositories <|.. BillRepositories
+BillRepositories "1" -- "1..*" BillDAO
+BillDAO "1" -- "0..*" Bill
 
 
 @enduml

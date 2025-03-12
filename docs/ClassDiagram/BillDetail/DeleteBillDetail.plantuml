@@ -6,15 +6,15 @@ class APIGateway {
 }
 
 class BillDetailController {
-    - _billDetailRepository: IBillDetailRepository 
+    - _billDetailRepository: IBillDetailRepositories 
     + DeleteBillDetail(Guid id): Task<IActionResult>
 }
 
-interface IBillDetailRepository<<interface>>  {
+interface IBillDetailRepositories<<interface>>  {
     +DeleteBillDetail(Guid id): Task<DeleteBillDetailResponseDTO>
 }
 
-class BillDetailRepository {
+class BillDetailRepositories {
     - _billDetailDAO : BillDetailDAO
     +DeleteBillDetail(Guid id): Task<DeleteBillDetailResponseDTO>
 }
@@ -35,9 +35,9 @@ class BillDetail {
 }
 
 APIGateway -- BillDetailController
-BillDetailController -- IBillDetailRepository
-IBillDetailRepository <|.. BillDetailRepository
-BillDetailRepository -- BillDetailDAO
-BillDetailDAO -- BillDetail
+BillDetailController -- IBillDetailRepositories
+IBillDetailRepositories <|.. BillDetailRepositories
+BillDetailRepositories "1" -- "1..*" BillDetailDAO
+BillDetailDAO "1" -- "0..*" BillDetail
 
 @enduml

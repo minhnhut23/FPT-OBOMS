@@ -6,21 +6,21 @@ class APIGateway {
 }
 
 class BillController {
-    - _billRepository: IBillRepository
+    - _billRepository: IBillRepositories
     + CreateBill(CreateBillRequestDTO request): Task<IActionResult>
 }
 
-interface IBillRepository<<interface>> {
+interface IBillRepositories<<interface>> {
     + CreateBill(CreateBillRequestDTO request): Task<BillResponseDTO>
 }
 
-class BillRepository {
+class BillRepositories {
     - _billDao: BillDAO
     + CreateBill(CreateBillRequestDTO request): Task<BillResponseDTO>
 }
 
 class BillDAO {
-    - _client: Client
+    - _client.From<Bill> : ISupabaseTable<Bill>
     + CreateBill(CreateBillRequestDTO request): Task<BillResponseDTO>
 }
 
@@ -39,11 +39,11 @@ class Bill {
 
 APIGateway --  BillController
 
-BillController -- IBillRepository
+BillController -- IBillRepositories
 
-IBillRepository <|.. BillRepository
+IBillRepositories <|.. BillRepositories
 
-BillRepository -- BillDAO
+BillRepositories "1" -- "1..*" BillDAO
 
-BillDAO -- Bill
+BillDAO "1" -- "0..*" Bill
 @enduml
