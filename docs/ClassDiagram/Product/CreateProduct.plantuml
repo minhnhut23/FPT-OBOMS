@@ -7,21 +7,23 @@ class APIGateway {
 }
 
 class ProductController {
-    - _repo: IProductRepository
+    - _repo: IProductRepositories
     + CreateProduct([FromBody] CreateProductRequestDTO request): Task<IActionResult>
 }
 
-interface IProductRepository<<interface>> {
+interface IProductRepositories<<interface>> {
     + CreateProduct(CreateProductRequestDTO request, string token): Task
 }
 
-class ProductRepository {
+class ProductRepositories {
     - _dao: ProductDAO
     + CreateProduct(CreateProductRequestDTO request, string token): Task
 }
 
 class ProductDAO {
-    - _client: Client
+    - _client.From<MenuItem> : ISupabaseTable<MenuItem>
+    - _client.From<Shop> : ISupabaseTable<Shop>
+    - _client.From<Profile> : ISupabaseTable<Profile>
     + CreateProduct(CreateProductRequestDTO request, string token): Task
 }
 
@@ -39,10 +41,34 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+class Shop {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + OwnerId: Guid
+}
+
 APIGateway -- ProductController
-ProductController -- IProductRepository 
-IProductRepository <|-- ProductRepository
-ProductRepository -- ProductDAO
-ProductDAO -- MenuItem
+ProductController -- IProductRepositories 
+IProductRepositories <|-- ProductRepositories
+ProductRepositories "1"--"1..*" ProductDAO
+ProductDAO "1" -- "0..*" MenuItem
+ProductDAO -- Shop
+ProductDAO  --  Profile
 
 @enduml
