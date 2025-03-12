@@ -5,24 +5,27 @@ skinparam classAttributeIconSize 0
 class APIGateway {
 }
 
+class Router {
+}
 
 class ShopController {
-    - _shopRepository: IShopRepository
+    - _shopRepository: IShopRepositories
     + GetShopById(Guid id) : Task<IActionResult> 
 }
 
-interface IShopRepository<<interface>> {
+interface IShopRepositories<<interface>> {
     + GetShopById(Guid id) : Task<GetShopResponseDTO?> 
 }
 
-class ShopRepository {
+class ShopRepositories {
     - _shopDao: ShopDAO
     + GetShopById(Guid id): Task<GetShopResponseDTO?>
 }
 
 class ShopDAO {
-    - _client: Client
-    - _mapper: IMapper
+   - _client.From<Shop> : ISupabaseTable<Shop>
+    - _client.From<Profile> : ISupabaseTable<Profile>
+    - _client.From<Subscriptions> : ISupabaseTable<Subscriptions>
     + GetShopById(Guid id): Task<GetShopResponseDTO?> 
 }
 
@@ -35,9 +38,34 @@ class Shop {
     + UpdatedAt: DateTime
 }
 
-APIGateway -- ShopController
-ShopController -- IShopRepository
-IShopRepository <|-- ShopRepository
-ShopRepository -- ShopDAO
-ShopDAO -- Shop
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+class Subscriptions {
+    + Id: Guid
+    + Name: string
+    + Price: decimal
+    + Description: string
+    + NumberOfMonths: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+}
+
+APIGateway --  Router
+Router -- ShopController
+ShopController -- IShopRepositories
+IShopRepositories <|-- ShopRepositories
+ShopRepositories "1"--"1..*" ShopDAO
+ShopDAO "1" -- "0..*" Shop
+ShopDAO -- Profile
+ShopDAO -- Subscriptions
 @enduml

@@ -5,27 +5,32 @@ skinparam linetype ortho
 
 class APIGateway {
 }
+
+class Router {
+}
+
 ' Controllers
 class ProductController {
-    - _repo: IProductRepository
+    - _repo: IProductRepositories
     + GetAllProducts([FromQuery] GetProductRequestDTO request): Task<IActionResult>
 }
 
 ' Repository Interface
-interface IProductRepository {
+interface IProductRepositories {
     + GetAllProducts(GetProductRequestDTO request): Task<(List<GetProductResponseDTO>, ProductPaginationDTO)>
 }
 
 ' Repository Implementation
-class ProductRepository {
+class ProductRepositories {
     - _dao: ProductDAO
     + GetAllProducts(GetProductRequestDTO request): Task<(List<GetProductResponseDTO>, ProductPaginationDTO)>
 }
 
 ' Data Access Object
 class ProductDAO {
-    - _client: Client
-    - _mapper: IMapper
+    - _client.From<MenuItem> : ISupabaseTable<MenuItem>
+    - _client.From<Shop> : ISupabaseTable<Shop>
+    - _client.From<Profile> : ISupabaseTable<Profile>
     + GetAllProducts(GetProductRequestDTO request): Task<(List<GetProductResponseDTO>, ProductPaginationDTO)>
 }
 
@@ -44,13 +49,34 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
 
-' Relationships
-APIGateway -- ProductController
-ProductController -- IProductRepository
+class Shop {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + OwnerId: Guid
+}
 
-IProductRepository <|-- ProductRepository
-ProductRepository -- ProductDAO
-ProductDAO -- MenuItem
-
+APIGateway -- Router
+Router -- ProductController
+ProductController -- IProductRepositories 
+IProductRepositories <|-- ProductRepositories
+ProductRepositories "1"--"1..*" ProductDAO
+ProductDAO "1" -- "0..*" MenuItem
+ProductDAO -- Shop
+ProductDAO  --  Profile
 @enduml

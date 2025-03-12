@@ -5,26 +5,32 @@ skinparam linetype ortho
 
 class APIGateway {
 }
+
+class Router {
+}
+
 ' Controller for product operations
 class ProductController {
-    - _repo: IProductRepository
+    - _repo: IProductRepositories
     + GetProductById(Guid id): Task<IActionResult>
 }
 
 ' Repository interface defining the GetProductById method
-interface IProductRepository {
+interface IProductRepositories {
     + GetProductById(Guid id): Task<MenuItem>
 }
 
 ' Repository implementation that delegates to the DAO
-class ProductRepository {
+class ProductRepositories {
     - _dao: ProductDAO
     + GetProductById(Guid id): Task<MenuItem>
 }
 
 ' Data Access Object handling database interactions
 class ProductDAO {
-    - _client: Client
+    - _client.From<MenuItem> : ISupabaseTable<MenuItem>
+    - _client.From<Shop> : ISupabaseTable<Shop>
+    - _client.From<Profile> : ISupabaseTable<Profile>
     + GetProductById(Guid id): Task<MenuItem>
 }
 
@@ -43,11 +49,36 @@ class MenuItem {
     + UpdatedAt: DateTime
 }
 
-' Relationships among classes
-APIGateway -- ProductController
-ProductController -- IProductRepository
-IProductRepository <|-- ProductRepository
-ProductRepository -- ProductDAO
-ProductDAO -- MenuItem
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+class Shop {
+    + Id: Guid
+    + Name: string
+    + Address: string
+    + Description: string
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + OwnerId: Guid
+}
+
+
+APIGateway -- Router
+Router -- ProductController
+ProductController -- IProductRepositories 
+IProductRepositories <|-- ProductRepositories
+ProductRepositories "1"--"1..*" ProductDAO
+ProductDAO "1" -- "0..*" MenuItem
+ProductDAO -- Shop
+ProductDAO  --  Profile
 
 @enduml
