@@ -36,6 +36,7 @@ User: {
 
 application: Web application
 apiGateway: ApiGateway
+Router: Router
 SubscriptionController: SubscriptionController
 SubscriptionRepository: SubscriptionRepository
 SubscriptionDAO: SubscriptionDAO
@@ -45,7 +46,6 @@ DB: "DB" {
   shape: cylinder
 }
 
-# User registration sequence
 loop  { 
   class: frame
   User -> application.post: "1. Enter Update Subscription form"
@@ -53,27 +53,29 @@ loop  {
   application.post -> User: "3. Show validation message" {class: return arrow}        
 }  
  
-application -> apiGateway.post: "4. Forward Update Subscription request"
-apiGateway -> SubscriptionController.post: "5. Forward Update Subscription request"
-SubscriptionController -> SubscriptionRepository.post: "6. Forward to repository"
-SubscriptionRepository -> SubscriptionDAO.post: "7. Forward to DAO"
-SubscriptionDAO.post -> Supabase.post: "8. Validate token"
-Supabase.post-> DB.insert: "9. Update Subscription By Id"
-DB.insert -> Supabase.post: "10. Return result" {class: return arrow}
-Supabase.post -> SubscriptionDAO.post: "11. Return result" {class: return arrow}
-SubscriptionDAO.post -> SubscriptionRepository.post: "12. Forward result" {class: return arrow}
-SubscriptionRepository.post -> SubscriptionController.post: "13. Return result" {class: return arrow}
-
+application -> apiGateway.post: "4. Send Update Subscription request"
+apiGateway.post -> Router.post: "5. Send Update Subscription request"
+Router.post -> SubscriptionController.post: "6. Forward to controller"
+SubscriptionController -> SubscriptionRepository.post: "7. Forward to repository"
+SubscriptionRepository -> SubscriptionDAO.post: "8. Forward to DAO"
+SubscriptionDAO.post -> Supabase.post: "9. Validate token"
+Supabase.post-> DB.insert: "10. Update Subscription By Id"
+DB.insert -> Supabase.post: "11. Return result" {class: return arrow}
+Supabase.post -> SubscriptionDAO.post: "12. Return result" {class: return arrow}
+SubscriptionDAO.post -> SubscriptionRepository.post: "13. Forward result" {class: return arrow}
+SubscriptionRepository.post -> SubscriptionController.post: "14. Return result" {class: return arrow}
 
 alt: "alt" {
   class: frame
   Registration successful: "[Update successful]" {
-    SubscriptionController.post -> apiGateway.post: "13.1. Send success status to frontend" {class: return arrow}
+    SubscriptionController.post -> Router.post: "13.1. Send success status to frontend" {class: return arrow}
+    Router.post -> apiGateway.post: "13.1.1. Return success status" {class: return arrow}
     apiGateway.post -> application.post: "13.1.1. Return success status" {class: return arrow}
     application.post -> User: "13.1.2. Display update success message" {class: return arrow}
   }
   Registration failed: "[Subscription Id not found]" { 
-    SubscriptionController.post -> apiGateway.post: "13.2. Send error status to frontend" {class: return arrow}
+    SubscriptionController.post -> Router.post: "13.2. Send error status to frontend" {class: return arrow}
+    Router.post -> apiGateway.post: "13.1.1. Return error status" {class: return arrow}
     apiGateway.post -> application.post: "13.2.1. Return error status" {class: return arrow}
     application.post -> User: "13.2.2. Display error message" {class: return arrow}
   }
