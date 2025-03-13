@@ -54,7 +54,7 @@ AuthController -> AuthRepository.post: "7. Forward to repository"
 AuthRepository -> AuthDAO.post: "8. Forward to DAO"
 AuthDAO.post -> Supabase.post: "9. Validate token"
 Supabase.post-> DB.insert: "10. Remove session"
-DB.insert -> Supabase.post: "11. Return result"
+DB.insert -> Supabase.post: "11. Return result" {class: return arrow}
 Supabase.post -> AuthDAO.post: "12. Return result" {class: return arrow}
 AuthDAO.post -> AuthRepository.post: "13. Forward result" {class: return arrow}
 AuthRepository.post -> AuthController.post: "14. Return result" {class: return arrow}

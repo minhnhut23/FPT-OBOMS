@@ -6,7 +6,7 @@ classes: {
       font-color: black
     }
   }
-  return_arrow: {
+  return arrow: {
     style: {
       stroke-dash: 3
     }
@@ -33,6 +33,7 @@ User: {
 
 application: "Web application"
 apiGateway: "ApiGateway"
+Router: "Router"
 UserController: "UserController"
 UserRepository: "UserRepository"
 UserDAO: "UserDAO"
@@ -42,28 +43,31 @@ DB: "DB" {
 }
 
 User -> application.get: "1. Get all product request"
-application.get -> apiGateway.get: "2. Request get alls product"
-apiGateway.get -> UserController.get: "3. Forward request"
-UserController -> UserRepository.get: "4. Forward request to repository"
-UserRepository -> UserDAO.get: "5. Forward request to DAO"
+application.get -> apiGateway.get: "2. Request get all product"
+apiGateway.get -> Router.get: "3. Send get all product request"
+Router.get -> UserController.get: "4. Forward request to controller"
+UserController -> UserRepository.get: "5. Forward request to repository"
+UserRepository -> UserDAO.get: "6. Forward request to DAO"
 
-UserDAO.get -> Supabase.get: "6. Validate token"
-Supabase.get -> DB.get: "7. Get all product"
-DB.get -> Supabase.get: "8. Return result"
-Supabase.get -> UserDAO.get: "9. Return result"
-UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
-UserRepository.get-> UserController.get: "11. Forward result" {class: return arrow}
+UserDAO.get -> Supabase.get: "7. Validate token"
+Supabase.get -> DB.get: "8. Get all product"
+DB.get -> Supabase.get: "9. Return result" {class: return arrow}
+Supabase.get -> UserDAO.get: "10. Return result" {class: return arrow}
+UserDAO.get -> UserRepository.get: "11. Return result" {class: return arrow}
+UserRepository.get-> UserController.get: "12. Forward result" {class: return arrow}
 
 alt: "alt" {
   class: frame
   Product found: "[Get List Product]" {
-    UserController.get -> apiGateway.get: "11.1. Send product list" {class: return arrow}
-    apiGateway.get -> application.get: "11.1.1. Send product list" {class: return arrow}
-    application.get -> User: "11.1.2. Display product list" {class: return arrow}
+    UserController.get -> Router.get: "12.1. Send product list" {class: return arrow}
+    Router.get -> apiGateway.get: "12.1.1 Return product list" {class: return arrow}
+    apiGateway.get -> application.get: "12.1.2. Return product list" {class: return arrow}
+    application.get -> User: "12.1.3. Display product list" {class: return arrow}
   }
   Get Product failed: "[Get Product failed]" {
-    UserController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
-    apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
-    application.get -> User: "11.2.2. Display error message" {class: return arrow}
+    UserController.get -> Router.get: "12.2. Send error to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "12.2.1 Return error" {class: return arrow}
+    apiGateway.get -> application.get: "12.2.2. Return error" {class: return arrow}
+    application.get -> User: "12.2.3. Display error message" {class: return arrow}
   }
 }
