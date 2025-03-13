@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { EyeIcon, EyeSlashIcon, ArrowLeftIcon, CalendarIcon } from '@heroicons/react/24/outline'; // Import icons
+import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'; // Import icons
 import { Link } from 'react-router-dom';
 
 export default function Register() {
@@ -12,7 +12,7 @@ export default function Register() {
       <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-violet-50 dark:from-black dark:via-black dark:to-black">
         {/* Background Effects */}
         <div className="absolute inset-0 opacity-30">
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-400 dark:from-blue-500 dark:via-blue-500 dark:to-blue-900 animate-gradient" />
+          <div className="absolute inset-0 bg-gradient-to-r from-white via-slate-100 to-gray-100 dark:from-gray-500 dark:via-blue-700 dark:to-gray-700 animate-gradient" />
           <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 dark:opacity-20" />
         </div>
 
@@ -31,7 +31,7 @@ export default function Register() {
 
       {/* Register Form */}
       <motion.div
-        className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg relative z-10"
+        className="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg relative z-10"
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -48,11 +48,10 @@ export default function Register() {
               <ArrowLeftIcon className="w-6 h-6 cursor-pointer" />
             </motion.button>
           </Link>
-          <div className="text-3xl font-bold text-center flex-1">Sign up</div>
+          <div className="text-3xl font-bold text-center flex-1">Register</div>
           {/* Empty span to balance layout */}
           <span className="w-6"></span>
         </div>
-
         <div className="mt-6">
           <input
             type="text"
@@ -97,14 +96,18 @@ export default function Register() {
             placeholder="Confirm your password"
           />
         </div>
-
-        <button className="w-full mt-4 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg transition duration-200">
+        {/* Register Button */}
+        <motion.button
+          onClick={() => setExitAnimation(true)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-full  py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-200"
+        >
           Register
-        </button>
-
+        </motion.button>
         <div className="mt-4 text-center">
           <span className="text-gray-600 dark:text-gray-300 text-sm">Already have an account?</span>
-          <Link to="/login">
+          <Link to="/auth/login">
             <span className="text-blue-500 hover:underline text-sm font-medium ms-1">Log in</span>
           </Link>
         </div>

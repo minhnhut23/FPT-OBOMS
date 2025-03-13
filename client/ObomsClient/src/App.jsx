@@ -28,7 +28,7 @@ export default function App() {
             />
 
             <Route
-              path="/login"
+              path="auth/login"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <Login />
@@ -37,7 +37,7 @@ export default function App() {
             />
 
             <Route
-              path="/register"
+              path="auth/register"
               element={
                 <Suspense fallback={<LoadingSpinner />}>
                   <Register />

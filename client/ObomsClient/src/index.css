@@ -171,42 +171,41 @@
     animation-delay: 1000ms;
   }
 
-  /* Hide default calendar icon */
-  .custom-datepicker::-webkit-inner-spin-button,
   .custom-datepicker::-webkit-calendar-picker-indicator {
-    filter: invert(20%) sepia(0%) saturate(0%) hue-rotate(200deg) brightness(85%) contrast(90%);
+    filter: brightness(0) saturate(100%) invert(71%) sepia(5%) saturate(102%) hue-rotate(180deg)
+      brightness(90%) contrast(85%);
   }
 
   /* Custom orbs */
   @keyframes move-left {
     0% {
-      transform: translateX(200px);
+      transform: translateX(150px);
     }
     50% {
-      transform: translateX(-200px);
+      transform: translateX(-150px);
     }
     100% {
-      transform: translateX(200px);
+      transform: translateX(150px);
     }
   }
 
   @keyframes move-right {
     0% {
-      transform: translateX(-200px);
+      transform: translateX(-150px);
     }
     50% {
-      transform: translateX(200px);
+      transform: translateX(150px);
     }
     100% {
-      transform: translateX(-200px);
+      transform: translateX(-150px);
     }
   }
 
   .left-to-right {
-    animation: move-right 10s ease-in-out infinite;
+    animation: move-right 15s ease-in-out infinite;
   }
 
   .right-to-left {
-    animation: move-left 10s ease-in-out infinite;
+    animation: move-left 15s ease-in-out infinite;
   }
 }
