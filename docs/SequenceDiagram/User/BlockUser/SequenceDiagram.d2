@@ -6,7 +6,7 @@ classes: {
       font-color: black
     }
   }
-  return_arrow: {
+  return arrow: {
     style: {
       stroke-dash: 3
     }
@@ -34,6 +34,7 @@ User: {
 
 application: "Web application"
 apiGateway: "ApiGateway"
+Router: "Router"
 UserController: "UserController"
 UserRepository: "UserRepository"
 UserDAO: "UserDAO"
@@ -44,28 +45,29 @@ DB: "DB" {
 
 User -> application.get: "1. Block user"
 application -> apiGateway.get: "2. Send block user request "
-apiGateway -> UserController.get: "3. Forward request"
-UserController -> UserRepository.get: "4. Forward token to repository"
-UserRepository -> UserDAO.get: "5. Forward token to DAO"
-
-# Validate token
-UserDAO.get -> Supabase.get: "6. Validate token"
-Supabase.get -> DB.get: "7. Create user blocked"
-DB.get -> Supabase.get: "8. Return result"
-Supabase.get -> UserDAO.get: "9. Return result"
-UserDAO.get -> UserRepository.get: "10. Return result" {class: return arrow}
-UserRepository .get-> UserController.get: "11. Forward result" {class: return arrow}
+apiGateway -> Router.get: "3. Send block user request "
+Router.get -> UserController.get: "4. Forward request to controller"
+UserController -> UserRepository.get: "5. Forward token to repository"
+UserRepository -> UserDAO.get: "6. Forward token to DAO"
+UserDAO.get -> Supabase.get: "7. Validate token"
+Supabase.get -> DB.get: "8. Create user blocked"
+DB.get -> Supabase.get: "9. Return result" {class: return arrow}
+Supabase.get -> UserDAO.get: "10. Return result" {class: return arrow}
+UserDAO.get -> UserRepository.get: "11. Return result" {class: return arrow}
+UserRepository .get-> UserController.get: "12. Forward result" {class: return arrow}
 
 alt: "alt" {
   class: frame
   User found: "[User found]" {
-    UserController.get -> apiGateway.get: "11.1. Send success status to frontend" {class: return arrow}
-    apiGateway.get -> application.get: "11.1.1. Return success status" {class: return arrow}
-    application.get -> User: "11.1.2. Display success status" {class: return arrow}
+    UserController.get -> Router.get: "12.1. Send success status to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "12.1.1. Return success status" {class: return arrow}
+    apiGateway.get -> application.get: "12.1.2. Return success status" {class: return arrow}
+    application.get -> User: "12.1.3. Display success status" {class: return arrow}
   }
   User not found: "[User not found]" {
-    UserController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
-    apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
-    application.get -> User: "11.2.2. Display error message" {class: return arrow}
+    UserController.get -> Router.get: "12.2. Send error to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "12.2.1. Return success status" {class: return arrow}
+    apiGateway.get -> application.get: "12.2.2. Return error" {class: return arrow}
+    application.get -> User: "12.2.3. Display error message" {class: return arrow}
   }
 }
