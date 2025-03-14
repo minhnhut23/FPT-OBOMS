@@ -1,4 +1,5 @@
 ﻿using AuthService.Utils;
+using AuthService.Utils.Security;
 using BusinessObject.DTO;
 using BusinessObject.Enums;
 using BusinessObject.Models;
@@ -53,6 +54,11 @@ public class AuthDAO
     {
         try
         {
+            if (!EmailValidator.IsValidEmail(request.Email))
+            {
+                throw new Exception("Invalid email format!");
+            }
+
             if (string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
             {
                 throw new ArgumentException("Password fields cannot be null or empty.");
@@ -95,8 +101,6 @@ public class AuthDAO
             var profile = new Profile
             {
                 FullName = request.FullName,
-                ProfilePicture = request.ProfilePicture,
-                Bio = request.Bio,
                 Role = request.Role,
                 DateOfBirth = request.DateOfBirth,
                 AccountId = accountId,
@@ -137,6 +141,16 @@ public class AuthDAO
     {
         try
         {
+            if (!EmailValidator.IsValidEmail(email))
+            {
+                throw new Exception("Invalid email format!");
+            }
+
+            if (!await EmailValidator.IsEmailExists(email))
+            {
+                throw new Exception("Email does not exist!");
+            }
+
             await _client.Auth.ResetPasswordForEmail(email);
         }
         catch (Exception ex)

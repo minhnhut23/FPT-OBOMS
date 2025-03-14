@@ -1,54 +1,153 @@
-POST /api/auth/login
+# FPT-OBOMS
 
-Request body:
+# Authentication and User Management API Documentation
 
+This document describes the API endpoints for **Authentication and User Management**. These APIs handle security, account management, and user management. The API follows RESTful principles and communicates using JSON.
+
+---
+
+## Base URL
+
+`http://127.0.0.1:5003/api/`
+
+---
+
+## Authentication
+
+All endpoints require an API key passed as a header:
+
+```
+Authorization: Bearer <your_api_key>
+```
+
+---
+
+## Endpoints
+
+### 1. Authentication
+
+#### **1.1 Login**
+
+**POST** `/auth/login/`
+
+**Description:** Authenticate a user by verifying credentials and returning access tokens.
+
+**Request Parameters:**
+
+```json
 {
-    "email": "user@example.com",
-    "password": "Password123@"
+  "email": "minhnhut9a8@gmail.com",
+  "password": "Pass1234@"
 }
+```
 
-Response: Status Code 200
+**Response:**
 
+**200 Success**:
+
+```json
 {
-    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTYiLCJ1c2VybmFtZSI6ImpvaG5kb2UiLCJpYXQiOjE1MTYyMzkwMjJ9.4fg63f89e5E7Vt6byGY7YrT5G0Q"
+  "accessToken": "eyJhbG...",
+  "refreshToken": "VGnkRl7WZKxGIsu47r__Dg",
+  "expiresAt": "2025-03-14T21:25:25Z"
 }
+```
 
-Response: Status Code 400
+**400 Bad Request**:
 
+```json
 {
-    "msg": "Invalid login credentials"
+  "msg": "Invalid login credentials"
 }
+```
 
-POST /api/auth/register
+#### **1.2 Register**
 
-Request body:
+**POST** `/auth/register`
 
+**Description:** Register a new user by providing account details, including email, password, full name, date of birth, and role. The system validates the input and returns the created user details upon success.
+
+**Request Body:**
+
+```json
 {
-    "email": ""user@example.com",
-    "password": "Password123@",
-    "confirmPassword": "Password123@"
+  "email": "clone.vyvy.2@gmail.com",
+  "password": "Pass123@",
+  "ConfirmPassword": "Pass123@",
+  "fullName": "abc2",
+  "dateOfBirth": "2024-12-23",
+  "role": "Customer"
 }
+```
 
-Response: Status Code 200
+**Response:**
+**200 Success**:
 
-Response: Status Code 400
+```json
+{
+  "email": "clone.vyvy.2@gmail.com",
+  "fullName": "abc2",
+  "profilePicture": null,
+  "bio": null,
+  "dateOfBirth": "2024-12-23"
+}
+```
 
+**400 Bad Request:**
+
+```json
 {
   "msg": "Password is not valid: password and confirm password are not the same."
 }
+```
 
+```json
 {
   "msg": "Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character."
 }
+```
 
-GET /api/auth/GetProfile
-
-Response: Status Code 200
-
+```json
 {
-    "accountId": "61276ff4-527a-42ee-9887-cc3107977ca5",
-    "email": "minhnhut9a8@gmail.com",
-    "fullName": "test",
-    "bio": null,
-    "role": 0
+  "msg": "Invalid Birthday!"
 }
+```
+
+```json
+{
+  "msg": "Invalid email format!"
+}
+```
+
+#### **1.3 Forgot Password**
+
+**POST** `/auth/forgotPassword`
+
+**Description:** Update information about a specific shop.
+
+**Request Body:**
+
+```json
+{
+  "email": "minhnhut9a8@gmail.com"
+}
+```
+
+**Response:**
+**200 Success**:
+
+**400 Bad Request:**
+
+```json
+{
+  "msg": "Email does not exist!"
+}
+```
+
+```json
+{
+  "msg": "Invalid email format!"
+}
+```
+
+---
