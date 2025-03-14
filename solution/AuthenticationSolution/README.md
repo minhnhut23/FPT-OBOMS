@@ -73,6 +73,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 ```
 
 **Response:**
+
 **200 Success:**
 
 ```json
@@ -134,6 +135,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 ```
 
 **Response:**
+
 **200 Success**
 
 **400 Bad Request:**
@@ -170,6 +172,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 ```
 
 **Response:**
+
 **200 Success**
 
 **400 Bad Request:**
@@ -219,6 +222,7 @@ Authorization: Bearer <your_api_key>
 ```
 
 **Response:**
+
 **200 Success:**
 
 ```json
@@ -274,6 +278,7 @@ Authorization: Bearer <your_api_key>
 **Request**
 
 **Response:**
+
 **200 Success**
 
 **401 Unauthorized**
