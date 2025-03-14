@@ -187,7 +187,7 @@ public class AuthDAO
             var requestBody = new
             {
                 email = request.Email,
-                token = request.Token,
+                token = request.OTP,
                 type = "email"
             };
 
