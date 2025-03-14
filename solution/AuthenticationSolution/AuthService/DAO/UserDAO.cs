@@ -1,6 +1,7 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
 using BusinessObject.Models;
+using Microsoft.AspNetCore.Identity;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -49,7 +50,7 @@ public class UserDAO
                     ProfilePicture = profile.ProfilePicture!
                 };
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -57,10 +58,10 @@ public class UserDAO
         }
 
     }
-     public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
+    public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
     {
         try
-        {          
+        {
             var profile = await _client
                 .From<Profile>()
                 .Where(x => x.Id == profileId)
@@ -68,19 +69,19 @@ public class UserDAO
 
             if (profile == null)
             {
-               throw new Exception("Profile not found!");
+                throw new Exception("Profile not found!");
             }
             else
             {
                 return new GetUserResponeDTO
-                {                   
+                {
                     FullName = profile.FullName,
                     Bio = profile.Bio!,
                     DateOfBirth = profile.DateOfBirth,
                     ProfilePicture = profile.ProfilePicture!
                 };
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -88,7 +89,7 @@ public class UserDAO
         }
 
     }
-    
+
     public async Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token)
     {
         try
@@ -98,62 +99,78 @@ public class UserDAO
 
             var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
 
-            var accountId = Guid.Parse(claims["sub"]);
+            var accountId = Guid.Parse(claims["sub"].Trim());
 
             var profile = await _client
                 .From<Profile>()
                 .Where(x => x.AccountId == accountId)
                 .Single();
-            
+
             if (profile == null)
             {
-               throw new Exception("Profile not found!");
+                throw new Exception("Profile not found! ==== " + accountId);
             }
-            else
+
+            if (request.ProfilePicture != null)
             {
-
-                if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+                if (!ImageValidator.IsValidImage(request.ProfilePicture, out string error))
                 {
-                    throw new Exception("Invalid Birthday!");
+                    throw new Exception(error);
                 }
 
-                profile.ProfilePicture = request.ProfilePicture;
-                profile.FullName = request.FullName;
-                profile.Bio = request.Bio; 
-                profile.DateOfBirth = request.DateOfBirth;
-                profile.UpdatedAt = DateTime.UtcNow;
-                await profile.Update<Profile>();
+                var file = request.ProfilePicture;
+                var fileName = $"{Guid.NewGuid()}_{file.FileName.Trim()}";
 
-                if (request.Email != null && request.Email != claims["email"])
+                if (!string.IsNullOrEmpty(profile.ProfilePicture))
                 {
-                    var attrs = new UserAttributes { Email = request.Email };
-                    await _client.Auth.Update(attrs);
-
-                    return new GetUserResponeDTO
-                    {
-                        Email = request.Email,
-                        FullName = profile.FullName,
-                        Bio = profile.Bio!,
-                        DateOfBirth = profile.DateOfBirth,
-                        ProfilePicture = profile.ProfilePicture!
-                    };
+                    var oldFileName = Path.GetFileName(new Uri(profile.ProfilePicture).AbsolutePath);
+                    var deleteResult = await _client.Storage.From("avatars").Remove(new List<string> { oldFileName });                   
                 }
 
-                return new GetUserResponeDTO
+                byte[] fileBytes;
+                using (var stream = new MemoryStream())
                 {
-                    Email = claims["email"],
-                    FullName = profile.FullName,
-                    Bio = profile.Bio!,
-                    DateOfBirth = profile.DateOfBirth,
-                    ProfilePicture = profile.ProfilePicture!
-                };
+                    await file.CopyToAsync(stream);
+                    fileBytes = stream.ToArray();
+                }
+
+                await _client.Storage
+                    .From("avatars")
+                    .Upload(fileBytes, fileName, new Supabase.Storage.FileOptions { CacheControl = "3600", Upsert = false });
+
+                var publicUrl = _client.Storage.From("avatars").GetPublicUrl(fileName);
+
+                profile.ProfilePicture = publicUrl;
             }
-            
+
+            profile.FullName = request.FullName ?? profile.FullName;
+            profile.Bio = request.Bio ?? profile.Bio;
+            profile.DateOfBirth = request.DateOfBirth != default ? request.DateOfBirth : profile.DateOfBirth;
+            profile.UpdatedAt = DateTime.UtcNow;
+
+            await profile.Update<Profile>();
+
+            string emailResponse = claims["email"];
+
+            if (request.Email != null && request.Email != claims["email"])
+            {
+                var attrs = new UserAttributes { Email = request.Email };
+                var user = await _client.Auth.Update(attrs);
+                emailResponse = user!.Email!;
+            }            
+
+            return new GetUserResponeDTO
+            {
+                Email = emailResponse,
+                FullName = profile.FullName!,
+                Bio = profile.Bio!,
+                DateOfBirth = profile.DateOfBirth,
+                ProfilePicture = profile.ProfilePicture!
+            };
         }
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
-
-    }    
+    }
 }

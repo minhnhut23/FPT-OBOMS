@@ -34,9 +34,9 @@ public class UserController : Controller
 
     }
 
-    [HttpGet("getUserById")]
+    [HttpGet("{id}")]
     [Authorize]
-    public async Task<IActionResult> GetUserById([FromQuery] Guid id)
+    public async Task<IActionResult> GetUserById(Guid id)
     {
         try
         {
@@ -51,7 +51,7 @@ public class UserController : Controller
 
     [HttpPut("updateProfile")]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDTO request)
+    public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequestDTO request)
     {
         try
         {

@@ -21,17 +21,17 @@ namespace ShopManagementService.Utils {
                 .ForMember(dest => dest.Id, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.UpdatedAt, opt => opt.Ignore());
-            CreateMap<CreateProductRequestDTO, MenuItem>()
+            CreateMap<CreateProductRequestDTO, Product>()
               .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
               .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow))
               .ForMember(dest => dest.IsAvailable, opt => opt.MapFrom(_ => true)); // Default: available
 
             // Map UpdateProductRequestDTO to MenuItem (Update)
-            CreateMap<UpdateProductRequestDTO, MenuItem>()
+            CreateMap<UpdateProductRequestDTO, Product>()
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(_ => DateTime.UtcNow));
 
             // Map MenuItem to GetProductResponseDTO
-            CreateMap<MenuItem, GetProductResponseDTO>();
+            CreateMap<Product, GetProductResponseDTO>();
         }
     }
 }
