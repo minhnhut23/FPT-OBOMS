@@ -71,7 +71,7 @@ namespace ShopManagementService.Controllers
             {
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
                 var response = await _repo.CreateProduct(request, token);
-                return Created(response);
+                return Ok(response);
             }
             catch (Exception ex)
             {
