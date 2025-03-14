@@ -9,12 +9,12 @@ public interface IProductRepository
 {
     public Task<(List<GetProductResponseDTO>, ProductPaginationDTO)> GetAllProducts(GetProductRequestDTO request);
 
-    public Task<MenuItem> GetProductById(Guid id);
+    public Task<Product> GetProductById(Guid id);
 
-    public Task CreateProduct(CreateProductRequestDTO request, string token);
+    public Task<GetProductResponseDTO> CreateProduct(CreateProductRequestDTO request, string token);
 
-    public Task UpdateProduct(UpdateProductRequestDTO request, Guid id, string token);
+    public Task<GetProductResponseDTO> UpdateProduct(UpdateProductRequestDTO request, Guid id, string token);
 
-    public Task DeleteProduct(Guid id);
+    public Task DeleteProduct(Guid id, string token);
 
 }
