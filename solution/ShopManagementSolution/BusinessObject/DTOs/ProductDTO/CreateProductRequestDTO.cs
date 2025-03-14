@@ -1,4 +1,6 @@
-﻿namespace BusinessObject.DTOs.ProductDTO;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace BusinessObject.DTOs.ProductDTO;
 
 public class CreateProductRequestDTO
 {
@@ -15,5 +17,7 @@ public class CreateProductRequestDTO
     public string? NutritionalIfo { get; set; } = null!;
 
     public Guid ShopId { get; set; }
+
+    public IFormFile? ProductImage { get; set; }
 }
 

@@ -1,10 +1,12 @@
-﻿namespace BusinessObject.DTOs.ProductDTO;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace BusinessObject.DTOs.ProductDTO;
 
 public class UpdateProductRequestDTO
 {
-    public string Name { get; set; } = null!;
+    public string? Name { get; set; } = null!;
 
-    public decimal Price { get; set; }
+    public decimal? Price { get; set; }
 
     public string? Description { get; set; } = null!;
 
@@ -14,6 +16,9 @@ public class UpdateProductRequestDTO
 
     public string? NutritionalIfo { get; set; } = null!;
 
-    public bool IsAvailable { get; set; }
+    public bool? IsAvailable { get; set; }
+
+    public IFormFile? ProductImage { get; set; }
+
 }
 

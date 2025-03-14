@@ -2,8 +2,8 @@
 using Supabase.Postgrest.Models;
 
 namespace BusinessObject.Models;
-[Table("menu_items")]
-public class MenuItem : BaseModel
+[Table("products")]
+public class Product : BaseModel
 {
     [PrimaryKey("id")]
     public Guid Id { get; set; }
@@ -29,10 +29,11 @@ public class MenuItem : BaseModel
     [Column("ingredients")]
     public string Ingredient { get; set; } = null!;
 
-
     [Column("nutritional_info")]
     public string NutritionalIfo { get; set; } = null!;
 
+    [Column("image")]
+    public string Image { get; set; } = null!;
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
