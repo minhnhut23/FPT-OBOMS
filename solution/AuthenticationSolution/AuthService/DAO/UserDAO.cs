@@ -1,6 +1,7 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
 using BusinessObject.Models;
+using Microsoft.AspNetCore.Identity;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -112,37 +113,34 @@ public class UserDAO
 
             if (request.ProfilePicture != null)
             {
+                if (!ImageValidator.IsValidImage(request.ProfilePicture, out string error))
+                {
+                    throw new Exception(error);
+                }
+
                 var file = request.ProfilePicture;
-                var fileName = $"{Guid.NewGuid()}_{file.FileName}";
-
-                var uploadDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-
-                if (!Directory.Exists(uploadDir))
-                {
-                    Directory.CreateDirectory(uploadDir);
-                }
-
-                var localPath = Path.Combine(uploadDir, fileName);
-
-                using (var stream = new FileStream(localPath, FileMode.Create, FileAccess.Write, FileShare.None))
-                {
-                    await file.CopyToAsync(stream);
-                }
+                var fileName = $"{Guid.NewGuid()}_{file.FileName.Trim()}";
 
                 if (!string.IsNullOrEmpty(profile.ProfilePicture))
                 {
-                    var oldFileName = profile.ProfilePicture.Split('/').Last();
-                    await _client.Storage.From("avatars").Remove(new List<string> { oldFileName });
+                    var oldFileName = Path.GetFileName(new Uri(profile.ProfilePicture).AbsolutePath);
+                    var deleteResult = await _client.Storage.From("avatars").Remove(new List<string> { oldFileName });                   
                 }
 
-                await _client.Storage.From("avatars").Upload(localPath, fileName, new Supabase.Storage.FileOptions { Upsert = true });
-
-                profile.ProfilePicture = _client.Storage.From("avatars").GetPublicUrl(fileName);
-
-                if (File.Exists(localPath))
+                byte[] fileBytes;
+                using (var stream = new MemoryStream())
                 {
-                    File.Delete(localPath);
+                    await file.CopyToAsync(stream);
+                    fileBytes = stream.ToArray();
                 }
+
+                await _client.Storage
+                    .From("avatars")
+                    .Upload(fileBytes, fileName, new Supabase.Storage.FileOptions { CacheControl = "3600", Upsert = false });
+
+                var publicUrl = _client.Storage.From("avatars").GetPublicUrl(fileName);
+
+                profile.ProfilePicture = publicUrl;
             }
 
             profile.FullName = request.FullName ?? profile.FullName;
@@ -152,15 +150,18 @@ public class UserDAO
 
             await profile.Update<Profile>();
 
+            string emailResponse = claims["email"];
+
             if (request.Email != null && request.Email != claims["email"])
             {
                 var attrs = new UserAttributes { Email = request.Email };
-                await _client.Auth.Update(attrs);
-            }
+                var user = await _client.Auth.Update(attrs);
+                emailResponse = user!.Email!;
+            }            
 
             return new GetUserResponeDTO
             {
-                Email = claims["email"],
+                Email = emailResponse,
                 FullName = profile.FullName!,
                 Bio = profile.Bio!,
                 DateOfBirth = profile.DateOfBirth,
@@ -171,6 +172,5 @@ public class UserDAO
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
         }
-
     }
 }
