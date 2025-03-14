@@ -20,7 +20,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 
 **POST** `/auth/login/`
 
-**Description:** Authenticate a user by verifying credentials and returning access tokens.
+**Description:** Allows users to log in by verifying their credentials. Returns an access token and refresh token upon successful authentication.
 
 **Request Parameters:**
 
@@ -57,7 +57,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 
 **POST** `/auth/register`
 
-**Description:** Register a new user by providing account details, including email, password, full name, date of birth, and role. The system validates the input and returns the created user details upon success.
+**Description:** Creates a new user account by accepting email, password, full name, date of birth, and role. The system validates input data before saving the user information.
 
 **Request Body:**
 
@@ -123,7 +123,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 
 **POST** `/auth/forgotPassword`
 
-**Description:** Update information about a specific shop.
+**Description:** Initiates the password reset process by sending a verification OTP to the registered email.
 
 **Request Body:**
 
@@ -156,7 +156,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 
 **POST** `/auth/recoverPassword`
 
-**Description:** Update information about a specific shop.
+**Description:** Allows users to reset their password by providing a valid OTP along with a new password.
 
 **Request Body:**
 
@@ -198,7 +198,15 @@ This document describes the API endpoints for **Authentication and User Manageme
 
 **POST** `/auth/changePassword`
 
-**Description:** Update information about a specific shop.
+**Description:** Enables authenticated users to update their password by providing the current password and a new password.
+
+**Authentication**
+
+Endpoints require an API key passed as a header:
+
+```
+Authorization: Bearer <your_api_key>
+```
 
 **Request Body:**
 
@@ -218,6 +226,8 @@ This document describes the API endpoints for **Authentication and User Manageme
   "msg": "Password has been change successfully."
 }
 ```
+
+**401 Unauthorized**
 
 **400 Bad Request:**
 
@@ -251,7 +261,7 @@ This document describes the API endpoints for **Authentication and User Manageme
 
 **POST** `/auth/logout`
 
-**Description:** Update information about a specific shop.
+**Description:** Logs out the authenticated user by invalidating the access token.
 
 **Authentication**
 
@@ -264,36 +274,6 @@ Authorization: Bearer <your_api_key>
 **Request**
 
 **Response:**
-**200 Success:**
+**200 Success**
 
-```json
-{
-  "msg": "Password has been change successfully."
-}
-```
-
-**400 Bad Request:**
-
-```json
-{
-  "msg": "Invalid current password or email."
-}
-```
-
-```json
-{
-  "msg": "Password is not valid: password and confirm password are not the same."
-}
-```
-
-```json
-{
-  "msg": "Password is not valid: password must contain at least one lowercase, uppercase letter, digit and special character."
-}
-```
-
-```json
-{
-  "msg": "Password fields cannot be null or empty."
-}
-```
+**401 Unauthorized**
