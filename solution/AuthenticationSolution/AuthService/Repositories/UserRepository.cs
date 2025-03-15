@@ -1,6 +1,7 @@
 ﻿using AuthService.DAO;
 using AuthService.IRepositories;
 using BusinessObject.DTO;
+using BusinessObject.Models;
 
 namespace AuthService.Repositories;
 
@@ -12,6 +13,8 @@ public class UserRepository : IUserRepository
     {
         _dao = dao;
     }
+
+    public Task<(List<Profile> Profiles, PaginationDTO PaginationMetadata)> GetAllProfiles(GetProfileRequestDTO request) => _dao.GetAllProfiles(request);
 
     public Task<GetUserResponeDTO> GetCurrentUser(string token) => _dao.GetCurrentUser(token);
 
