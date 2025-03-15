@@ -36,6 +36,7 @@ User: {
 
 application: "Web application"
 apiGateway: "ApiGateway"
+Router: "Router"
 AuthController: "AuthController"
 AuthRepository: "AuthRepositories"
 AuthDAO: "AuthDAO"
@@ -51,28 +52,31 @@ loop  {
   application.post -> application.post.get: "2. Check empty or \n invalid input"
   application.post -> User: "3. Show validation message" {class: return arrow}           
 }  
-application -> apiGateway.post: "4. Forward change password request"
-apiGateway -> AuthController.post: "5. Handle change password request"
-AuthController -> AuthRepository.post: "6. Forward to repository"
-AuthRepository -> AuthDAO.post: "7. Forward to DAO"
-AuthDAO.post -> Supabase.post: "8. Validate user and password"
-Supabase.post -> DB.post: "9. Update user password"
-DB.post -> Supabase.post: "10. Return result" {class: return arrow} 
-Supabase.post -> AuthDAO.post: "11. Return result" {class: return arrow} 
-AuthDAO.post -> AuthRepository.post: "12. Forward result" {class: return arrow} 
-AuthRepository.post -> AuthController.post: "13. Return result" {class: return arrow} 
+application -> apiGateway.post: "4. Send change password request"
+apiGateway -> AuthController.post: "5. Send change password request"
+Router.post -> AuthController.post: "6. Forward to controller"
+AuthController -> AuthRepository.post: "7. Forward to repository"
+AuthRepository -> AuthDAO.post: "8. Forward to DAO"
+AuthDAO.post -> Supabase.post: "9. Validate user and password"
+Supabase.post -> DB.post: "10. Update user password"
+DB.post -> Supabase.post: "11. Return result" {class: return arrow} 
+Supabase.post -> AuthDAO.post: "12. Return result" {class: return arrow} 
+AuthDAO.post -> AuthRepository.post: "13. Forward result" {class: return arrow} 
+AuthRepository.post -> AuthController.post: "14. Return result" {class: return arrow} 
 
 
 alt: "alt" {
   class: frame
   Current password valid: "[Current password valid]" {
-    AuthController.post -> apiGateway.post: "13.1. Send success status to frontend" {class: return arrow} 
-    apiGateway.post -> application.post: "13.1.1. Return success status" {class: return arrow} 
-    application.post -> User: "13.1.2. Display password change success message" {class: return arrow} 
+    AuthController.post -> Router.post: "14.1. Send success status to frontend" {class: return arrow} 
+    Router.post -> apiGateway.post: "14.1.1. Return success status" {class: return arrow} 
+    apiGateway.post -> application.post: "14.1.2. Return success status" {class: return arrow} 
+    application.post -> User: "14.1.3. Display password change success message" {class: return arrow} 
   }
   Current password invalid: "[Current password invalid]" {
-    AuthController.post -> apiGateway.post: "13.2. Send error to frontend" {class: return arrow} 
-    apiGateway.post -> application.post: "13.2.1. Return error" {class: return arrow} 
-    application.post -> User: "13.2.2. Display error message" {class: return arrow} 
+    AuthController.post -> Router.post: "14.2. Send error to frontend" {class: return arrow} 
+    Router.post -> apiGateway.post: "14.2.1. Return success status" {class: return arrow} 
+    apiGateway.post -> application.post: "14.2.2. Return error" {class: return arrow} 
+    application.post -> User: "13.2.3. Display error message" {class: return arrow} 
   }
 }

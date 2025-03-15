@@ -64,4 +64,23 @@ public class UserController : Controller
             return BadRequest(new { msg = ex.Message });
         }
     }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllProfile([FromQuery] GetProfileRequestDTO request)
+    {
+        try
+        {
+            var user = await _repo.GetAllProfiles(request);
+            if (user.Profiles == null || !user.Profiles.Any())
+            {
+                return NotFound(new { msg = "User not found" });
+            }
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+
+    }
 }

@@ -6,7 +6,7 @@ classes: {
       font-color: black
     }
   }
-  return_arrow: {
+  return arrow: {
     style: {
       stroke-dash: 3
     }
@@ -33,6 +33,7 @@ User: {
 
 application: "Web application"
 apiGateway: "ApiGateway"
+Router: "Router"
 ProductController: "ProductController"
 ProductRepositories: "ProductRepositories"
 ProductDAO: "ProductDAO"
@@ -49,27 +50,30 @@ loop  {
 }
 
 application.get -> apiGateway.get: "4. Request create product"
-apiGateway.get -> ProductController.get: "5. Forward request"
-ProductController -> ProductRepositories.get: "6. Forward request to repository"
-ProductRepositories -> ProductDAO.get: "7. Forward request to DAO"
+apiGateway.get -> Router.get: "5. Send create product request"
+Router.get ->ProductController.get: "6. Forward request to controller"
+ProductController -> ProductRepositories.get: "7. Forward request to repository"
+ProductRepositories -> ProductDAO.get: "8. Forward request to DAO"
 
-ProductDAO.get -> Supabase.get: "8. Validate token"
-Supabase.get -> DB.get: "9. Insert new product"
-DB.get -> Supabase.get: "10. Return result"
-Supabase.get -> ProductDAO.get: "11. Return result"
-ProductDAO.get -> ProductRepositories.get: "12. Return result" {class: return arrow}
-ProductRepositories.get-> ProductController.get: "13. Forward result" {class: return arrow}
+ProductDAO.get -> Supabase.get: "9. Validate token"
+Supabase.get -> DB.get: "10. Insert new product"
+DB.get -> Supabase.get: "11. Return result" {class: return arrow}
+Supabase.get -> ProductDAO.get: "12. Return result" {class: return arrow}
+ProductDAO.get -> ProductRepositories.get: "13. Return result" {class: return arrow}
+ProductRepositories.get-> ProductController.get: "14. Forward result" {class: return arrow}
 
 alt: "alt" {
   class: frame
   Create Product Successfully: "[Create Product Successfully]" {
-    ProductController.get -> apiGateway.get: "13.1. Send product record to frontend" {class: return arrow}
-    apiGateway.get -> application.get: "13.1.1. Return product" {class: return arrow}
-    application.get -> User: "13.1.2. Display Status Successfully" {class: return arrow}
+    ProductController.get -> Router.get: "14.1. Send product record to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "14.1.1. Return product" {class: return arrow}
+    apiGateway.get -> application.get: "14.1.2. Return product" {class: return arrow}
+    application.get -> User: "14.1.3. Display Product and Status Successfully" {class: return arrow}
   }
   Create Product Unsuccessfully: "[Create Product Unsuccessfully]" {
-    ProductController.get -> apiGateway.get: "13.2. Send error to frontend" {class: return arrow}
-    apiGateway.get -> application.get: "13.2.1. Return error" {class: return arrow}
-    application.get -> User: "13.2.2. Display error message" {class: return arrow}
+    ProductController.get -> Router.get: "14.2. Send error to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "14.2.1. Return error" {class: return arrow}
+    apiGateway.get -> application.get: "14.2.2. Return error" {class: return arrow}
+    application.get -> User: "14.2.3. Display error message" {class: return arrow}
   }
 }

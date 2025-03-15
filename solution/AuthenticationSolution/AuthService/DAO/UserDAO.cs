@@ -4,6 +4,7 @@ using BusinessObject.Models;
 using Microsoft.AspNetCore.Identity;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
+using static Supabase.Postgrest.Constants;
 
 namespace AuthService.DAO;
 
@@ -171,6 +172,55 @@ public class UserDAO
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
+    }
+
+    public async Task<(List<Profile> Profiles, PaginationDTO PaginationMetadata)> GetAllProfiles(GetProfileRequestDTO request)
+    {
+        try
+        {
+            var query = _client.From<Profile>().Select("*");
+            query = ApplyGetAllFilters.ApplyProfileFilters(query, request);
+
+            var counting = _client.From<Profile>().Select("*");
+            counting = ApplyGetAllFilters.ApplyProfileFilters(counting, request);
+            var totalRecordsResponse = await counting.Select("id").Get();
+            var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
+            var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+
+            var skip = (request.PageNumber - 1) * request.PageSize;
+            var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
+
+            var profilesResponse = await paginatedQuery.Get();
+            var profiles = profilesResponse.Models.ToList();
+
+            if (totalRecords == 0 || request.PageNumber > totalPages)
+            {
+                return (
+                    new List<Profile>(),
+                    new PaginationDTO
+                    {
+                        TotalResults = totalRecords,
+                        TotalPages = totalPages,
+                        CurrentPage = request.PageNumber,
+                        PageSize = request.PageSize
+                    }
+                );
+            }
+
+            var paginationMetadata = new PaginationDTO
+            {
+                TotalResults = totalRecords,
+                TotalPages = totalPages,
+                CurrentPage = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+            return (profiles, paginationMetadata);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching profiles: {ex.Message}");
         }
     }
 }
