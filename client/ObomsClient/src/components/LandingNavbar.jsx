@@ -23,7 +23,7 @@ NavLink.propTypes = {
 
 export default function LandingNavbar() {
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       className="fixed w-full z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800"
@@ -47,24 +47,28 @@ export default function LandingNavbar() {
 
           {/* Auth Buttons and Theme Toggle */}
           <div className="flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="hidden md:block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-            >
-              Log In
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-            >
-              Sign In
-            </motion.button>
+            <Link to="auth/login">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="hidden md:block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                Log In
+              </motion.button>
+            </Link>
+            <Link to="auth/register">
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Sign In
+              </motion.button>
+            </Link>
             <ThemeToggle className="ml-2" />
           </div>
         </div>
       </div>
     </motion.nav>
   );
-} 
+}

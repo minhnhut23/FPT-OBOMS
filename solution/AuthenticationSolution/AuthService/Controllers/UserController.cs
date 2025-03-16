@@ -17,7 +17,7 @@ public class UserController : Controller
         _repo = repo;
     }
 
-    [HttpGet("getCurrentProfile")]
+    [HttpGet("currentUser")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
