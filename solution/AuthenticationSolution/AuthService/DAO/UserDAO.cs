@@ -109,7 +109,7 @@ public class UserDAO
 
             if (profile == null)
             {
-                throw new Exception("Profile not found! ==== " + accountId);
+                throw new Exception("Profile not found!");
             }
 
             if (request.ProfilePicture != null)
@@ -142,6 +142,11 @@ public class UserDAO
                 var publicUrl = _client.Storage.From("avatars").GetPublicUrl(fileName);
 
                 profile.ProfilePicture = publicUrl;
+            }
+
+            if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+            {
+                throw new Exception("Invalid Birthday!");
             }
 
             profile.FullName = request.FullName ?? profile.FullName;
