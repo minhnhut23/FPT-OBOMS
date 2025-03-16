@@ -7,7 +7,7 @@ export function PublicRoute() {
   const { isAuthenticated } = useAppSelector((state) => state.auth);
 
   // Redirect authenticated users to dashboard
-  if (isAuthenticated && window.location.pathname === '/login') {
+  if (isAuthenticated) {
     return <Navigate to="/app" replace />;
   }
 
@@ -16,4 +16,4 @@ export function PublicRoute() {
       <Outlet />
     </Suspense>
   );
-} 
+}

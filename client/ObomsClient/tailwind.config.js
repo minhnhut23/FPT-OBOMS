@@ -1,16 +1,13 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
       colors: {
         // Brand colors
         brand: {
-          primary: 'var(--color-brand-primary)',
+          primary: 'rgb(var(--color-brand-primary) / <alpha-value>)',
           secondary: 'var(--color-brand-secondary)',
           accent: 'var(--color-brand-accent)',
         },
@@ -40,8 +37,8 @@ export default {
         },
       },
       animation: {
-        'float': 'float 6s ease-in-out infinite',
-        'shimmer': 'shimmer 1.5s infinite linear',
+        float: 'float 6s ease-in-out infinite',
+        shimmer: 'shimmer 1.5s infinite linear',
         'fade-in': 'fadeIn 0.5s ease-out',
         'slide-up': 'slideUp 0.5s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
@@ -74,5 +71,4 @@ export default {
     },
   },
   plugins: [],
-}
-
+};
