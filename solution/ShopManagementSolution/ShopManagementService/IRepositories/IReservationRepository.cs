@@ -13,6 +13,5 @@ namespace ShopManagementService.IRepositories
             Task<ReservationResponseDTO> UpdateReservation(Guid id, ReservationRequestDTO request);
             Task<ReservationResponseDTO> DeleteReservation(Guid id);
             Task<ReservationResponseDTO> CancelReservation(Guid id);
-        }
-    
+    }
 }
