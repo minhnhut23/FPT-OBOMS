@@ -2,10 +2,54 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { EyeIcon, EyeSlashIcon, ArrowLeftIcon } from '@heroicons/react/24/outline'; // Import icons
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import useAuth from '../../hooks/useAuth';
+
+// Validation schema
+const registerSchema = yup.object({
+  fullName: yup.string().required('Full name is required'),
+  birthDate: yup.date().nullable(),
+  email: yup.string().email('Please enter a valid email').required('Email is required'),
+  password: yup
+    .string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters')
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      'Password must contain at least one uppercase letter, one lowercase letter, one number and one special character'
+    ),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('password'), null], 'Passwords must match')
+    .required('Confirm password is required'),
+});
 
 export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
-  const [exitAnimation, setExitAnimation] = useState(false);
+  const { register: registerUser, isRegistering, registerError } = useAuth();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(registerSchema),
+    defaultValues: {
+      fullName: '',
+      birthDate: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
+
+  const onSubmit = (data) => {
+    const { confirmPassword, ...userData } = data;
+    console.log(confirmPassword);
+    registerUser(userData);
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white flex items-center justify-center px-4">
@@ -40,7 +84,6 @@ export default function Register() {
         <div className="flex items-center justify-between mb-4">
           <Link to="/">
             <motion.button
-              onClick={() => setExitAnimation(true)}
               className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition"
               whileHover={{ scale: 1.1 }} // Scale up slightly on hover
               whileTap={{ scale: 0.9 }} // Optional: Shrink slightly when clicked
@@ -52,29 +95,46 @@ export default function Register() {
           {/* Empty span to balance layout */}
           <span className="w-6"></span>
         </div>
-        <div className="mt-6">
-          <input
-            type="text"
-            className="w-full mb-4 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-6" // Increased margin-bottom
-            placeholder="Enter your full name"
-          />
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
+          <div className="mb-4">
+            <input
+              type="text"
+              className={`w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.fullName ? 'border-red-500' : ''}`}
+              placeholder="Enter your full name"
+              {...register('fullName')}
+            />
+            {errors.fullName && (
+              <p className="text-red-500 text-sm mt-1">{errors.fullName.message}</p>
+            )}
+          </div>
 
-          <input
-            type="date"
-            className="w-full mb-6 p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400 bg-gray-100 dark:bg-gray-700 dark:[color-scheme:dark] custom-datepicker"
-          />
+          <div className="mb-4">
+            <input
+              type="date"
+              className={`w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-400 bg-gray-100 dark:bg-gray-700 dark:[color-scheme:dark] custom-datepicker ${errors.birthDate ? 'border-red-500' : ''}`}
+              {...register('birthDate')}
+            />
+            {errors.birthDate && (
+              <p className="text-red-500 text-sm mt-1">{errors.birthDate.message}</p>
+            )}
+          </div>
 
-          <input
-            type="email"
-            className="w-full mb-6 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your email"
-          />
+          <div className="mb-4">
+            <input
+              type="email"
+              className={`w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.email ? 'border-red-500' : ''}`}
+              placeholder="Enter your email"
+              {...register('email')}
+            />
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+          </div>
 
-          <div className="relative w-full mb-6">
+          <div className="relative w-full mb-4">
             <input
               type={showPassword ? 'text' : 'password'}
-              className="w-full p-3 pr-10 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full p-3 pr-10 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.password ? 'border-red-500' : ''}`}
               placeholder="Enter your password"
+              {...register('password')}
             />
             {/* Show/Hide Password Button */}
             <button
@@ -88,23 +148,41 @@ export default function Register() {
                 <EyeIcon className="w-6 h-6 text-gray-400 dark:text-gray-400" />
               )}
             </button>
+            {errors.password && (
+              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
           </div>
 
-          <input
-            type={showPassword ? 'text' : 'password'}
-            className="w-full mb-6 p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Confirm your password"
-          />
-        </div>
-        {/* Register Button */}
-        <motion.button
-          onClick={() => setExitAnimation(true)}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="w-full  py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-200"
-        >
-          Register
-        </motion.button>
+          <div className="mb-4">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              className={`w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.confirmPassword ? 'border-red-500' : ''}`}
+              placeholder="Confirm your password"
+              {...register('confirmPassword')}
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+            )}
+          </div>
+
+          {/* Registration error message */}
+          {registerError && (
+            <div className="mb-4 p-2 bg-red-100 dark:bg-red-900/30 border border-red-500 text-red-700 dark:text-red-300 rounded-lg text-sm">
+              {registerError.response?.data?.msg || 'Registration failed. Please try again.'}
+            </div>
+          )}
+
+          {/* Register Button */}
+          <motion.button
+            type="submit"
+            disabled={isRegistering}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition duration-200"
+          >
+            {isRegistering ? 'Registering...' : 'Register'}
+          </motion.button>
+        </form>
         <div className="mt-4 text-center">
           <span className="text-gray-600 dark:text-gray-300 text-sm">Already have an account?</span>
           <Link to="/auth/login">
