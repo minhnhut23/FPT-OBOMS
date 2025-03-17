@@ -1,4 +1,5 @@
 ﻿using BusinessObject.Models;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ShopManagementService.Utils;
 
@@ -15,20 +16,36 @@ public class RoleMiddleware
 
     public async Task Invoke(HttpContext context)
     {
-        var userId = context.User.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-        if (userId != null)
+        var token = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+        string? userId = null;
+
+        if (!string.IsNullOrEmpty(token))
         {
-            var role = await GetUserRole(Guid.Parse(userId));
-            if (role != null)
+            try
             {
-                context.Items["UserRole"] = role;
+                var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
+                userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var roleFromDB = await GetUserRole(Guid.Parse(userId));
+
+            if (roleFromDB != null)
+            {
+                context.Items["UserRole"] = roleFromDB;
             }
         }
 
         await _next(context);
     }
 
-    private async Task<string?> GetUserRole(Guid userId)
+    private async Task<Enum?> GetUserRole(Guid userId)
     {
         var response = await _client
             .From<Profile>()

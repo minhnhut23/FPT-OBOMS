@@ -16,7 +16,14 @@ public class AuthorizeRoleAttribute : Attribute, IAuthorizationFilter
 
     public void OnAuthorization(AuthorizationFilterContext context)
     {
-        if (context.HttpContext.Items["UserRole"] is not UserRole userRole || userRole != _requiredRole)
+        UserRole userRole = UserRole.Customer;
+
+        if (context.HttpContext.Items["UserRole"] is UserRole role)
+        {
+            userRole = role;
+        }
+
+        if (userRole != _requiredRole)
         {
             context.Result = new ForbidResult();
         }

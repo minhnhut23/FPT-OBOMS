@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AuthService.Repositories;
 using AuthService.IRepositories;
+using ShopManagementService.Utils;
 
 namespace AuthService
 {
@@ -77,6 +78,7 @@ namespace AuthService
 
             app.UseHttpsRedirection();
 
+            app.UseMiddleware<RoleMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 

@@ -17,11 +17,13 @@ public class ShopRepositoy : IShopRepository
 
     public Task<ShopResponseDTO> CreateShop(CreateShopRequestDTO createShop, string token) => _dao.CreateShop(createShop, token);
 
-    public Task<DeleteShopResponseDTO> DeleteShop(Guid id) => _dao.DeleteShop(id);
+    public Task<DeleteShopResponseDTO> DeleteShop(Guid id, string token) => _dao.DeleteShop(id, token);
 
     public Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetAllShops(GetShopRequestDTO request) => _dao.GetAllShops(request);
 
     public Task<ShopResponseDTO?> GetShopById(Guid id) => _dao.GetShopById(id);
+
+    public Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetShopsByCurrentOwner(GetShopRequestDTO request, string token) => _dao.GetShopsByCurrentOwner(request, token);
 
     public Task<ShopResponseDTO> UpdateShop(Guid id, UpdateShopRequestDTO updateShop, string token) => _dao.UpdateShop(id, updateShop, token);
 }

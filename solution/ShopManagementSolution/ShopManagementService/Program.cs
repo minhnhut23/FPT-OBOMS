@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 using ShopManagementService.Repositories;
+using ShopManagementService.Utils;
 using System.Text;
 
 namespace ShopManagementService
@@ -91,6 +92,7 @@ namespace ShopManagementService
 
             app.UseHttpsRedirection();
 
+            app.UseMiddleware<RoleMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 

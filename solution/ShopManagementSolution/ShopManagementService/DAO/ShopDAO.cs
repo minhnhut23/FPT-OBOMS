@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Org.BouncyCastle.Asn1.Ocsp;
 using ShopManagementService.Utils;
 using System.IdentityModel.Tokens.Jwt;
+using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace BusinessObject.Services
 {
@@ -281,11 +282,32 @@ namespace BusinessObject.Services
             }
         }
 
-        public async Task<DeleteShopResponseDTO> DeleteShop(Guid id)
+        public async Task<DeleteShopResponseDTO> DeleteShop(Guid id, string token)
         {
             try
             {
-                var shop = await GetShopById(id);
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+                var accountId = Guid.Parse(claims["sub"]);
+
+                var profile = await _client
+                    .From<BusinessObject.Models.Profile>()
+                    .Where(x => x.AccountId == accountId)
+                    .Single();
+
+                var shop = await _client.From<Shop>().Where(s => s.Id == id).Single();
+
+                if (shop == null)
+                {
+                    throw new Exception("Shop not found!");
+                }
+
+                if (shop.OwnerId != profile!.Id)
+                {
+                    throw new Exception("You are not shop's owner!");
+                }
+
                 if (shop == null)
                     return new DeleteShopResponseDTO { IsDeleted = false, Message = "Shop not found." };
 
@@ -302,5 +324,77 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
+
+        public async Task<(List<ShopResponseDTO> Shops, TablePaginationDTO PaginationMetadata)> GetShopsByCurrentOwner(GetShopRequestDTO request, string token)
+        {
+            try
+            {
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+                var accountId = Guid.Parse(claims["sub"]);
+
+                var profile = await _client
+                    .From<BusinessObject.Models.Profile>()
+                    .Where(x => x.AccountId == accountId)
+                    .Single();
+
+                var query = _client.From<Shop>().Where(s => s.OwnerId == profile!.Id);
+
+                var totalRecordsResponse = await _client.From<Shop>().Select("id").Get();
+                var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
+                var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+
+                var skip = (request.PageNumber - 1) * request.PageSize;
+                var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
+
+                var shopResponse = await paginatedQuery.Get();
+                var shops = shopResponse.Models.Select(shop => new ShopResponseDTO
+                {
+                    Id = shop.Id,
+                    Name = shop.Name,
+                    Description = shop.Description,
+                    Address = shop.Address,
+                    PhoneNumber = shop.PhoneNumber,
+                    OpeningHours = shop.OpeningHours,
+                    ClosingHours = shop.ClosingHours,
+                    Rating = shop.Rating,
+                    Latitude = shop.Latitude,
+                    Longitude = shop.Longitude,
+                    OwnerId = shop.OwnerId,
+                    Status = ShopStatusHelper.GetShopStatus(shop.OpeningHours, shop.ClosingHours)
+                }).ToList();
+
+                if (totalRecords == 0 || request.PageNumber > totalPages)
+                {
+                    return (
+                        new List<ShopResponseDTO>(),
+                        new TablePaginationDTO
+                        {
+                            TotalResults = totalRecords,
+                            TotalPages = totalPages,
+                            CurrentPage = request.PageNumber,
+                            PageSize = request.PageSize
+                        }
+                    );
+                }
+
+                var paginationMetadata = new TablePaginationDTO
+                {
+                    TotalResults = totalRecords,
+                    TotalPages = totalPages,
+                    CurrentPage = request.PageNumber,
+                    PageSize = request.PageSize
+                };
+
+                return (shops, paginationMetadata);
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+            }
+        }
+
     }
 }

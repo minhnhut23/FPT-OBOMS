@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 using ShopManagementService.Utils.Security;
 using BusinessObject.Enums;
+using ZXing;
 
 namespace BusinessObject.Controllers
 {
@@ -108,11 +109,14 @@ namespace BusinessObject.Controllers
         }
 
         [HttpDelete("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> DeleteShop(Guid id)
         {
             try
             {
-                var result = await _repo.DeleteShop(id);
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                var result = await _repo.DeleteShop(id, token);
                 if (!result.IsDeleted)
                 {
                     return NotFound(result.Message);
@@ -123,6 +127,26 @@ namespace BusinessObject.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpGet("yourShop")]
+        [AuthorizeRole(UserRole.Owner)]
+        public async Task<IActionResult> GetShopByCurrentUser([FromQuery] GetShopRequestDTO request)
+        {
+            try
+            {
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                var shops = await _repo.GetAllShops(request);
+                if (shops.Shops == null || shops.PaginationMetadata == null)
+                {
+                    return NotFound(new {msg = "You do not have any stores yet!" });
+                }
+                return Ok(shops);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new {msg =  ex.Message});
             }
         }
     }
