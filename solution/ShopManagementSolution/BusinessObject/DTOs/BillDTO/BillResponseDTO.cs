@@ -12,8 +12,9 @@ namespace BusinessObject.DTOs.BillDTO
         public Guid TableId { get; set; } // ID bàn
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
         public Guid ShopId { get; set; }
         public int BillDetailsQuantity { get; set; }
+        public string Status { get; set; }
     }
 }

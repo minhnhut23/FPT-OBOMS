@@ -1,6 +1,6 @@
 ﻿namespace BusinessObject.Enums
 {
-    public enum UserRole
+    public enum Enum_UserRole
     {
         Customer,
         Owner

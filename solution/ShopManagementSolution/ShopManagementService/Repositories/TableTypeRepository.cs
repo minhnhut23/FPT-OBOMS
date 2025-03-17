@@ -1,6 +1,5 @@
-﻿using BusinessObject.DTOs.TableDTO;
-using BusinessObject.DTOs.TableTypeDTO;
-using BusinessObject.Services;
+﻿using BusinessObject.DTOs.TableTypeDTO;
+using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Repositories

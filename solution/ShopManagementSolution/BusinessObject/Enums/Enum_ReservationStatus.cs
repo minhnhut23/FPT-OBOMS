@@ -1,6 +1,6 @@
 ﻿namespace BusinessObject.Enums
 {
-    public enum ReservationStatus
+    public enum Enum_ReservationStatus
     {
         Pending,     
         Confirmed,  

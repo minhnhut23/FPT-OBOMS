@@ -3,7 +3,7 @@ using BusinessObject.Models;
 using BusinessObject.Utils;
 using Supabase;
 
-namespace BusinessObject.Services
+namespace ShopManagementService.DAO
 {
     public class TableTypeDAO
     {

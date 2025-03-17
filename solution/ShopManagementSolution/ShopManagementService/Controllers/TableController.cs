@@ -1,7 +1,5 @@
 ﻿using BusinessObject.DTOs.TableDTO;
-using BusinessObject.Services;
 using BusinessObject.Utils;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.IRepositories;
 
@@ -28,7 +26,7 @@ namespace ShopManagementService.Controllers
 
                 if (tables.Count == 0)
                 {
-                    return NotFound(new { Message = "No tables found matching the criteria." });
+                    return BadRequest(new { Message = "No tables found matching the criteria." });
                 }
 
                 var response = new

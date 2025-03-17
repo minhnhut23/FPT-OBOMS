@@ -1,5 +1,5 @@
 ﻿using BusinessObject.DTOs.BillDetailDTO;
-using BusinessObject.Services;
+using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Repositories

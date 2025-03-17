@@ -5,7 +5,7 @@ using ShopManagementService.IRepositories;
 using System;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Controllers
+namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

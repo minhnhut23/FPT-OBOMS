@@ -6,7 +6,7 @@ using Supabase;
 
 using static Supabase.Postgrest.Constants;
 
-namespace BusinessObject.Services
+namespace ShopManagementService.DAO
 {
     public class TableDAO
     {

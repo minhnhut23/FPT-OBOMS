@@ -1,9 +1,6 @@
-﻿using BusinessObject.Models;
-using BusinessObject.DTOs.ShopDTO;
-using BusinessObject.Services;
+﻿using BusinessObject.DTOs.ShopDTO;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Threading.Tasks;
+using ShopManagementService.DAO;
 
 namespace BusinessObject.Controllers
 {

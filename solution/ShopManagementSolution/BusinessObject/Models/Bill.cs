@@ -1,5 +1,8 @@
 ﻿
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using BusinessObject.DTOs.BillDTO;
+using BusinessObject.Enums;
 using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
@@ -17,7 +20,7 @@ namespace BusinessObject.Models
 
         [Column("total_amount")]
         [Range(0, double.MaxValue, ErrorMessage = "Total amount must be a positive value.")]
-        public decimal TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; } = 0m;
 
         [Column("received_amount")]
         [Range(0, double.MaxValue, ErrorMessage = "Received amount must be a positive value.")]
@@ -30,6 +33,10 @@ namespace BusinessObject.Models
         [Column("table_id")]
         public Guid TableId { get; set; }
 
+        [Column("status")]
+        [Required(ErrorMessage = "Status is required!")]
+        public string Status { get; set; } = Enum_BillStatus.Pending.ToString();
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -37,8 +44,7 @@ namespace BusinessObject.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         [Column("customer_id")]
-        [Required(ErrorMessage = "Customer ID is required.")]
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
 
         [Column("shop_id")]
         [Required(ErrorMessage = "Shop ID is required.")]

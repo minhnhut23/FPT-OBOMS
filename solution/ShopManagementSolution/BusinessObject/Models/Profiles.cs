@@ -34,7 +34,7 @@ namespace BusinessObject.Models
 
         [Required]
         [Column("role")]
-        public UserRole Role { get; set; }
+        public Enum_UserRole Role { get; set; }
 
         [Required]
         [Column("full_name")]

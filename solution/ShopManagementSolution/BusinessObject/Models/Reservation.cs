@@ -33,9 +33,9 @@ namespace BusinessObject.Models
         public string Status { get; set; }
 
         [IgnoreDataMember]
-        public ReservationStatus StatusEnum
+        public Enum_ReservationStatus StatusEnum
         {
-            get => Enum.Parse<ReservationStatus>(Status, true);
+            get => Enum.Parse<Enum_ReservationStatus>(Status, true);
             set => Status = value.ToString(); 
         }
 

@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using BusinessObject.DTOs.TableDTO;
-using BusinessObject.Services;
+﻿using BusinessObject.DTOs.TableDTO;
+using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace ShopManagementService.Repositories
 {

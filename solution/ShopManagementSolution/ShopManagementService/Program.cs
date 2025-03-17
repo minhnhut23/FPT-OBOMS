@@ -1,6 +1,4 @@
-﻿
-using BusinessObject.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.IdentityModel.Tokens;
 using ShopManagementService.DAO;
@@ -56,13 +54,17 @@ namespace ShopManagementService
             builder.Services.AddScoped<BillDetailDAO>();
             builder.Services.AddScoped<ProductDAO>();
             builder.Services.AddScoped<ReservationDAO>();
+            builder.Services.AddScoped<ShopDAO>();
+            builder.Services.AddScoped<MoMoService>();
+            builder.Services.AddHttpClient<MoMoService>();
+
+            builder.Services.AddScoped<PaymentDAO>();
             builder.Services.AddTransient<ITableRepository, TableRepository>();
             builder.Services.AddTransient<ITableTypeRepository, TableTypeRepository>();
             builder.Services.AddTransient<IProductRepository, ProductRepository>();
             builder.Services.AddTransient<IBillRepository, BillRepository>();
             builder.Services.AddTransient<IBillDetailRepository, BillDetailRepository>();
             builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
-            builder.Services.AddScoped<ShopDAO>();
 
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);

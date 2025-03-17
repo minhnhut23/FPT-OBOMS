@@ -47,7 +47,7 @@ namespace ShopManagementService.DAO
                     ReservationTime = DateTime.UtcNow,
                     NumberOfGuests = request.NumberOfGuests,
                     SpecialRequests = request.SpecialRequests,
-                    StatusEnum = ReservationStatus.Pending,
+                    StatusEnum = Enum_ReservationStatus.Pending,
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -198,7 +198,7 @@ namespace ShopManagementService.DAO
                     };
                 }
 
-                reservation.StatusEnum = ReservationStatus.Cancelled;
+                reservation.StatusEnum = Enum_ReservationStatus.Cancelled;
                 await _client.From<Reservation>().Update(reservation);
 
                 return new ReservationResponseDTO

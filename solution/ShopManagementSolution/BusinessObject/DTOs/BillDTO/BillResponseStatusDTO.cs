@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.DTOs.BillDTO
 {
-    public class DeleteBillResponseDTO
+    public class BillResponseStatusDTO
     {
-        public bool IsDeleted { get; set; }
+        public bool Success { get; set; }  
         public string Message { get; set; }
+        public BillResponseDTO? Data { get; set; } 
     }
+
 }

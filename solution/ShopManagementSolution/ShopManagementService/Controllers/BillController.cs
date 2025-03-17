@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Controllers
+namespace ShopManagementService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -41,7 +41,6 @@ namespace BusinessObject.Controllers
                 {
                     return NotFound("Bill not found.");
                 }
-
                 return Ok(bill);
             }
             catch (Exception ex)
@@ -50,7 +49,6 @@ namespace BusinessObject.Controllers
             }
         }
 
-       
         [HttpPost]
         public async Task<IActionResult> CreateBill([FromBody] CreateBillRequestDTO createBill)
         {
@@ -58,34 +56,44 @@ namespace BusinessObject.Controllers
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid input data.");
+                    return BadRequest(new { Success = false, Message = "Dữ liệu không hợp lệ.", Data = (object)null });
                 }
 
                 var createdBill = await _billRepository.CreateBill(createBill);
-                return CreatedAtAction(nameof(GetBillByID), new { id = createdBill.Id }, createdBill);
+                if (!createdBill.Success)
+                {
+                    return BadRequest(createdBill);
+                }
+
+                return CreatedAtAction(nameof(GetBillByID), new { id = createdBill.Data.Id }, createdBill);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { Success = false, Message = $"Lỗi: {ex.Message}", Data = (object)null });
             }
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBill(Guid id,UpdateBillRequestDTO updateBill)
+        public async Task<IActionResult> UpdateBill(Guid id, [FromBody] UpdateBillRequestDTO updateBill)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest("Invalid input data.");
+                    return BadRequest(new { Success = false, Message = "Dữ liệu không hợp lệ.", Data = (object)null });
                 }
 
                 var updatedBill = await _billRepository.UpdateBill(id, updateBill);
+                if (!updatedBill.Success)
+                {
+                    return NotFound(updatedBill);
+                }
+
                 return Ok(updatedBill);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { Success = false, Message = $"Lỗi: {ex.Message}", Data = (object)null });
             }
         }
 
@@ -95,16 +103,16 @@ namespace BusinessObject.Controllers
             try
             {
                 var result = await _billRepository.DeleteBill(id);
-                if (!result.IsDeleted)
+                if (!result.Success)
                 {
-                    return NotFound(result.Message);
+                    return NotFound(result);
                 }
 
-                return Ok(result.Message);
+                return Ok(result);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Internal server error: {ex.Message}");
+                return StatusCode(500, new { Success = false, Message = $"Lỗi: {ex.Message}", Data = (object)null });
             }
         }
 

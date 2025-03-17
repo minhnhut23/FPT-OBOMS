@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Services
+namespace ShopManagementService.DAO
 {
     public class ShopDAO
     {

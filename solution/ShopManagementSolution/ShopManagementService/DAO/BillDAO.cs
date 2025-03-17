@@ -1,5 +1,6 @@
 ﻿using BusinessObject.DTOs.BillDetailDTO;
 using BusinessObject.DTOs.BillDTO;
+using BusinessObject.Enums;
 using BusinessObject.Models;
 using BusinessObject.Utils;
 using iText.Kernel.Pdf;
@@ -8,7 +9,7 @@ using iText.Layout.Properties;
 using Supabase;
 using System.Diagnostics;
 using static Supabase.Postgrest.Constants;
-namespace BusinessObject.Services
+namespace ShopManagementService.DAO
 {
     public class BillDAO
     {
@@ -35,10 +36,11 @@ namespace BusinessObject.Services
                 {
                     Id = bill.Id,
                     ReservationId = bill.ReservationId,
+                    TableId = bill.TableId,
                     TotalAmount = bill.TotalAmount,
                     ReceivedAmount = bill.ReceivedAmount,
                     ChangeAmount = bill.ChangeAmount,
-                    TableId = bill.TableId,
+                    Status = bill.Status,
                     CreatedAt = bill.CreatedAt,
                     UpdatedAt = bill.UpdatedAt,
                     CustomerId = bill.CustomerId,
@@ -52,7 +54,6 @@ namespace BusinessObject.Services
             }
         }
 
-        
         public async Task<BillWithDetailsResponseDTO> GetBillByID(Guid id)
         {
             try
@@ -115,7 +116,8 @@ namespace BusinessObject.Services
                 throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
             }
         }
-        public async Task<BillResponseDTO> CreateBill(CreateBillRequestDTO createBill)
+
+        public async Task<BillResponseStatusDTO> CreateBill(CreateBillRequestDTO createBill)
         {
             try
             {
@@ -127,6 +129,7 @@ namespace BusinessObject.Services
                     ReceivedAmount = createBill.ReceivedAmount,
                     ChangeAmount = createBill.ChangeAmount,
                     TableId = createBill.TableId,
+                    Status = Enum_BillStatus.Pending.ToString(),
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow,
                     CustomerId = createBill.CustomerId,
@@ -135,40 +138,143 @@ namespace BusinessObject.Services
 
                 var response = await _client.From<Bill>().Insert(bill);
 
-                return new BillResponseDTO
+                return new BillResponseStatusDTO
                 {
-                    Id = bill.Id,
-                    ReservationId = bill.ReservationId,
-                    TotalAmount = bill.TotalAmount,
-                    ReceivedAmount = bill.ReceivedAmount,
-                    ChangeAmount = bill.ChangeAmount,
-                    TableId = bill.TableId,
-                    CreatedAt = bill.CreatedAt,
-                    UpdatedAt = bill.UpdatedAt,
-                    CustomerId = bill.CustomerId,
-                    ShopId = bill.ShopId
+                    Success = true,
+                    Message = "Hóa đơn tạo thành công!",
+                    Data = new BillResponseDTO
+                    {
+                        Id = bill.Id,
+                        ReservationId = bill.ReservationId,
+                        TotalAmount = bill.TotalAmount,
+                        ReceivedAmount = bill.ReceivedAmount,
+                        ChangeAmount = bill.ChangeAmount,
+                        TableId = bill.TableId,
+                        Status = bill.Status,
+                        CreatedAt = bill.CreatedAt,
+                        UpdatedAt = bill.UpdatedAt,
+                        CustomerId = bill.CustomerId,
+                        ShopId = bill.ShopId
+                    }
                 };
             }
             catch (Exception ex)
             {
-                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+                return new BillResponseStatusDTO
+                {
+                    Success = false,
+                    Message = $"Lỗi khi tạo hóa đơn: {ErrorHandler.ProcessErrorMessage(ex.Message)}",
+                    Data = null
+                };
             }
         }
 
-        public bool IsFileLocked(string filePath)
+        public async Task<BillResponseStatusDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill)
         {
             try
             {
-                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                var bill = await _client
+                    .From<Bill>()
+                    .Where(x => x.Id == id)
+                    .Single();
+
+                if (bill == null)
                 {
-                    // If file can be opened, it's not locked
-                    return false;
+                    return new BillResponseStatusDTO
+                    {
+                        Success = false,
+                        Message = "Bill not found for update.",
+                        Data = null
+                    };
+                }
+
+                bill.TotalAmount = updateBill.TotalAmount;
+                bill.ReceivedAmount = updateBill.ReceivedAmount;
+                bill.ChangeAmount = updateBill.ChangeAmount;
+                bill.TableId = updateBill.TableId;
+                bill.UpdatedAt = DateTime.UtcNow;
+
+                await _client.From<Bill>().Where(x => x.Id == id).Update(bill);
+
+                return new BillResponseStatusDTO
+                {
+                    Success = true,
+                    Message = "Bill updated successfully!",
+                    Data = new BillResponseDTO
+                    {
+                        Id = bill.Id,
+                        ReservationId = bill.ReservationId,
+                        TotalAmount = bill.TotalAmount,
+                        ReceivedAmount = bill.ReceivedAmount,
+                        ChangeAmount = bill.ChangeAmount,
+                        TableId = bill.TableId,
+                        Status = bill.Status,
+                        CreatedAt = bill.CreatedAt,
+                        UpdatedAt = bill.UpdatedAt,
+                        CustomerId = bill.CustomerId,
+                        ShopId = bill.ShopId
+                    }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new BillResponseStatusDTO
+                {
+                    Success = false,
+                    Message = $"Error updating bill: {ErrorHandler.ProcessErrorMessage(ex.Message)}",
+                    Data = null
+                };
+            }
+        }
+
+        public async Task<BillResponseStatusDTO> DeleteBill(Guid id)
+        {
+            try
+            {
+                var bill = await _client.From<Bill>().Where(x => x.Id == id).Single();
+
+                if (bill == null)
+                {
+                    return new BillResponseStatusDTO
+                    {
+                        Success = false,
+                        Message = "Bill not found for deletion.",
+                        Data = null
+                    };
+                }
+
+                if (bill.Status != Enum_BillStatus.Deleted.ToString())
+                {
+                    bill.Status = Enum_BillStatus.Deleted.ToString();
+                    await _client.From<Bill>().Where(x => x.Id == id).Update(bill);
+
+                    return new BillResponseStatusDTO
+                    {
+                        Success = true,
+                        Message = "Bill has been marked as deleted.",
+                        Data = null
+                    };
+                }
+                else
+                {
+                    await _client.From<Bill>().Where(x => x.Id == id).Delete();
+
+                    return new BillResponseStatusDTO
+                    {
+                        Success = true,
+                        Message = "Bill has been permanently deleted from the system.",
+                        Data = null
+                    };
                 }
             }
-            catch (IOException)
+            catch (Exception ex)
             {
-                // If an exception is thrown, the file is locked
-                return true;
+                return new BillResponseStatusDTO
+                {
+                    Success = false,
+                    Message = $"Error deleting bill: {ErrorHandler.ProcessErrorMessage(ex.Message)}",
+                    Data = null
+                };
             }
         }
 
@@ -276,6 +382,22 @@ namespace BusinessObject.Services
                 throw new Exception($"Unknown error: {ex.Message} - {ex.StackTrace}", ex);
             }
         }
+        public bool IsFileLocked(string filePath)
+        {
+            try
+            {
+                using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                    // If file can be opened, it's not locked
+                    return false;
+                }
+            }
+            catch (IOException)
+            {
+                // If an exception is thrown, the file is locked
+                return true;
+            }
+        }
 
         private void OpenAndPrintPdf(string filePath)
         {
@@ -298,72 +420,5 @@ namespace BusinessObject.Services
             }
         }
 
-
-        public async Task<BillResponseDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill)
-        {
-            try
-            {
-                var bill = await _client
-                    .From<Bill>()
-                    .Where(x => x.Id == id)
-                    .Single();
-
-                if (bill == null) throw new Exception("Bill not found.");
-
-                bill.TotalAmount = updateBill.TotalAmount;
-                bill.ReceivedAmount = updateBill.ReceivedAmount;
-                bill.ChangeAmount = updateBill.ChangeAmount;
-                bill.TableId = updateBill.TableId;
-                bill.UpdatedAt = DateTime.UtcNow;
-
-                var updatedBill = await _client
-                    .From<Bill>()
-                    .Where(x => x.Id == id)
-                    .Update(bill);
-
-                return new BillResponseDTO
-                {
-                    Id = bill.Id,
-                    ReservationId = bill.ReservationId,
-                    TotalAmount = bill.TotalAmount,
-                    ReceivedAmount = bill.ReceivedAmount,
-                    ChangeAmount = bill.ChangeAmount,
-                    TableId = bill.TableId,
-                    CreatedAt = bill.CreatedAt,
-                    UpdatedAt = bill.UpdatedAt,
-                    CustomerId = bill.CustomerId,
-                    ShopId = bill.ShopId
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-            }
-        }
-
-        public async Task<DeleteBillResponseDTO> DeleteBill(Guid id)
-        {
-            try
-            {
-                var bill = await GetBillByID(id);
-                if (bill == null)
-                    return new DeleteBillResponseDTO { IsDeleted = false, Message = "Bill not found." };
-
-                await _client
-                    .From<Bill>()
-                    .Where(x => x.Id == id)
-                    .Delete();
-
-                return new DeleteBillResponseDTO
-                {
-                    IsDeleted = true,
-                    Message = "Bill successfully deleted."
-                };
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-            }
-        }
     }
 }

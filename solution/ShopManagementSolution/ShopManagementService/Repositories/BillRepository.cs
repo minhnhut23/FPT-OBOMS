@@ -1,7 +1,5 @@
 ﻿using BusinessObject.DTOs.BillDTO;
-using BusinessObject.DTOs.TableDTO;
-using BusinessObject.Models;
-using BusinessObject.Services;
+using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 
 namespace ShopManagementService.Repositories
@@ -18,19 +16,20 @@ namespace ShopManagementService.Repositories
         public Task<BillWithDetailsResponseDTO?> GetBillByID(Guid id)
             => _billDao.GetBillByID(id);
 
-        public Task<BillResponseDTO> CreateBill(CreateBillRequestDTO createBill)
+        public Task<BillResponseStatusDTO> CreateBill(CreateBillRequestDTO createBill)
             => _billDao.CreateBill(createBill);
 
-        public Task<BillResponseDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill)
+        public Task<BillResponseStatusDTO> UpdateBill(Guid id, UpdateBillRequestDTO updateBill)
             => _billDao.UpdateBill(id, updateBill);
 
-        public Task<DeleteBillResponseDTO> DeleteBill(Guid id)
+        public Task<BillResponseStatusDTO> DeleteBill(Guid id)
             => _billDao.DeleteBill(id);
 
         public Task<string> GenerateAndPrintBillPdf(Guid billId)
             => _billDao.GenerateAndPrintBillPdf(billId);
 
-        public Task<Guid> GetBillIdByTableId(Guid tableId)
-             => _billDao.GetBillIdByTableId(tableId);
+        public Task<BillWithDetailsResponseDTO> GetBillByTableID(Guid tableId)
+            => _billDao.GetBillByTableID(tableId);
+        
     }
 }
