@@ -1,4 +1,5 @@
-﻿using BusinessObject.Models;
+﻿using BusinessObject.Enums;
+using BusinessObject.Models;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace ShopManagementService.Utils;
@@ -52,7 +53,13 @@ public class RoleMiddleware
             .Where(x => x.AccountId == userId)
             .Single();
 
-        return response?.Role;
+        if (response?.Role == null)
+            return null;
+
+        if (Enum.TryParse<UserRole>(response.Role, out var role))
+            return role;
+
+        return null;
     }
 
 }

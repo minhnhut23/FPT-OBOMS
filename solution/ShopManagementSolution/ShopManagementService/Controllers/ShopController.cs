@@ -137,10 +137,10 @@ namespace BusinessObject.Controllers
             try
             {
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                var shops = await _repo.GetAllShops(request);
+                var shops = await _repo.GetShopsByCurrentOwner(request, token);
                 if (shops.Shops == null || shops.PaginationMetadata == null)
                 {
-                    return NotFound(new {msg = "You do not have any stores yet!" });
+                    return NotFound(new {msg = "Shop not found!" });
                 }
                 return Ok(shops);
             }
