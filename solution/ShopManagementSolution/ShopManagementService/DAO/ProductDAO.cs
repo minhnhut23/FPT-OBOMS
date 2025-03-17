@@ -2,6 +2,8 @@
 using BusinessObject.DTOs.ProductDTO;
 using BusinessObject.Models;
 using BusinessObject.Utils;
+using Microsoft.AspNetCore.Http.HttpResults;
+using ShopManagementService.Utils;
 using Supabase;
 using System.IdentityModel.Tokens.Jwt;
 using static Supabase.Postgrest.Constants;
@@ -20,11 +22,11 @@ public class ProductDAO
         _mapper = mapper;
 
     }
-    public async Task<MenuItem> GetProductById(Guid id)
+    public async Task<Product> GetProductById(Guid id)
     {
         try
         {
-            var productResponse = await _client.From<MenuItem>().Where(p => p.Id == id).Single();
+            var productResponse = await _client.From<Product>().Where(p => p.Id == id).Single();
             if (productResponse == null)
             {
                 throw new Exception("Product not found!");
@@ -34,16 +36,16 @@ public class ProductDAO
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-        }                                                
+        }
     }
     public async Task<(List<GetProductResponseDTO> Products, ProductPaginationDTO PaginationMetadata)> GetAllProducts(GetProductRequestDTO request)
     {
         try
         {
-            var query = _client.From<MenuItem>().Select("*");
+            var query = _client.From<Product>().Select("*");
             query = ApplyFilters(query, request);
 
-            var counting = _client.From<MenuItem>().Select("*");
+            var counting = _client.From<Product>().Select("*");
             counting = ApplyFilters(counting, request);
             var totalRecordsResponse = await counting.Select("id").Get();
             var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
@@ -107,7 +109,7 @@ public class ProductDAO
         return query;
     }
 
-    public async Task CreateProduct(CreateProductRequestDTO request, string token)
+    public async Task<GetProductResponseDTO> CreateProduct(CreateProductRequestDTO request, string token)
     {
         try
         {
@@ -133,7 +135,33 @@ public class ProductDAO
                 throw new Exception("You are not shop's owner!");
             }
 
-            var product = new MenuItem
+            string NewImage = "";
+
+            if (request.ProductImage != null)
+            {
+                if (!ImageValidator.IsValidImage(request.ProductImage, out string error))
+                {
+                    throw new Exception(error);
+                }
+
+                var file = request.ProductImage;
+                var fileName = $"{Guid.NewGuid()}_{file.FileName.Trim()}";
+
+                byte[] fileBytes;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    fileBytes = stream.ToArray();
+                }
+
+                await _client.Storage
+                    .From("products")
+                    .Upload(fileBytes, fileName, new Supabase.Storage.FileOptions { CacheControl = "3600", Upsert = false });
+
+                NewImage = _client.Storage.From("products").GetPublicUrl(fileName);
+            }
+
+            var product = new Product
             {
                 Name = request.Name,
                 Price = request.Price,
@@ -143,11 +171,24 @@ public class ProductDAO
                 Ingredient = request.Ingredient!,
                 NutritionalIfo = request.NutritionalIfo!,
                 ShopId = shop.Id,
+                Image = NewImage,
                 CreatedAt = DateTime.Now,
                 UpdatedAt = DateTime.Now,
             };
 
-            await _client.From<MenuItem>().Insert(product);
+            await _client.From<Product>().Insert(product);
+
+            return new GetProductResponseDTO
+            {
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                Category = product.Category,
+                IsAvailable = true,
+                Ingredient = product.Ingredient,
+                NutritionalInfo = product.NutritionalIfo,
+                Image = product.Image,
+            };
         }
         catch (Exception ex)
         {
@@ -155,7 +196,7 @@ public class ProductDAO
         }
     }
 
-    public async Task UpdateProduct(UpdateProductRequestDTO request, Guid id, string token)
+    public async Task<GetProductResponseDTO> UpdateProduct(UpdateProductRequestDTO request, Guid id, string token)
     {
         try
         {
@@ -169,7 +210,7 @@ public class ProductDAO
                 .Where(x => x.AccountId == accountId)
                 .Single();
 
-            var product = await _client.From<MenuItem>().Where(s => s.Id == id).Single();
+            var product = await _client.From<Product>().Where(s => s.Id == id).Single();
 
             var shop = await _client.From<Shop>().Where(s => s.Id == product!.ShopId).Single();
 
@@ -188,16 +229,59 @@ public class ProductDAO
                 throw new Exception("Product not found!");
             }
 
-            product.Name = request.Name;
-            product.Price = request.Price;
-            product.Description = request.Description!;
-            product.Category = request.Category!;
-            product.IsAvailable = request.IsAvailable;
-            product.Ingredient = request.Ingredient!;
-            product.NutritionalIfo = request.NutritionalIfo!;
+            if (request.ProductImage != null)
+            {
+                if (!ImageValidator.IsValidImage(request.ProductImage, out string error))
+                {
+                    throw new Exception(error);
+                }
+
+                var file = request.ProductImage;
+                var fileName = $"{Guid.NewGuid()}_{file.FileName.Trim()}";
+
+                if (!string.IsNullOrEmpty(product.Image))
+                {
+                    var oldFileName = Path.GetFileName(new Uri(product.Image).AbsolutePath);
+                    var deleteResult = await _client.Storage.From("products").Remove(new List<string> { oldFileName });
+                }
+
+                byte[] fileBytes;
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    fileBytes = stream.ToArray();
+                }
+
+                await _client.Storage
+                    .From("products")
+                    .Upload(fileBytes, fileName, new Supabase.Storage.FileOptions { CacheControl = "3600", Upsert = false });
+
+                product.Image = _client.Storage.From("products").GetPublicUrl(fileName);
+            }
+
+            product.Name = request.Name ?? product.Name;
+            product.Price = request.Price ?? product.Price;
+            product.Description = request.Description! ?? product.Description;
+            product.Category = request.Category! ?? product.Category;
+            product.IsAvailable = request.IsAvailable ?? product.IsAvailable;
+            product.Ingredient = request.Ingredient! ?? product.Ingredient;
+            product.NutritionalIfo = request.NutritionalIfo! ?? product.NutritionalIfo;
             product.UpdatedAt = DateTime.Now;
 
-            await product.Update<MenuItem>();
+            await product.Update<Product>();
+
+            return new GetProductResponseDTO
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Description = product.Description,
+                Category = product.Category,
+                IsAvailable = product.IsAvailable,
+                Ingredient = product.Ingredient,
+                NutritionalInfo = product.NutritionalIfo,
+                Image = product.Image,
+            };
         }
         catch (Exception ex)
         {
@@ -205,18 +289,40 @@ public class ProductDAO
         }
     }
 
-    public async Task DeleteProduct(Guid id)
+    public async Task DeleteProduct(Guid id, string token)
     {
         try
         {
-            var product = await _client.From<MenuItem>().Where(s => s.Id == id).Single();
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
+            var accountId = Guid.Parse(claims["sub"]);
+
+            var profile = await _client
+                .From<BusinessObject.Models.Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
+            var product = await _client.From<Product>().Where(s => s.Id == id).Single();
+
+            var shop = await _client.From<Shop>().Where(s => s.Id == product!.ShopId).Single();
+
+            if (shop == null)
+            {
+                throw new Exception("Shop not found!");
+            }
+
+            if (shop.OwnerId != profile!.Id)
+            {
+                throw new Exception("You are not shop's owner!");
+            }
 
             if (product == null)
             {
                 throw new Exception("Product not found!");
             }
 
-            await _client.From<MenuItem>().Where(s => s.Id == id).Delete();
+            await _client.From<Product>().Where(s => s.Id == id).Delete();
         }
         catch (Exception ex)
         {

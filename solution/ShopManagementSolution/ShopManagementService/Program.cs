@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using ShopManagementService.DAO;
 using ShopManagementService.IRepositories;
 using ShopManagementService.Repositories;
+using ShopManagementService.Utils;
 using System.Text;
 
 namespace ShopManagementService
@@ -66,6 +67,12 @@ namespace ShopManagementService
             builder.Services.AddTransient<IBillDetailRepository, BillDetailRepository>();
             builder.Services.AddTransient<IReservationRepository, ReservationRepository>();
 
+            builder.Services.AddScoped<ShopDAO>();
+            builder.Services.AddTransient<IShopRepository, ShopRepositoy>();
+
+            builder.Services.AddScoped<SubscriptionDAO>();
+            builder.Services.AddTransient<ISubscriptionRepository, SubscriptionsRepository>();
+
             // Initialize Supabase client
             var supabaseClient = new Supabase.Client(supabaseUrl, supabaseKey);
             supabaseClient.InitializeAsync().Wait();
@@ -89,6 +96,7 @@ namespace ShopManagementService
 
             app.UseHttpsRedirection();
 
+            app.UseMiddleware<RoleMiddleware>();
             app.UseAuthentication();
             app.UseAuthorization();
 

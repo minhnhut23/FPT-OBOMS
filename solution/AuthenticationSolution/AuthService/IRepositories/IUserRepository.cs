@@ -1,16 +1,16 @@
 ﻿using BusinessObject.DTO;
+using BusinessObject.Models;
 
 namespace AuthService.IRepositories;
 
 public interface IUserRepository
 {
-    public Task<GetUserResponeDTO> GetCurrentUser(string token);
+    Task<GetUserResponeDTO> GetCurrentUser(string token);
 
-    public Task<GetUserResponeDTO> GetUserById(Guid profileId);
+    Task<GetUserResponeDTO> GetUserById(Guid profileId);
 
-    public Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token);
+    Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token);
 
-    public Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token);
-
+    Task<(List<Profile> Profiles, PaginationDTO PaginationMetadata)> GetAllProfiles(GetProfileRequestDTO request);
 
 }

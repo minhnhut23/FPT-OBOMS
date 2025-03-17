@@ -1,8 +1,10 @@
 ﻿using AuthService.Utils;
 using BusinessObject.DTO;
 using BusinessObject.Models;
+using Microsoft.AspNetCore.Identity;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
+using static Supabase.Postgrest.Constants;
 
 namespace AuthService.DAO;
 
@@ -49,7 +51,7 @@ public class UserDAO
                     ProfilePicture = profile.ProfilePicture!
                 };
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -57,10 +59,10 @@ public class UserDAO
         }
 
     }
-     public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
+    public async Task<GetUserResponeDTO> GetUserById(Guid profileId)
     {
         try
-        {          
+        {
             var profile = await _client
                 .From<Profile>()
                 .Where(x => x.Id == profileId)
@@ -68,19 +70,19 @@ public class UserDAO
 
             if (profile == null)
             {
-               throw new Exception("Profile not found!");
+                throw new Exception("Profile not found!");
             }
             else
             {
                 return new GetUserResponeDTO
-                {                   
+                {
                     FullName = profile.FullName,
                     Bio = profile.Bio!,
                     DateOfBirth = profile.DateOfBirth,
                     ProfilePicture = profile.ProfilePicture!
                 };
             }
-            
+
         }
         catch (Exception ex)
         {
@@ -88,7 +90,7 @@ public class UserDAO
         }
 
     }
-    
+
     public async Task<GetUserResponeDTO> UpdateProfile(UpdateProfileRequestDTO request, string token)
     {
         try
@@ -98,82 +100,48 @@ public class UserDAO
 
             var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
 
-            var accountId = Guid.Parse(claims["sub"]);
+            var accountId = Guid.Parse(claims["sub"].Trim());
 
             var profile = await _client
                 .From<Profile>()
                 .Where(x => x.AccountId == accountId)
                 .Single();
-            
+
             if (profile == null)
             {
-               throw new Exception("Profile not found!");
+                throw new Exception("Profile not found!");
             }
-            else
-            {
 
-                if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+            if (request.ProfilePicture != null)
+            {
+                if (!ImageValidator.IsValidImage(request.ProfilePicture, out string error))
                 {
-                    throw new Exception("Invalid Birthday!");
+                    throw new Exception(error);
                 }
 
-                profile.ProfilePicture = request.ProfilePicture;
-                profile.FullName = request.FullName;
-                profile.Bio = request.Bio; 
-                profile.DateOfBirth = request.DateOfBirth;
-                profile.UpdatedAt = DateTime.UtcNow;
-                await profile.Update<Profile>();
+                var file = request.ProfilePicture;
+                var fileName = $"{Guid.NewGuid()}_{file.FileName.Trim()}";
 
-                if (request.Email != null && request.Email != claims["email"])
+                if (!string.IsNullOrEmpty(profile.ProfilePicture))
                 {
-                    var attrs = new UserAttributes { Email = request.Email };
-                    await _client.Auth.Update(attrs);
-
-                    return new GetUserResponeDTO
-                    {
-                        Email = request.Email,
-                        FullName = profile.FullName,
-                        Bio = profile.Bio!,
-                        DateOfBirth = profile.DateOfBirth,
-                        ProfilePicture = profile.ProfilePicture!
-                    };
+                    var oldFileName = Path.GetFileName(new Uri(profile.ProfilePicture).AbsolutePath);
+                    var deleteResult = await _client.Storage.From("avatars").Remove(new List<string> { oldFileName });                   
                 }
 
-                return new GetUserResponeDTO
+                byte[] fileBytes;
+                using (var stream = new MemoryStream())
                 {
-                    Email = claims["email"],
-                    FullName = profile.FullName,
-                    Bio = profile.Bio!,
-                    DateOfBirth = profile.DateOfBirth,
-                    ProfilePicture = profile.ProfilePicture!
-                };
-            }
-            
-        }
-        catch (Exception ex)
-        {
-            throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
-        }
+                    await file.CopyToAsync(stream);
+                    fileBytes = stream.ToArray();
+                }
 
-    }
+                await _client.Storage
+                    .From("avatars")
+                    .Upload(fileBytes, fileName, new Supabase.Storage.FileOptions { CacheControl = "3600", Upsert = false });
 
-    public async Task<GetUserResponeDTO> CreateUser(CreateProfileRequestDTO request, string token)
-    {
-        try
-        {
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var claims = jwtToken.Claims.ToDictionary(c => c.Type, c => c.Value);
-            var accountId = Guid.Parse(claims["sub"]);
+                var publicUrl = _client.Storage.From("avatars").GetPublicUrl(fileName);
 
-            var profile = await _client
-                .From<Profile>()
-                .Where(x => x.AccountId == accountId)
-                .Single();
-
-            if (profile != null)
-            {
-                throw new Exception("The user already exists!");
+                profile.ProfilePicture = publicUrl;
             }
 
             if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
@@ -181,38 +149,83 @@ public class UserDAO
                 throw new Exception("Invalid Birthday!");
             }
 
-            if (request.Role != "Customer" || request.Role != "Owner" || request.Role != "Admin")
-            {
-                throw new Exception("Invalid Role");
-            }
+            profile.FullName = request.FullName ?? profile.FullName;
+            profile.Bio = request.Bio ?? profile.Bio;
+            profile.DateOfBirth = request.DateOfBirth != default ? request.DateOfBirth : profile.DateOfBirth;
+            profile.UpdatedAt = DateTime.UtcNow;
 
-            var result = new Profile
-            {
-                FullName = request.FullName,
-                ProfilePicture = request.ProfilePicture,
-                Bio = request.Bio,
-                Role = request.Role,
-                DateOfBirth = request.DateOfBirth,
-                AccountId = accountId,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-            };
+            await profile.Update<Profile>();
 
-            await _client.From<Profile>().Insert(result);
+            string emailResponse = claims["email"];
+
+            if (request.Email != null && request.Email != claims["email"])
+            {
+                var attrs = new UserAttributes { Email = request.Email };
+                var user = await _client.Auth.Update(attrs);
+                emailResponse = user!.Email!;
+            }            
 
             return new GetUserResponeDTO
             {
-                Email = claims["email"],
-                FullName = result.FullName,
-                Bio = result.Bio!,
-                DateOfBirth = result.DateOfBirth,
-                ProfilePicture = result.ProfilePicture!
+                Email = emailResponse,
+                FullName = profile.FullName!,
+                Bio = profile.Bio!,
+                DateOfBirth = profile.DateOfBirth,
+                ProfilePicture = profile.ProfilePicture!
             };
-
         }
         catch (Exception ex)
         {
             throw new Exception(ErrorHandler.ProcessErrorMessage(ex.Message));
+        }
+    }
+
+    public async Task<(List<Profile> Profiles, PaginationDTO PaginationMetadata)> GetAllProfiles(GetProfileRequestDTO request)
+    {
+        try
+        {
+            var query = _client.From<Profile>().Select("*");
+            query = ApplyGetAllFilters.ApplyProfileFilters(query, request);
+
+            var counting = _client.From<Profile>().Select("*");
+            counting = ApplyGetAllFilters.ApplyProfileFilters(counting, request);
+            var totalRecordsResponse = await counting.Select("id").Get();
+            var totalRecords = totalRecordsResponse.Models?.Count ?? 0;
+            var totalPages = (int)Math.Ceiling((double)totalRecords / request.PageSize);
+
+            var skip = (request.PageNumber - 1) * request.PageSize;
+            var paginatedQuery = query.Range(skip, skip + request.PageSize - 1);
+
+            var profilesResponse = await paginatedQuery.Get();
+            var profiles = profilesResponse.Models.ToList();
+
+            if (totalRecords == 0 || request.PageNumber > totalPages)
+            {
+                return (
+                    new List<Profile>(),
+                    new PaginationDTO
+                    {
+                        TotalResults = totalRecords,
+                        TotalPages = totalPages,
+                        CurrentPage = request.PageNumber,
+                        PageSize = request.PageSize
+                    }
+                );
+            }
+
+            var paginationMetadata = new PaginationDTO
+            {
+                TotalResults = totalRecords,
+                TotalPages = totalPages,
+                CurrentPage = request.PageNumber,
+                PageSize = request.PageSize
+            };
+
+            return (profiles, paginationMetadata);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error fetching profiles: {ex.Message}");
         }
     }
 }

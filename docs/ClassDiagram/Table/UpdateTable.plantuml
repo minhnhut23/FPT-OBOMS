@@ -3,10 +3,9 @@ hide circle
 skinparam classAttributeIconSize 0
 skinparam linetype ortho
 
-
-
 class APIGateway {
-}
+}         
+
 class TableController {
     - _tableRepository: ITableRepository
     + UpdateTable(Guid id, UpdateTableRequestDTO updateTable) : Task<IActionResult> 

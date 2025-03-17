@@ -1,0 +1,73 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+PostController: PostController
+PostRepository: PostRepository
+PostDAO: PostDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User reports a post
+User -> application.post: "1. Click Report on Post"
+application.post -> apiGateway.post: "2. Forward Report Request"
+apiGateway.post -> PostController.post: "3. Forward to Controller"
+PostController.post -> PostRepository.post: "4. Call Save Report Method"
+PostRepository.post -> PostDAO.post: "5. Forward to DAO"
+PostDAO.post -> Supabase.post: "6. Validate Post & User"
+Supabase.post-> DB.insert: "7. Save Report Data"
+DB.insert -> PostDAO.post: "8. Return Save Result" {class: return arrow}
+PostDAO.post -> PostRepository.post: "9. Forward Save Result" {class: return arrow}
+PostRepository.post -> PostController.post: "10. Return Save Result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Report successful: "[Report saved]" {
+    PostController.post -> apiGateway.post: "10.1. Send success response" {class: return arrow}
+    apiGateway.post -> application.post: "10.1.1. Return success response" {class: return arrow}
+    application.post -> User: "10.1.1.1. Display report success message" {class: return arrow}
+  }
+  Report failed: "[Report failed]" {
+    PostController.post -> apiGateway.post: "10.2. Send error response" {class: return arrow}
+    apiGateway.post -> application.post: "10.2.1. Return error response" {class: return arrow}
+    application.post -> User: "10.2.1.1. Display report failed message" {class: return arrow}
+  }
+}
+

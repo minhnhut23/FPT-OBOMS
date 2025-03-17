@@ -65,13 +65,13 @@ namespace ShopManagementService.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestDTO request)
+        public async Task<IActionResult> CreateProduct([FromForm] CreateProductRequestDTO request)
         {
             try
             {
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                await _repo.CreateProduct(request, token);
-                return Ok();
+                var response = await _repo.CreateProduct(request, token);
+                return Ok(response);
             }
             catch (Exception ex)
             {
@@ -80,13 +80,13 @@ namespace ShopManagementService.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] UpdateProductRequestDTO request)
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromForm] UpdateProductRequestDTO request)
         {
             try
             {
                 var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-                await _repo.UpdateProduct(request, id, token);
-                return Ok();
+                var reponse = await _repo.UpdateProduct(request, id, token);
+                return Ok(reponse);
             }
             catch (Exception ex)
             {
@@ -99,7 +99,8 @@ namespace ShopManagementService.Controllers
         {
             try
             {
-                await _repo.DeleteProduct(id);
+                var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+                await _repo.DeleteProduct(id, token);
                 return Ok();
             }
             catch (Exception ex)

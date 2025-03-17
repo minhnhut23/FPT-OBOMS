@@ -1,0 +1,96 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  },
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  },
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  },
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+ReviewController: ReviewController
+ReviewRepository: ReviewRepository
+ReviewDAO: ReviewDAO
+Cloudinary: "Cloudinary"
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User delete review sequence
+User -> application.delete: "1. Click Delete Review"
+application.delete -> apiGateway.delete: "2. Forward Delete Review request"
+apiGateway.delete -> ReviewController.delete: "3. Forward Delete Review request"
+ReviewController -> ReviewRepository.delete: "4. Forward to repository"
+ReviewRepository -> ReviewDAO.get: "5. Fetch review from DB"
+ReviewDAO.get -> DB.get: "6. Retrieve review"
+DB.get -> ReviewDAO.get: "7. Return review data" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  If review exists: "[Review found]" {
+    ReviewDAO.get -> ReviewRepository.get: "8. Validate user permission"
+    ReviewRepository.get -> ReviewController.get: "9. Permission valid" {class: return arrow}
+  }
+  If review does not exist: "[Review not found]" {
+    ReviewDAO.get -> ReviewRepository.get: "8.1. Return error"
+    ReviewRepository.get -> ReviewController.get: "8.1.1. Forward error" {class: return arrow}
+    ReviewController.get -> apiGateway.get: "8.1.2. Return error message" {class: return arrow}
+    apiGateway.get -> application.get: "8.1.3. Forward error" {class: return arrow}
+    application.get -> User: "8.1.4. Display error message" {class: return arrow}
+  }
+}
+
+alt: "alt" {
+  class: frame
+  If review has media: "[Review contains media]" {
+    ReviewController.delete -> Cloudinary.delete: "10. Delete associated media"
+    Cloudinary.delete -> ReviewController.delete: "11. Confirm media deletion" {class: return arrow}
+  }
+}
+
+ReviewController.delete -> ReviewDAO.delete: "12. Delete review from DB"
+ReviewDAO.delete -> DB.delete: "13. Remove review data"
+DB.delete -> ReviewDAO.delete: "14. Return delete status" {class: return arrow}
+ReviewDAO.delete -> ReviewRepository.delete: "15. Forward delete status" {class: return arrow}
+ReviewRepository.delete -> ReviewController.delete: "16. Return result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Delete successful: "[Review deleted successfully]" {
+    ReviewController.delete -> apiGateway.delete: "17.1. Send success status" {class: return arrow}
+    apiGateway.delete -> application.delete: "17.1.1. Return success status" {class: return arrow}
+    application.delete -> User: "17.1.1.1. Display delete success message" {class: return arrow}
+  }
+  Delete failed: "[Delete failed]" {
+    ReviewController.delete -> apiGateway.delete: "17.2. Send error status" {class: return arrow}
+    apiGateway.delete -> application.delete: "17.2.1. Return error status" {class: return arrow}
+    application.delete -> User: "17.2.1.1. Display delete review error message" {class: return arrow}
+  }
+}

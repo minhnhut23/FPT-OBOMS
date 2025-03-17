@@ -1,4 +1,4 @@
-
+﻿
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 
@@ -14,8 +14,17 @@ namespace ApiGateway
             builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
             builder.Services.AddOcelot();
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                {
+                    builder.WithOrigins("http://localhost:5173")
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials(); 
+                });
+            });
 
-            
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -30,12 +39,13 @@ namespace ApiGateway
                 app.UseSwaggerUI();
             }
 
+            app.UseCors("AllowAll");
             app.UseOcelot().Wait();
 
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseAuthentication();
 
             app.MapControllers();
 

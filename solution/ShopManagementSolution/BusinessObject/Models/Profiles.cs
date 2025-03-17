@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using BusinessObject.Enums;
+﻿using BusinessObject.Enums;
+using Supabase.Postgrest.Attributes;
 using Supabase.Postgrest.Models;
 
 namespace BusinessObject.Models
@@ -9,35 +7,33 @@ namespace BusinessObject.Models
     [Table("profiles")]
     public class Profiles : BaseModel
     {
-        [Key]
-        [Column("id")]
+        [PrimaryKey("id")]
         public Guid Id { get; set; }
 
+        [Column("full_name")]
+        public string FullName { get; set; } = null!;
+
         [Column("profile_picture")]
-        public string? ProfilePicture { get; set; }
+        public string? ProfilePicture { get; set; } = null!;
 
         [Column("bio")]
-        public string? Bio { get; set; }
+        public string? Bio { get; set; } = null!;
 
         [Column("date_of_birth")]
-        public DateTime? DateOfBirth { get; set; }
+        public DateTime DateOfBirth { get; set; }
 
         [Column("created_at")]
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; }
 
         [Column("updated_at")]
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; }
 
-        [Required]
         [Column("account_id")]
         public Guid AccountId { get; set; }
 
-        [Required]
         [Column("role")]
-        public Enum_UserRole Role { get; set; }
 
-        [Required]
-        [Column("full_name")]
-        public string FullName { get; set; }
+        public UserRole Role { get; set; }
+
     }
 }

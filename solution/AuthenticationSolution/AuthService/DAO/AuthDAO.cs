@@ -1,5 +1,9 @@
 ﻿using AuthService.Utils;
+using AuthService.Utils.Security;
 using BusinessObject.DTO;
+using BusinessObject.Enums;
+using BusinessObject.Models;
+using Microsoft.AspNetCore.Identity.Data;
 using Supabase.Gotrue;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
@@ -22,6 +26,9 @@ public class AuthDAO
     {
         try
         {
+            await _client.Auth.SignOut();
+            await Task.Delay(500);
+
             var session = await _client.Auth.SignInWithPassword(email, password);
 
             var handler = new JwtSecurityTokenHandler();
@@ -43,10 +50,15 @@ public class AuthDAO
         }
     }
 
-    public async Task Register(RegisterRequestDTO request)
+    public async Task<GetUserResponeDTO> Register(RegisterRequestDTO request)
     {
         try
         {
+            if (!EmailValidator.IsValidEmail(request.Email))
+            {
+                throw new Exception("Invalid email format!");
+            }
+
             if (string.IsNullOrWhiteSpace(request.Password) || string.IsNullOrWhiteSpace(request.ConfirmPassword))
             {
                 throw new ArgumentException("Password fields cannot be null or empty.");
@@ -63,6 +75,49 @@ public class AuthDAO
             }
 
             var session = await _client.Auth.SignUp(request.Email, request.Password);
+
+            if (session == null || session.User == null)
+            {
+                throw new Exception("Failed to register user. Please verify your email.");
+            }
+
+            var accountId = Guid.Parse(session.User.Id!);
+
+            var existingProfile = await _client
+                .From<Profile>()
+                .Where(x => x.AccountId == accountId)
+                .Single();
+
+            if (existingProfile != null)
+            {
+                throw new Exception("The user already exists!");
+            }
+
+            if (!DateOfBirthValidator.IsValid(request.DateOfBirth))
+            {
+                throw new Exception("Invalid Birthday!");
+            }
+
+            var profile = new Profile
+            {
+                FullName = request.FullName,
+                Role = request.Role,
+                DateOfBirth = request.DateOfBirth,
+                AccountId = accountId,
+                CreatedAt = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+            };
+
+            await _client.From<Profile>().Insert(profile);
+
+            return new GetUserResponeDTO
+            {
+                Email = session.User.Email!,
+                FullName = profile.FullName,
+                Bio = profile.Bio!,
+                DateOfBirth = profile.DateOfBirth,
+                ProfilePicture = profile.ProfilePicture!
+            };
         }
         catch (Exception ex)
         {
@@ -86,6 +141,16 @@ public class AuthDAO
     {
         try
         {
+            if (!EmailValidator.IsValidEmail(email))
+            {
+                throw new Exception("Invalid email format!");
+            }
+
+            if (!await EmailValidator.IsEmailExists(email))
+            {
+                throw new Exception("Email does not exist!");
+            }
+
             await _client.Auth.ResetPasswordForEmail(email);
         }
         catch (Exception ex)
@@ -122,7 +187,7 @@ public class AuthDAO
             var requestBody = new
             {
                 email = request.Email,
-                token = request.Token,
+                token = request.OTP,
                 type = "email"
             };
 

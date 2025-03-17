@@ -36,9 +36,9 @@ public class AuthController : Controller
     {
         try
         {
-            await _repo.Register(request);
+            var response = await _repo.Register(request);
 
-            return Ok();
+            return Ok(response);
         }
         catch (Exception ex)
         {

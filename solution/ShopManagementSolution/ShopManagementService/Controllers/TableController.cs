@@ -1,7 +1,11 @@
 ﻿using BusinessObject.DTOs.TableDTO;
+
+using BusinessObject.Enums;
+using BusinessObject.Services;
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.IRepositories;
+using ShopManagementService.Utils.Security;
 
 
 namespace ShopManagementService.Controllers
@@ -17,12 +21,12 @@ namespace ShopManagementService.Controllers
             _tableRepository = tableRepository;
         }
 
-        [HttpGet("tables")]
-        public async Task<IActionResult> GetAllTables([FromQuery] GetTablesRequestDTO request)
+        [HttpGet("tables/{shopId}")]
+        public async Task<IActionResult> GetAllTablesByShop(Guid shopId, [FromQuery] GetTablesRequestDTO request)
         {
             try
             {
-                var (tables, paginationMetadata) = await _tableRepository.GetAllTables(request);
+                var (tables, paginationMetadata) = await _tableRepository.GetAllTables(shopId, request);
 
                 if (tables.Count == 0)
                 {
@@ -59,6 +63,7 @@ namespace ShopManagementService.Controllers
         }
 
         [HttpPost]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> CreateTable([FromBody] CreateTableRequestDTO createTable)
         {
             try
@@ -81,6 +86,7 @@ namespace ShopManagementService.Controllers
 
 
         [HttpPut("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> UpdateTable(Guid id, [FromBody] UpdateTableRequestDTO updateTable)
         {
             try
@@ -118,6 +124,7 @@ namespace ShopManagementService.Controllers
 
 
         [HttpDelete("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> DeleteTable(Guid id)
         {
             try

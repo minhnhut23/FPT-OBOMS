@@ -1,0 +1,69 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  },
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  },
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  },
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+ReviewController: ReviewController
+ReviewRepository: ReviewRepository
+ReviewDAO: ReviewDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# User get all reviews sequence
+User -> application.get: "1. Request to view all reviews"
+application.get -> apiGateway.get: "2. Forward Get All Reviews request"
+apiGateway.get -> ReviewController.get: "3. Forward Get All Reviews request"
+ReviewController -> ReviewRepository.get: "4. Retrieve reviews from repository"
+ReviewRepository -> ReviewDAO.get: "5. Fetch all reviews from DB"
+ReviewDAO.get -> DB.get: "6. Retrieve all reviews"
+DB.get -> ReviewDAO.get: "7. Return all reviews data" {class: return arrow}
+ReviewDAO.get -> ReviewRepository.get: "8. Forward reviews data" {class: return arrow}
+ReviewRepository.get -> ReviewController.get: "9. Return result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Reviews found: "[Reviews available]" {
+    ReviewController.get -> apiGateway.get: "10.1. Send reviews data" {class: return arrow}
+    apiGateway.get -> application.get: "10.1.1. Return reviews data" {class: return arrow}
+    application.get -> User: "10.1.1.1. Display reviews" {class: return arrow}
+  }
+  No reviews found: "[No reviews available]" {
+    ReviewController.get -> apiGateway.get: "10.2. Send empty response" {class: return arrow}
+    apiGateway.get -> application.get: "10.2.1. Return empty response" {class: return arrow}
+    application.get -> User: "10.2.1.1. Display no reviews message" {class: return arrow}
+  }
+}
+

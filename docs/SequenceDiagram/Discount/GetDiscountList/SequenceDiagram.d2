@@ -1,0 +1,69 @@
+label: "Sequence Diagram for UpdateUser"
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+  return_arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+  label_right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: "Web application"
+apiGateway: "ApiGateway"
+DiscountController: "DiscountController"
+DiscountRepositories: "DiscountRepositories"
+DiscountDAO: "DiscountDAO"
+Supabase: "Supabase"
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> application.get: "1. Get discount list"
+application.get -> apiGateway.get: "2. Request create discount"
+apiGateway.get -> DiscountController.get: "3. Forward request"
+DiscountController.get -> DiscountRepositories.get: "4. Forward request to repository"
+DiscountRepositories.get -> DiscountDAO.get: "5. Forward request to DAO"
+
+DiscountDAO.get -> Supabase.get: "6. Validate token"
+Supabase.get -> DB.get: "7. Get discount list"
+DB.get -> Supabase.get: "8. Return result"
+Supabase.get -> DiscountDAO.get: "9. Return result"
+DiscountDAO.get -> DiscountRepositories.get: "10. Return result" {class: return arrow}
+DiscountRepositories.get-> DiscountController.get: "11. Forward result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Get Discount Successfully: "[Get discount list]" {
+    DiscountController.get -> apiGateway.get: "11.1. Send discount record to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.1.1. Return discount list" {class: return arrow}
+    application.get -> User: "11.1.2. Display discount list" {class: return arrow}
+  }
+  Get Discount Unsuccessfully: "[Discount not found]" {
+    DiscountController.get -> apiGateway.get: "11.2. Send error to frontend" {class: return arrow}
+    apiGateway.get -> application.get: "11.2.1. Return error" {class: return arrow}
+    application.get -> User: "11.2.2. Display error message" {class: return arrow}
+  }
+}

@@ -13,12 +13,13 @@ namespace BusinessObject.DTOs.ShopDTO
         public string Description { get; set; }
         public string Address { get; set; }
         public string PhoneNumber { get; set; }
-        public string OpeningHours { get; set; }
-        public string ClosingHours { get; set; }
+        public TimeSpan OpeningHours { get; set; }
+        public TimeSpan ClosingHours { get; set; }
         public decimal? Rating { get; set; }
-        public string CuisineType { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public Guid OwnerId { get; set; }
+        public string? Status { get; set; }
+        public string SubscriptionName { get; set; } = null!;
     }
 }

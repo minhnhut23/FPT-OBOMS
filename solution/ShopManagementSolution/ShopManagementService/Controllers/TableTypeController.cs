@@ -1,7 +1,9 @@
 ﻿using BusinessObject.DTOs.TableTypeDTO;
+using BusinessObject.Enums;
 using BusinessObject.Utils;
 using Microsoft.AspNetCore.Mvc;
 using ShopManagementService.IRepositories;
+using ShopManagementService.Utils.Security;
 using System;
 using System.Threading.Tasks;
 
@@ -20,6 +22,7 @@ namespace ShopManagementService.Controllers
 
         // Get all Table Types
         [HttpGet]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> GetAllTableTypes()
         {
             try
@@ -35,6 +38,7 @@ namespace ShopManagementService.Controllers
 
         // Get Table Type by ID
         [HttpGet("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> GetTableTypeById(Guid id)
         {
             try
@@ -51,6 +55,7 @@ namespace ShopManagementService.Controllers
 
         // Create Table Type
         [HttpPost]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> CreateTableType([FromBody] AddEditTypeRequestDTO createTableType)
         {
             try
@@ -71,6 +76,7 @@ namespace ShopManagementService.Controllers
 
         // Update Table Type
         [HttpPut("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> UpdateTableType(Guid id, [FromBody] AddEditTypeRequestDTO updateTableType)
         {
             try
@@ -97,6 +103,7 @@ namespace ShopManagementService.Controllers
 
         // Delete Table Type
         [HttpDelete("{id}")]
+        [AuthorizeRole(UserRole.Owner)]
         public async Task<IActionResult> DeleteTableType(Guid id)
         {
             try

@@ -32,9 +32,9 @@ namespace ShopManagementService.Repositories
         public Task<UpdateTableStatusResponseDTO> UpdateTableStatus(Guid tableId, bool isFinish)
          => _tableDao.UpdateTableStatus(tableId,isFinish);
 
-        public Task<(List<GetTableResponseDTO>, TablePaginationDTO)> GetAllTables(GetTablesRequestDTO request)
+        public Task<(List<GetTableResponseDTO>, TablePaginationDTO)> GetAllTables(Guid shopId, GetTablesRequestDTO request)
         
-            => _tableDao.GetAllTables(request);
+            => _tableDao.GetAllTables(shopId, request);
         
     }
     

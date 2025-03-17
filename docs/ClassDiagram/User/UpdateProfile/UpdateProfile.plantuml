@@ -1,0 +1,46 @@
+@startuml getUserById
+hide circle
+skinparam classAttributeIconSize 0
+skinparam linetype ortho
+
+class APIGateway {
+}
+
+class UserController{
+    - _repo: IUserRepositories
+    + UpdateProfile([FromBody] UpdateProfileRequestDTO request): Task<IActionResult>
+}
+
+interface IUserRepositories<<interface>> {
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class UserRepositories {
+    - _dao: UserDAO
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class UserDAO {
+    - _client: Client
+    + UpdateProfile(UpdateProfileRequestDTO request, string token): Task<GetUserResponeDTO>
+}
+
+class Profile {
+    + Id: Guid
+    + FullName: string
+    + ProfilePicture: string
+    + Bio: string
+    + DateOfBirth: DateTime
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + Role: string
+    + AccountId: Guid
+}
+
+APIGateway -- UserController
+UserController -- IUserRepositories 
+IUserRepositories <|-- UserRepositories
+UserRepositories "1"--"1..*" UserDAO
+UserDAO "1"--"0..*" Profile
+
+@enduml

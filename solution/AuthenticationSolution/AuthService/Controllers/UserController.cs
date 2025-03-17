@@ -17,7 +17,7 @@ public class UserController : Controller
         _repo = repo;
     }
 
-    [HttpGet("getCurrentProfile")]
+    [HttpGet("currentUser")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
@@ -34,26 +34,9 @@ public class UserController : Controller
 
     }
 
-    [HttpGet("createProfile")]
+    [HttpGet("{id}")]
     [Authorize]
-    public async Task<IActionResult> CreateProfile([FromBody] CreateProfileRequestDTO request)
-    {
-        try
-        {
-            var token = HttpContext.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-            var reponse = await _repo.CreateUser(request, token);
-            return Ok(reponse);
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(new { msg = ex.Message });
-        }
-
-    }
-
-    [HttpGet("getUserById")]
-    [Authorize]
-    public async Task<IActionResult> GetUserById([FromQuery] Guid id)
+    public async Task<IActionResult> GetUserById(Guid id)
     {
         try
         {
@@ -68,7 +51,7 @@ public class UserController : Controller
 
     [HttpPut("updateProfile")]
     [Authorize]
-    public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequestDTO request)
+    public async Task<IActionResult> UpdateProfile([FromForm] UpdateProfileRequestDTO request)
     {
         try
         {
@@ -80,5 +63,24 @@ public class UserController : Controller
         {
             return BadRequest(new { msg = ex.Message });
         }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetAllProfile([FromQuery] GetProfileRequestDTO request)
+    {
+        try
+        {
+            var user = await _repo.GetAllProfiles(request);
+            if (user.Profiles == null || !user.Profiles.Any())
+            {
+                return NotFound(new { msg = "User not found" });
+            }
+            return Ok(user);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { msg = ex.Message });
+        }
+
     }
 }

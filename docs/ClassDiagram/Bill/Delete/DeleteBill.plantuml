@@ -1,0 +1,51 @@
+@startuml
+hide circle
+skinparam classAttributeIconSize 0
+
+class APIGateway {
+}
+
+class BillController {
+    - _billRepository: IBillRepository
+    + DeleteBill(Guid id): Task<IActionResult>
+}
+
+interface IBillRepository<<interface>> {
+    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+}
+
+class BillRepository {
+    - _billDao: BillDAO
+    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+}
+
+class BillDAO {
+    - _client: Client
+    + DeleteBill(Guid id): Task<DeleteBillResponseDTO>
+}
+
+
+class Bill {
+    + Id: Guid
+    + ReservationId: Guid
+    + TotalAmount: decimal
+    + ReceivedAmount: decimal
+    + ChangeAmount: decimal
+    + TableId: Guid
+    + CreatedAt: DateTime
+    + UpdatedAt: DateTime
+    + CustomerId: Guid
+    + ShopId: Guid
+}
+
+APIGateway -- BillController
+
+BillController -- IBillRepository
+
+IBillRepository <|.. BillRepository
+
+BillRepository -- BillDAO
+
+BillDAO -- Bill
+
+@enduml

@@ -20,13 +20,13 @@ namespace ShopManagementService.DAO
         }
 
 
-        public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(GetTablesRequestDTO request)
+        public async Task<(List<GetTableResponseDTO> Tables, TablePaginationDTO PaginationMetadata)> GetAllTables(Guid shopId, GetTablesRequestDTO request)
 
         {
             try
             {
                 //Get list of all table and apply filters
-                var query = _client.From<Table>().Select("*");
+                var query = _client.From<Table>().Select("*").Where(tb => tb.ShopId == shopId);
                 query = ApplyFilters(query, request);
 
                 //Also apply filters but for counting since if using .Count it will reset filters

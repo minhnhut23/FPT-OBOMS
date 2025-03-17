@@ -1,31 +1,23 @@
-label.style.font-color: black
+label: "Sequence Diagram for UpdateUser"
 
 classes: {
-  forward arrow: {
+  text-black: {
     style: {
       font-color: black
-      bold: true
     }
   }
-
   return arrow: {
     style: {
       stroke-dash: 3
-      stroke: black
-      font-color: black
-      bold: true
     }
   }
-
   frame: {
     style: {
       fill: '#EAEDF0'
       stroke-width: 1
-      bold: true
     }
   }
-
-  label right: {
+  label_right: {
     style.font-color: black
   }
 }
@@ -39,38 +31,43 @@ User: {
   icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
 }
 
-WebAplication: Web Aplication
-apiGateway: API Gateway
-ProductController: ProductController
-ProductRepository: ProductRepository
-ProductDAO: ProductDAO
-
+application: "Web application"
+apiGateway: "ApiGateway"
+Router: "Router"
+UserController: "UserController"
+UserRepository: "UserRepository"
+UserDAO: "UserDAO"
+Supabase: "Supabase"
 DB: "DB" {
   shape: cylinder
 }
 
-User -> WebAplication.get: 1. User view product list\n(or apply filters) {class: forward arrow}
-WebAplication.get -> apiGateway.get: 2. Forward\n Request {class: forward arrow}
-apiGateway.get -> ProductController.get: 3. Forward to\n Controller {class: forward arrow}
-ProductController.get -> ProductRepository.get: 4. Call\n GetAllProduct() {class: forward arrow}
-ProductRepository.get -> ProductDAO.get: 5. Fetch product\n from DB {class: forward arrow}
+User -> application.get: "1. Get all product request"
+application.get -> apiGateway.get: "2. Request get all product"
+apiGateway.get -> Router.get: "3. Send get all product request"
+Router.get -> UserController.get: "4. Forward request to controller"
+UserController -> UserRepository.get: "5. Forward request to repository"
+UserRepository -> UserDAO.get: "6. Forward request to DAO"
 
-ProductDAO.get -> DB.get: 6. Query products\n with filters {class: forward arrow}
-DB.get -> ProductDAO.get: 7. Return\n product list {class: return arrow}
-ProductDAO.get -> ProductRepository.get: 9. Forward result {class: return arrow}
-ProductRepository.get -> ProductController.get: 10. Return result {class: return arrow}
+UserDAO.get -> Supabase.get: "7. Validate token"
+Supabase.get -> DB.get: "8. Get all product"
+DB.get -> Supabase.get: "9. Return result" {class: return arrow}
+Supabase.get -> UserDAO.get: "10. Return result" {class: return arrow}
+UserDAO.get -> UserRepository.get: "11. Return result" {class: return arrow}
+UserRepository.get-> UserController.get: "12. Forward result" {class: return arrow}
 
 alt: "alt" {
-  If product found: "[Product found]" {
-    class: frame  
-    ProductController.get -> apiGateway.get: 10.1. Send\n response {class: return arrow}
-    apiGateway.get -> WebAplication.get: 10.1.1. Forward\n response {class: return arrow}
-    WebAplication.get -> User: 10.1.1.1. Display\n product list {class: return arrow}
+  class: frame
+  Product found: "[Get List Product]" {
+    UserController.get -> Router.get: "12.1. Send product list" {class: return arrow}
+    Router.get -> apiGateway.get: "12.1.1 Return product list" {class: return arrow}
+    apiGateway.get -> application.get: "12.1.2. Return product list" {class: return arrow}
+    application.get -> User: "12.1.3. Display product list" {class: return arrow}
   }
-  If product not found: "[Product not found]" {
-    class: frame
-    ProductController.get -> apiGateway.get: 10.2. Send\n empty response {class: return arrow}
-    apiGateway.get -> WebAplication.get: 10.2.1. Forward\n empty response {class: return arrow}
-    WebAplication.get -> User: 10.2.1.1. Display\n empty response {class: return arrow}
+  Get Product failed: "[Get Product failed]" {
+    UserController.get -> Router.get: "12.2. Send error to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "12.2.1 Return error" {class: return arrow}
+    apiGateway.get -> application.get: "12.2.2. Return error" {class: return arrow}
+    application.get -> User: "12.2.3. Display error message" {class: return arrow}
   }
 }

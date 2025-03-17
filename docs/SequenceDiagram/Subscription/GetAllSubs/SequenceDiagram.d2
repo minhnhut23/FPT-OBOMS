@@ -1,0 +1,77 @@
+label.style.font-color: black
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+
+  return arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+
+  label right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+application: Web application
+apiGateway: ApiGateway
+Router: Router
+SubscriptionController: SubscriptionController
+SubscriptionRepository: SubscriptionRepository
+SubscriptionDAO: SubscriptionDAO
+Supabase: "Supabase"
+
+DB: "DB" {
+  shape: cylinder
+}
+
+# Get Subsrciption sequence
+User -> application.post: "1. Send request get all subscription" 
+application -> apiGateway.post: "2. Send Get Subscription request"
+apiGateway.post -> Router.post: "3. Send Get Subscription request"
+Router.post -> SubscriptionController.post: "4. Forward to controller"
+SubscriptionController -> SubscriptionRepository.post: "5. Forward to repository"
+SubscriptionRepository -> SubscriptionDAO.post: "6. Forward to DAO"
+SubscriptionDAO.post -> Supabase.post: "7. Validate token"
+Supabase.post-> DB.insert: "8. Get Subscription"
+DB.insert -> Supabase.post: "9. Return result" {class: return arrow}
+Supabase.post -> SubscriptionDAO.post: "10. Return result" {class: return arrow}
+SubscriptionDAO.post -> SubscriptionRepository.post: "11. Forward result" {class: return arrow}
+SubscriptionRepository.post -> SubscriptionController.post: "12. Return result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  Get Subscription successful: "[Get Subscription successful]" {
+    SubscriptionController.post -> Router.post: "12.1. Send success status to frontend" {class: return arrow}
+    Router.post -> apiGateway.post: "12.1.1. Return success status" {class: return arrow}
+    apiGateway.post -> application.post: "12.1.2. Return success status" {class: return arrow}
+    application.post -> User: "12.1.3. Display Subscription List" {class: return arrow}
+  }
+  Get Subscription failed: "[Get Subscription failed]" { 
+    SubscriptionController.post -> Router.post: "12.2. Send error status to frontend" {class: return arrow}
+    Router.post -> apiGateway.post: "12.2.1. Return success status" {class: return arrow}
+    apiGateway.post -> application.post: "12.2.2. Return error status" {class: return arrow}
+    application.post -> User: "12.2.3. Display error message" {class: return arrow}
+  }
+}

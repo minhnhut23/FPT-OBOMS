@@ -1,0 +1,75 @@
+label: "Sequence Diagram for GetCurrentUser"
+
+classes: {
+  text-black: {
+    style: {
+      font-color: black
+    }
+  }
+  return_arrow: {
+    style: {
+      stroke-dash: 3
+    }
+  }
+  frame: {
+    style: {
+      fill: '#EAEDF0'
+      stroke-width: 1
+    }
+  }
+  label_right: {
+    style.font-color: black
+  }
+}
+
+shape: sequence_diagram
+
+User: {
+  shape: image
+  width: 50
+  height: 60
+  icon: https://upload.wikimedia.org/wikipedia/commons/5/5b/Robustness_Diagram_Actor.svg
+}
+
+
+application: "Web application"
+apiGateway: "ApiGateway"
+Router: "Router"
+UserController: "UserController"
+UserRepository: "UserRepository"
+UserDAO: "UserDAO"
+Supabase: "Supabase"
+DB: "DB" {
+  shape: cylinder
+}
+
+User -> application.get: "1. Get user blocked list"
+application -> apiGateway.get: "2. Send user blocked list request "
+apiGateway.get -> Router.get: "3. Send user blocked list request"
+Router.get -> UserController.get: "4. Forward request to controller"
+UserController -> UserRepository.get: "5. Forward token to repository"
+UserRepository -> UserDAO.get: "6. Forward token to DAO"
+
+# Validate token and retrieve user
+UserDAO.get -> Supabase.get: "7. Validate token"
+Supabase.get -> DB.get: "8. Retrieve user blocked list"
+DB.get -> Supabase.get: "9. Return result" {class: return arrow}
+Supabase.get -> UserDAO.get: "10. Return result" {class: return arrow}
+UserDAO.get -> UserRepository.get: "11. Return result" {class: return arrow}
+UserRepository .get-> UserController.get: "12. Forward result" {class: return arrow}
+
+alt: "alt" {
+  class: frame
+  User found: "[User blocked found]" {
+    UserController.get -> Router.get: "12.1. Send success status to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "12.1.1. Return success status" {class: return arrow}
+    apiGateway.get -> application.get: "12.1.2. Return success status" {class: return arrow}
+    application.get -> User: "12.1.3. Display success status" {class: return arrow}
+  }
+  User not found: "[User blocked not found]" {
+    UserController.get -> Router.get: "12.2. Send error to frontend" {class: return arrow}
+    Router.get -> apiGateway.get: "12.2.1. Return error" {class: return arrow}
+    apiGateway.get -> application.get: "12.2.2. Return error" {class: return arrow}
+    application.get -> User: "12.2.3. Display error message" {class: return arrow}
+  }
+}
